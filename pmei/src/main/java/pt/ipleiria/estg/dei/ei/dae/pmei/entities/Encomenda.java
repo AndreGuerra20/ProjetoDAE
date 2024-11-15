@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "encomendas")
+//@NamedQueries({
+//        @NamedQuery(
+//                name = "getAllEncomendas",
+//                query = "SELECT e FROM encomendas e ORDER BY e.id" // JPQL
+//        )
+//})
+
 public class Encomenda {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

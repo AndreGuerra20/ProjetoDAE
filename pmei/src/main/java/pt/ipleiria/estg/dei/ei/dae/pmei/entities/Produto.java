@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "produtos")
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

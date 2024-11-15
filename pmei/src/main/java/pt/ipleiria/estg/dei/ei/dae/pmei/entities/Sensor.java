@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "sensores")
 public class Sensor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

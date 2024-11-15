@@ -7,6 +7,8 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
+import java.util.List;
+
 @Stateless
 public class EncomendaBean {
     @PersistenceContext
@@ -20,4 +22,8 @@ public class EncomendaBean {
     public Encomenda find(long id) {
         return em.find(Encomenda.class, id);
     }
+
+//    public List<Encomenda> findAll() {
+//        return em.createNamedQuery("getAllEncomendas", Encomenda.class).getResultList();
+//    }
 }
