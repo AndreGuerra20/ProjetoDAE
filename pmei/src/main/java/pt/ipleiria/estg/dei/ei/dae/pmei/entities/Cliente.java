@@ -1,11 +1,14 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Cliente {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
@@ -15,18 +18,13 @@ public class Cliente {
     public Cliente() {
     }
 
-    public Cliente(long id, String name, long NIF) {
-        this.id = id;
+    public Cliente(String name, long NIF) {
         this.name = name;
         this.NIF = NIF;
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {

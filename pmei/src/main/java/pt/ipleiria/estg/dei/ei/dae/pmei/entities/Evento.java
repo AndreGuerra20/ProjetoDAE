@@ -1,36 +1,33 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
 public class Evento {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String valor;
 
     private Date timestamp;
 
-    private long sensor;
+    @ManyToOne
+    @JoinColumn(name = "sensor_id")
+    private Sensor sensor;
 
     public Evento() {
     }
 
-    public Evento(long id, String valor) {
-        this.id = id;
+    public Evento(String valor) {
         this.valor = valor;
         this.timestamp = new Date();
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getValor() {
@@ -49,21 +46,11 @@ public class Evento {
         this.timestamp = timestamp;
     }
 
-    public long getSensor() {
+    public Sensor getSensor() {
         return sensor;
     }
 
-    public void setSensor(long sensor) {
+    public void setSensor(Sensor sensor) {
         this.sensor = sensor;
-    }
-
-    @Override
-    public String toString() {
-        return "Evento{" +
-                "id=" + id +
-                ", valor='" + valor + '\'' +
-                ", timestamp=" + timestamp +
-                ", sensor=" + sensor +
-                '}';
     }
 }

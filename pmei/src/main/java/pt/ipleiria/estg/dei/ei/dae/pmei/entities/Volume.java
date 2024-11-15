@@ -1,8 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,32 +8,30 @@ import java.util.List;
 @Entity
 public class Volume {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String tipoEmbalagem;
 
-    private long encomenda;
+    @ManyToOne
+    @JoinColumn(name = "encomenda_id")
+    private Encomenda encomenda;
 
-    @OneToMany(mappedBy = "volume")
+    @OneToMany(mappedBy = "volume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Produto> produtos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "volume")
+    @OneToMany(mappedBy = "volume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sensor> sensores = new ArrayList<>();
 
     public Volume() {
     }
 
-    public Volume(long id, String tipoEmbalagem) {
-        this.id = id;
+    public Volume(String tipoEmbalagem) {
         this.tipoEmbalagem = tipoEmbalagem;
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getTipoEmbalagem() {
@@ -62,11 +58,11 @@ public class Volume {
         this.sensores = sensores;
     }
 
-    public long getEncomenda() {
+    public Encomenda getEncomenda() {
         return encomenda;
     }
 
-    public void setEncomenda(long encomenda) {
+    public void setEncomenda(Encomenda encomenda) {
         this.encomenda = encomenda;
     }
 
@@ -76,16 +72,5 @@ public class Volume {
 
     public void addSensor(Sensor sensor) {
         sensores.add(sensor);
-    }
-
-    @Override
-    public String toString() {
-        return "Volume{" +
-                "id=" + id +
-                ", tipoEmbalagem='" + tipoEmbalagem + '\'' +
-                ", encomenda=" + encomenda +
-                ", produtos=" + produtos +
-                ", sensores=" + sensores +
-                '}';
     }
 }

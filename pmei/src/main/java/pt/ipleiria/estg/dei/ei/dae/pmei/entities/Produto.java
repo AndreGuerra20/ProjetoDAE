@@ -1,31 +1,28 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Produto {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private int quantidade;
 
-    private long volume;
+    @ManyToOne
+    @JoinColumn(name = "volume_id")
+    private Volume volume;
 
     public Produto() {
     }
 
-    public Produto(long id, int quantidade) {
-        this.id = id;
+    public Produto(int quantidade) {
         this.quantidade = quantidade;
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public int getQuantidade() {
@@ -36,20 +33,11 @@ public class Produto {
         this.quantidade = quantidade;
     }
 
-    public long getVolume() {
+    public Volume getVolume() {
         return volume;
     }
 
-    public void setVolume(long volume) {
+    public void setVolume(Volume volume) {
         this.volume = volume;
-    }
-
-    @Override
-    public String toString() {
-        return "Produto{" +
-                "id=" + id +
-                ", quantidade=" + quantidade +
-                ", volume=" + volume +
-                '}';
     }
 }

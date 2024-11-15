@@ -1,8 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,32 +8,30 @@ import java.util.List;
 @Entity
 public class Sensor {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String tipo;
 
     private Boolean status;
 
-    private long volume;
+    @ManyToOne
+    @JoinColumn(name = "volume_id")
+    private Volume volume;
 
-    @OneToMany(mappedBy = "sensor")
+    @OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evento> eventos = new ArrayList<>();
 
     public Sensor() {
     }
 
-    public Sensor(long id, String tipo, Boolean status) {
-        this.id = id;
+    public Sensor(String tipo, Boolean status) {
         this.tipo = tipo;
         this.status = status;
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public List<Evento> getEventos() {
@@ -62,21 +58,15 @@ public class Sensor {
         this.tipo = tipo;
     }
 
-    public long getVolume() {
+    public Volume getVolume() {
         return volume;
     }
 
-    public void setVolume(long volume) {
+    public void setVolume(Volume volume) {
         this.volume = volume;
     }
 
-    @Override
-    public String toString() {
-        return "Sensor{" +
-                "id=" + id +
-                ", tipo='" + tipo + '\'' +
-                ", status=" + status +
-                ", volume=" + volume +
-                '}';
+    public void addEvento(Evento evento) {
+        eventos.add(evento);
     }
 }

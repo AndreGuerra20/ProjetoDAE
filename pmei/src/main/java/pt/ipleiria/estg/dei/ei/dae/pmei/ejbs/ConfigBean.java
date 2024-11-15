@@ -27,30 +27,28 @@ public class ConfigBean {
     @EJB
     private SensorBean sensorBean;
 
+    @EJB
+    private EventoBean eventoBean;
+
     private static final Logger logger = Logger.getLogger("ConfigBean.logger");
 
     @PostConstruct
     public void populateDB() {
-        clienteBean.create(1, "João", 123456789);
+        clienteBean.create("João", 123456789);
 
-        encomendaBean.create(1, clienteBean.find(1), "Pendente");
+        encomendaBean.create(clienteBean.find(1), "Pendente");
 
-        volumeBean.create(1, "Caixa Isotérmica");
-        volumeBean.create(2, "Caixa Cartão");
+        volumeBean.create("Caixa Isotérmica", encomendaBean.find(1));
 
-        produtoBean.create(1, 10);
-        produtoBean.create(2, 20);
-        volumeBean.find(1).addProduto(produtoBean.find(1));
-        volumeBean.find(2).addProduto(produtoBean.find(2));
+        produtoBean.create(2, volumeBean.find(1));
+        produtoBean.create(3, volumeBean.find(1));
 
-        sensorBean.create(1, "Temperatura", true);
-        volumeBean.find(1).addSensor(sensorBean.find(1));
+        sensorBean.create("Temperatura", true, volumeBean.find(1));
 
-        encomendaBean.find(1).addVolume(volumeBean.find(1));
-        encomendaBean.find(1).addVolume(volumeBean.find(2));
+        eventoBean.create("25ºC", sensorBean.find(1));
+        eventoBean.create("24.3ºC", sensorBean.find(1));
+        eventoBean.create("26ºC", sensorBean.find(1));
+        eventoBean.create("25.3ºC", sensorBean.find(1));
 
-
-//        System.out.println(">>> Encomenda 1 - " + encomendaBean.find(1));
-        logger.log(Level.WARNING, ">>> Encomenda 1 - " + encomendaBean.find(1));
     }
 }

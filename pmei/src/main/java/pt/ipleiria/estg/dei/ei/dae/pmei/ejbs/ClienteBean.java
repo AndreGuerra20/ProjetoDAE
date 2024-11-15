@@ -10,8 +10,8 @@ public class ClienteBean {
     @PersistenceContext
     private EntityManager em;
 
-    public void create(long id, String name, long NIF) {
-        em.persist(new Cliente(id, name, NIF));
+    public void create(String name, long NIF) {
+        em.persist(new Cliente(name, NIF));
     }
 
     public Cliente find(long id) {

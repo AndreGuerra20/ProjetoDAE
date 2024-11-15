@@ -1,9 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +8,10 @@ import java.util.List;
 @Entity
 public class Encomenda {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToMany(mappedBy = "encomenda")
+    @OneToMany(mappedBy = "encomenda", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Volume> volumes = new ArrayList<>();
 
     @ManyToOne
@@ -24,18 +22,13 @@ public class Encomenda {
     public Encomenda() {
     }
 
-    public Encomenda(long id, Cliente cliente, String estado) {
-        this.id = id;
+    public Encomenda(Cliente cliente, String estado) {
         this.cliente = cliente;
         this.estado = estado;
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public List<Volume> getVolumes() {
