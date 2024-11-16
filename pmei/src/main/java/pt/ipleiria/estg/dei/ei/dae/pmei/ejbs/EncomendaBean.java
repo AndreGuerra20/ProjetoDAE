@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
@@ -20,10 +21,12 @@ public class EncomendaBean {
     }
 
     public Encomenda find(long id) {
-        return em.find(Encomenda.class, id);
+        var encomenda = em.find(Encomenda.class, id);
+        Hibernate.initialize(encomenda.getVolumes());
+        return encomenda;
     }
 
-//    public List<Encomenda> findAll() {
-//        return em.createNamedQuery("getAllEncomendas", Encomenda.class).getResultList();
-//    }
+    public List<Encomenda> findAll() {
+        return em.createNamedQuery("getAllEncomendas", Encomenda.class).getResultList();
+    }
 }

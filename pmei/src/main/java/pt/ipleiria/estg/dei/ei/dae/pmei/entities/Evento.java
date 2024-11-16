@@ -54,4 +54,14 @@ public class Evento {
     public void setSensor(Sensor sensor) {
         this.sensor = sensor;
     }
+
+    @Override
+    public String toString() {
+        return "Evento{" +
+                "id=" + id +
+                ", valor='" + valor + '\'' +
+                ", timestamp=" + timestamp +
+                ", sensor=" + sensor.getId() +
+                '}';
+    }
 }

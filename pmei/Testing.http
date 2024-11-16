@@ -1,7 +1,7 @@
 ### Get um encomenda
-GET http://localhost:8080/pmei/api/encomenda/1
+GET http://localhost:8080/PMEI/api/encomenda/1
 Accept: application/json
 
 ### Get todas as encomendas
-GET http://localhost:8080/api/encomenda
+GET http://localhost:8080/PMEI/api/encomenda
 Accept: application/json

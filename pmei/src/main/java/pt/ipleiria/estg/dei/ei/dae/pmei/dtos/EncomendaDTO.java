@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,14 +11,13 @@ public class EncomendaDTO implements Serializable {
     private long id;
     private ClienteDTO cliente;
     private String estado;
-    private List<VolumeDTO> volumes;
+    private List<VolumeDTO> volumes = new ArrayList<>();
 
     public EncomendaDTO() {
     }
 
-    public EncomendaDTO(long id, List<VolumeDTO> volumes, String estado, ClienteDTO cliente) {
+    public EncomendaDTO(long id, String estado, ClienteDTO cliente) {
         this.id = id;
-        this.volumes = volumes;
         this.estado = estado;
         this.cliente = cliente;
     }
@@ -55,12 +55,9 @@ public class EncomendaDTO implements Serializable {
     }
 
     public static EncomendaDTO from(Encomenda encomenda) {
-        return new EncomendaDTO(
-                encomenda.getId(),
-                VolumeDTO.from(encomenda.getVolumes()),
-                encomenda.getEstado(),
-                ClienteDTO.from(encomenda.getCliente())
-        );
+        EncomendaDTO encomendaDTO = new EncomendaDTO(encomenda.getId(), encomenda.getEstado(), ClienteDTO.from(encomenda.getCliente()));
+        encomendaDTO.setVolumes(VolumeDTO.from(encomenda.getVolumes()));
+        return encomendaDTO;
     }
 
     public static List<EncomendaDTO> from(List<Encomenda> encomendas) {

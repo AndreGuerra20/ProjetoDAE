@@ -74,4 +74,14 @@ public class Volume {
     public void addSensor(Sensor sensor) {
         sensores.add(sensor);
     }
+
+    @Override
+    public String toString() {
+        return "Volume{" +
+                "id=" + id +
+                ", tipoEmbalagem='" + tipoEmbalagem + '\'' +
+                ", produtos=" + produtos +
+                ", sensores=" + sensores +
+                '}';
+    }
 }

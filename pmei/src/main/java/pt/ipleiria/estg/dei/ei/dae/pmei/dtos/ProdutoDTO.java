@@ -9,15 +9,13 @@ import java.util.stream.Collectors;
 public class ProdutoDTO implements Serializable {
     private long id;
     private int quantidade;
-    private VolumeDTO volume;
 
     public ProdutoDTO() {
     }
 
-    public ProdutoDTO(long id, int quantidade, VolumeDTO volume) {
+    public ProdutoDTO(long id, int quantidade) {
         this.id = id;
         this.quantidade = quantidade;
-        this.volume = volume;
     }
 
     public long getId() {
@@ -36,19 +34,10 @@ public class ProdutoDTO implements Serializable {
         this.quantidade = quantidade;
     }
 
-    public VolumeDTO getVolume() {
-        return volume;
-    }
-
-    public void setVolume(VolumeDTO volume) {
-        this.volume = volume;
-    }
-
     public static ProdutoDTO from(Produto produto) {
         return new ProdutoDTO(
                 produto.getId(),
-                produto.getQuantidade(),
-                VolumeDTO.from(produto.getVolume())
+                produto.getQuantidade()
         );
     }
 

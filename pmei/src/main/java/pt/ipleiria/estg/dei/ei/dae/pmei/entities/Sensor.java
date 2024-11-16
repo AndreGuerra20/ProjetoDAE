@@ -70,4 +70,14 @@ public class Sensor {
     public void addEvento(Evento evento) {
         eventos.add(evento);
     }
+
+    @Override
+    public String toString() {
+        return "Sensor{" +
+                "id=" + id +
+                ", tipo='" + tipo + '\'' +
+                ", status=" + status +
+                ", volume=" + volume.getId() +
+                '}';
+    }
 }

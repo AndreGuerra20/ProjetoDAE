@@ -41,4 +41,13 @@ public class Produto {
     public void setVolume(Volume volume) {
         this.volume = volume;
     }
+
+    @Override
+    public String toString() {
+        return "Produto{" +
+                "id=" + id +
+                ", quantidade=" + quantidade +
+                ", volume=" + volume.getId() +
+                '}';
+    }
 }

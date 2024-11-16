@@ -11,17 +11,15 @@ import java.util.stream.Collectors;
 public class VolumeDTO implements Serializable {
     private long id;
     private String tipoEmbalagem;
-    private EncomendaDTO encomenda;
     private List<ProdutoDTO> produtos = new ArrayList<>();
     private List<SensorDTO> sensores = new ArrayList<>();
 
     public VolumeDTO() {
     }
 
-    public VolumeDTO(long id, String tipoEmbalagem, EncomendaDTO encomenda) {
+    public VolumeDTO(long id, String tipoEmbalagem) {
         this.id = id;
         this.tipoEmbalagem = tipoEmbalagem;
-        this.encomenda = encomenda;
     }
 
     public long getId() {
@@ -48,14 +46,6 @@ public class VolumeDTO implements Serializable {
         this.produtos = produtos;
     }
 
-    public EncomendaDTO getEncomenda() {
-        return encomenda;
-    }
-
-    public void setEncomenda(EncomendaDTO encomenda) {
-        this.encomenda = encomenda;
-    }
-
     public List<SensorDTO> getSensores() {
         return sensores;
     }
@@ -65,11 +55,13 @@ public class VolumeDTO implements Serializable {
     }
 
     public static VolumeDTO from(Volume volume) {
-        return new VolumeDTO(
+        VolumeDTO volumeDTO = new VolumeDTO(
                 volume.getId(),
-                volume.getTipoEmbalagem(),
-                EncomendaDTO.from(volume.getEncomenda())
+                volume.getTipoEmbalagem()
         );
+        volumeDTO.setProdutos(ProdutoDTO.from(volume.getProdutos()));
+        volumeDTO.setSensores(SensorDTO.from(volume.getSensores()));
+        return volumeDTO;
     }
 
     public static List<VolumeDTO> from(List<Volume> volumes) {

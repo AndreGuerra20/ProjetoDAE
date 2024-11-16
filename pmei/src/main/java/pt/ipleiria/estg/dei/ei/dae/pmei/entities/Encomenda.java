@@ -7,12 +7,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "encomendas")
-//@NamedQueries({
-//        @NamedQuery(
-//                name = "getAllEncomendas",
-//                query = "SELECT e FROM encomendas e ORDER BY e.id" // JPQL
-//        )
-//})
+@NamedQueries({
+        @NamedQuery(
+                name = "getAllEncomendas",
+                query = "SELECT e FROM Encomenda e ORDER BY e.id" // JPQL
+        )
+})
 
 public class Encomenda {
     @Id
