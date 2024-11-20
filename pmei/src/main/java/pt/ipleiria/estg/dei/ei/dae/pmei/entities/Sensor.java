@@ -3,7 +3,9 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "sensores")
@@ -74,11 +76,6 @@ public class Sensor {
 
     @Override
     public String toString() {
-        return "Sensor{" +
-                "id=" + id +
-                ", tipo='" + tipo + '\'' +
-                ", status=" + status +
-                ", volume=" + volume.getId() +
-                '}';
+        return "Sensor{" + "id=" + id + ", tipo='" + tipo + '\'' + ", status=" + status + ", volume=" + volume.getId() + '}';
     }
 }

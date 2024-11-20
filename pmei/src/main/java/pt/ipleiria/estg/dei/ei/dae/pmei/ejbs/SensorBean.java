@@ -36,4 +36,19 @@ public class SensorBean {
         Hibernate.initialize(sensor.getEventos());
         return sensor;
     }
+
+    public double getAverageValue(long id) {
+        Sensor sensor = em.find(Sensor.class, id);
+        return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).average().orElse(0);
+    }
+
+    public double getLowestValue(long id) {
+        Sensor sensor = em.find(Sensor.class, id);
+        return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).min().orElse(0);
+    }
+
+    public double getHighestValue(long id) {
+        Sensor sensor = em.find(Sensor.class, id);
+        return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).max().orElse(0);
+    }
 }

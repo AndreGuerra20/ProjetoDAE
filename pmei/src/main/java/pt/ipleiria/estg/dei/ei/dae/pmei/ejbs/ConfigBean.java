@@ -8,6 +8,8 @@ import jakarta.ejb.Startup;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Thread.sleep;
+
 @Singleton
 @Startup
 public class ConfigBean {
@@ -33,7 +35,7 @@ public class ConfigBean {
     private static final Logger logger = Logger.getLogger("ConfigBean.logger");
 
     @PostConstruct
-    public void populateDB() {
+    public void populateDB() throws InterruptedException {
         clienteBean.create("João", 123456789);
 
         encomendaBean.create(clienteBean.find(1).getId(), "Pendente");
@@ -45,10 +47,13 @@ public class ConfigBean {
 
         sensorBean.create("Temperatura", true, volumeBean.find(1).getId());
 
-        eventoBean.create("25ºC", sensorBean.find(1).getId());
-        eventoBean.create("24.3ºC", sensorBean.find(1).getId());
-        eventoBean.create("26ºC", sensorBean.find(1).getId());
-        eventoBean.create("25.3ºC", sensorBean.find(1).getId());
+        eventoBean.create("25", sensorBean.find(1).getId());
+        sleep(1000);
+        eventoBean.create("24.3", sensorBean.find(1).getId());
+        sleep(1000);
+        eventoBean.create("26", sensorBean.find(1).getId());
+        sleep(1000);
+        eventoBean.create("25.3", sensorBean.find(1).getId());
 
     }
 }
