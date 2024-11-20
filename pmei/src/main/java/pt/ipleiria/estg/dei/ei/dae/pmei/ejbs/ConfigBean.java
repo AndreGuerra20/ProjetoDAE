@@ -36,19 +36,19 @@ public class ConfigBean {
     public void populateDB() {
         clienteBean.create("João", 123456789);
 
-        encomendaBean.create(clienteBean.find(1), "Pendente");
+        encomendaBean.create(clienteBean.find(1).getId(), "Pendente");
 
-        volumeBean.create("Caixa Isotérmica", encomendaBean.find(1));
+        volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
 
-        produtoBean.create(2, volumeBean.find(1));
-        produtoBean.create(3, volumeBean.find(1));
+        produtoBean.create(2, volumeBean.find(1).getId());
+        produtoBean.create(3, volumeBean.find(1).getId());
 
-        sensorBean.create("Temperatura", true, volumeBean.find(1));
+        sensorBean.create("Temperatura", true, volumeBean.find(1).getId());
 
-        eventoBean.create("25ºC", sensorBean.find(1));
-        eventoBean.create("24.3ºC", sensorBean.find(1));
-        eventoBean.create("26ºC", sensorBean.find(1));
-        eventoBean.create("25.3ºC", sensorBean.find(1));
+        eventoBean.create("25ºC", sensorBean.find(1).getId());
+        eventoBean.create("24.3ºC", sensorBean.find(1).getId());
+        eventoBean.create("26ºC", sensorBean.find(1).getId());
+        eventoBean.create("25.3ºC", sensorBean.find(1).getId());
 
     }
 }

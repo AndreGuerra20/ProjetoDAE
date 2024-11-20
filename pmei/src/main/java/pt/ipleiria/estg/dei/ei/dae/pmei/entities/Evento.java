@@ -2,10 +2,12 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Entity
 @Table(name = "eventos")
+@NamedQueries({@NamedQuery(name = "getAllEventos", query = "SELECT e FROM Evento e")})
 public class Evento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,18 +15,18 @@ public class Evento {
 
     private String valor;
 
-    private Date timestamp;
+    private String timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "sensor_id")
     private Sensor sensor;
 
     public Evento() {
     }
 
-    public Evento(String valor) {
+    public Evento(String valor, Sensor sensor) {
         this.valor = valor;
-        this.timestamp = new Date();
+        this.sensor = sensor;
+        this.timestamp = DateTimeFormatter.ISO_INSTANT.format(new Date().toInstant());
     }
 
     public long getId() {
@@ -39,11 +41,11 @@ public class Evento {
         this.valor = valor;
     }
 
-    public Date getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -57,11 +59,6 @@ public class Evento {
 
     @Override
     public String toString() {
-        return "Evento{" +
-                "id=" + id +
-                ", valor='" + valor + '\'' +
-                ", timestamp=" + timestamp +
-                ", sensor=" + sensor.getId() +
-                '}';
+        return "Evento{" + "id=" + id + ", valor='" + valor + '\'' + ", timestamp=" + timestamp + ", sensor=" + sensor.getId() + '}';
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "volumes")
+@NamedQueries(@NamedQuery(name = "getAllVolumes", query = "SELECT v FROM Volume v LEFT JOIN FETCH v.produtos LEFT JOIN FETCH v.sensores ORDER BY v.id"))
 public class Volume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,20 +16,20 @@ public class Volume {
     private String tipoEmbalagem;
 
     @ManyToOne
-    @JoinColumn(name = "encomenda_id")
     private Encomenda encomenda;
 
-    @OneToMany(mappedBy = "volume", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
     private List<Produto> produtos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "volume", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
     private List<Sensor> sensores = new ArrayList<>();
 
     public Volume() {
     }
 
-    public Volume(String tipoEmbalagem) {
+    public Volume(String tipoEmbalagem, Encomenda encomenda) {
         this.tipoEmbalagem = tipoEmbalagem;
+        this.encomenda = encomenda;
     }
 
     public long getId() {
@@ -41,6 +42,14 @@ public class Volume {
 
     public void setTipoEmbalagem(String tipoEmbalagem) {
         this.tipoEmbalagem = tipoEmbalagem;
+    }
+
+    public Encomenda getEncomenda() {
+        return encomenda;
+    }
+
+    public void setEncomenda(Encomenda encomenda) {
+        this.encomenda = encomenda;
     }
 
     public List<Produto> getProdutos() {
@@ -59,29 +68,11 @@ public class Volume {
         this.sensores = sensores;
     }
 
-    public Encomenda getEncomenda() {
-        return encomenda;
-    }
-
-    public void setEncomenda(Encomenda encomenda) {
-        this.encomenda = encomenda;
-    }
-
-    public void addProduto(Produto produto) {
-        produtos.add(produto);
-    }
-
-    public void addSensor(Sensor sensor) {
-        sensores.add(sensor);
-    }
-
     @Override
     public String toString() {
         return "Volume{" +
                 "id=" + id +
                 ", tipoEmbalagem='" + tipoEmbalagem + '\'' +
-                ", produtos=" + produtos +
-                ", sensores=" + sensores +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "produtos")
+@NamedQueries({@NamedQuery(name = "getAllProdutos", query = "SELECT p FROM Produto p ORDER BY p.id")})
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,14 +13,14 @@ public class Produto {
     private int quantidade;
 
     @ManyToOne
-    @JoinColumn(name = "volume_id")
     private Volume volume;
 
     public Produto() {
     }
 
-    public Produto(int quantidade) {
+    public Produto(int quantidade, Volume volume) {
         this.quantidade = quantidade;
+        this.volume = volume;
     }
 
     public long getId() {

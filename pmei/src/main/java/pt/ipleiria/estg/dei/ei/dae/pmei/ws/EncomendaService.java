@@ -4,10 +4,9 @@ import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.EncomendaDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EncomendaBean;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("encomenda")
@@ -19,17 +18,17 @@ public class EncomendaService {
 
     @GET
     @Path("/")
-    public Response getAllEncomendas() {
-        return Response.ok(encomendaBean.findAll()).build();
+    public List<EncomendaDTO> getAllEncomendas() {
+        return EncomendaDTO.from(encomendaBean.findAll());
     }
 
     @GET
     @Path("{id}")
     public Response getEncomenda(@PathParam("id") long id) {
-        var encomenda = encomendaBean.find(id);
+        var encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {
             return Response.status(Response.Status.NOT_IMPLEMENTED).build();
         }
-        return Response.ok(encomenda).build();
+        return Response.ok(EncomendaDTO.from(encomenda)).build();
     }
 }

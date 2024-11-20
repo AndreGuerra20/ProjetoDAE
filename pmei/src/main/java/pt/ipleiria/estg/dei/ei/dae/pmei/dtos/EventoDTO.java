@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
+import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 
 import java.io.Serializable;
@@ -8,17 +9,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventoDTO implements Serializable {
+    @Id
     private long id;
     private String valor;
-    private Date timestamp;
+    private String timestamp;
+    private long sensorId;
 
     public EventoDTO() {
     }
 
-    public EventoDTO(long id, String valor, Date timestamp) {
-        this.id = id;
+    public EventoDTO(String valor, String timestamp, long sensorId) {
         this.valor = valor;
         this.timestamp = timestamp;
+        this.sensorId = sensorId;
     }
 
     public long getId() {
@@ -37,19 +40,27 @@ public class EventoDTO implements Serializable {
         this.valor = valor;
     }
 
-    public Date getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public long getSensorId() {
+        return sensorId;
+    }
+
+    public void setSensorId(long sensorId) {
+        this.sensorId = sensorId;
     }
 
     public static EventoDTO from(Evento evento) {
         return new EventoDTO(
-                evento.getId(),
                 evento.getValor(),
-                evento.getTimestamp()
+                evento.getTimestamp(),
+                evento.getSensor().getId()
         );
     }
 

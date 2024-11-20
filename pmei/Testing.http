@@ -1,7 +1,54 @@
-### Get um encomenda
+
+# Encomendas
+### Get uma encomenda
 GET http://localhost:8080/PMEI/api/encomenda/1
 Accept: application/json
 
 ### Get todas as encomendas
 GET http://localhost:8080/PMEI/api/encomenda
+Accept: application/json
+
+# Clientes
+### Get um cliente
+GET http://localhost:8080/PMEI/api/cliente/1
+Accept: application/json
+
+### Get todos os clientes
+GET http://localhost:8080/PMEI/api/cliente
+Accept: application/json
+
+# Volumes
+### Get um volume
+GET http://localhost:8080/PMEI/api/volume/1
+Accept: application/json
+
+### Get todos os volumes
+GET http://localhost:8080/PMEI/api/volume
+Accept: application/json
+
+# Produtos
+### Get um produto
+GET http://localhost:8080/PMEI/api/produto/1
+Accept: application/json
+
+### Get todos os produtos
+GET http://localhost:8080/PMEI/api/produto
+Accept: application/json
+
+# Sensores
+### Get um sensor
+GET http://localhost:8080/PMEI/api/sensor/1
+Accept: application/json
+
+### Get todos os sensores
+GET http://localhost:8080/PMEI/api/sensor
+Accept: application/json
+
+# Eventos
+### Get um evento
+GET http://localhost:8080/PMEI/api/evento/1
+Accept: application/json
+
+### Get todos os eventos
+GET http://localhost:8080/PMEI/api/evento
 Accept: application/json

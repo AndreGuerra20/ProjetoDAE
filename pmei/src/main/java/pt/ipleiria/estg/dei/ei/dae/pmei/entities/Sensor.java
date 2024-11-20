@@ -7,6 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "sensores")
+@NamedQueries(@NamedQuery(name = "getAllSensores", query = "SELECT s FROM Sensor s LEFT JOIN FETCH s.eventos ORDER BY s.id"))
 public class Sensor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,18 +18,18 @@ public class Sensor {
     private Boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "volume_id")
     private Volume volume;
 
-    @OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sensor")
     private List<Evento> eventos = new ArrayList<>();
 
     public Sensor() {
     }
 
-    public Sensor(String tipo, Boolean status) {
+    public Sensor(String tipo, Boolean status, Volume volume) {
         this.tipo = tipo;
         this.status = status;
+        this.volume = volume;
     }
 
     public long getId() {

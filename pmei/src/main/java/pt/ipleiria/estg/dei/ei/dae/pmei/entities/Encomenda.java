@@ -1,28 +1,26 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "encomendas")
-@NamedQueries({
-        @NamedQuery(
-                name = "getAllEncomendas",
-                query = "SELECT e FROM Encomenda e ORDER BY e.id" // JPQL
-        )
-})
+@NamedQueries({@NamedQuery(name = "getAllEncomendas", query = "SELECT e FROM Encomenda e LEFT JOIN FETCH e.volumes ORDER BY e.id" // JPQL
+)})
 
 public class Encomenda {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToMany(mappedBy = "encomenda", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "encomenda", fetch = FetchType.LAZY)
     private List<Volume> volumes = new ArrayList<>();
 
     @ManyToOne
+    @NotNull
     private Cliente cliente;
 
     private String estado;
@@ -69,11 +67,6 @@ public class Encomenda {
 
     @Override
     public String toString() {
-        return "Encomenda{" +
-                "id=" + id +
-                ", volumes=" + volumes +
-                ", cliente=" + cliente +
-                ", estado='" + estado + '\'' +
-                '}';
+        return "Encomenda{" + "id=" + id + ", volumes=" + volumes + ", cliente=" + cliente + ", estado='" + estado + '\'' + '}';
     }
 }
