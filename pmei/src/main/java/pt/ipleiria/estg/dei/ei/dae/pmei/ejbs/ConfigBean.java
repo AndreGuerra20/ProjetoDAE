@@ -36,9 +36,9 @@ public class ConfigBean {
 
     @PostConstruct
     public void populateDB() throws InterruptedException {
-        clienteBean.create("João", 123456789);
+        clienteBean.create("João", 123456789, "joao", "123");
 
-        encomendaBean.create(clienteBean.find(1).getId(), "Pendente");
+        encomendaBean.create("joao", "Pendente");
 
         volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
 

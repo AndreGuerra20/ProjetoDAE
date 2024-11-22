@@ -6,13 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "clientes")
-@NamedQueries(@NamedQuery(name = "getAllClientes", query = "SELECT c FROM Cliente c LEFT JOIN FETCH c.encomendas ORDER BY c.id"))
-public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+@NamedQueries(@NamedQuery(name = "getAllClientes", query = "SELECT u FROM User u ORDER BY u.username"))
+public class Cliente extends User {
     private String name;
 
     private long NIF;
@@ -23,13 +18,10 @@ public class Cliente {
     public Cliente() {
     }
 
-    public Cliente(String name, long NIF) {
+    public Cliente(String name, long NIF, String username, String password) {
+        super(username, password);
         this.name = name;
         this.NIF = NIF;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getName() {
@@ -66,6 +58,6 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "Cliente{" + "id=" + id + ", name='" + name + '\'' + ", NIF=" + NIF + '}';
+        return "Cliente{" + "username=" + getUsername() + ", name='" + name + '\'' + ", NIF=" + NIF + '}';
     }
 }

@@ -15,10 +15,10 @@ public class EncomendaBean {
     @PersistenceContext
     private EntityManager em;
 
-    public void create(long cliente_id, String estado) {
-        var cliente = em.find(Cliente.class, cliente_id);
+    public void create(String username, String estado) {
+        var cliente = em.find(Cliente.class, username);
         if(cliente == null) {
-            throw new IllegalArgumentException("Cliente {" + cliente_id + "} not found");
+            throw new IllegalArgumentException("Cliente {" + username + "} not found");
         }
         Encomenda encomenda = new Encomenda(cliente, estado);
         em.persist(encomenda);

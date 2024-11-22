@@ -12,17 +12,17 @@ import java.util.stream.Collectors;
 public class EncomendaDTO implements Serializable {
     @Id
     private long id;
-    private long clienteId;
+    private String clienteUsername;
     private String estado;
     private List<Long> lista_volumes = new ArrayList<>();
 
     public EncomendaDTO() {
     }
 
-    public EncomendaDTO(long id, String estado, long clienteId, List<Long> lista_volumes) {
+    public EncomendaDTO(long id, String estado, String clienteUsername, List<Long> lista_volumes) {
         this.id = id;
         this.estado = estado;
-        this.clienteId = clienteId;
+        this.clienteUsername = clienteUsername;
         this.lista_volumes = lista_volumes;
     }
 
@@ -34,12 +34,12 @@ public class EncomendaDTO implements Serializable {
         this.id = id;
     }
 
-    public long getClienteId() {
-        return clienteId;
+    public String getClienteUsername() {
+        return clienteUsername;
     }
 
-    public void setClienteId(long clienteId) {
-        this.clienteId = clienteId;
+    public void setClienteUsername(String clienteUsername) {
+        this.clienteUsername = clienteUsername;
     }
 
     public String getEstado() {
@@ -62,7 +62,7 @@ public class EncomendaDTO implements Serializable {
         return new EncomendaDTO(
                 encomenda.getId(),
                 encomenda.getEstado(),
-                encomenda.getCliente().getId(),
+                encomenda.getCliente().getUsername(),
                 encomenda.getVolumes().stream().map(Volume::getId).collect(Collectors.toList())
         );
     }

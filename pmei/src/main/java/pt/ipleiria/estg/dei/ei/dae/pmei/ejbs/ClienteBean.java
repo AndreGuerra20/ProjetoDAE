@@ -1,9 +1,12 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Hibernate;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
+import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 
 import java.util.List;
@@ -13,12 +16,23 @@ public class ClienteBean {
     @PersistenceContext
     private EntityManager em;
 
-    public void create(String name, long NIF) {
-        em.persist(new Cliente(name, NIF));
+    @Inject
+    private Hasher hasher;
+
+    public void create(String name, long NIF, String username, String password) {
+        var cliente = find(username);
+        if (cliente != null) {
+            throw new IllegalArgumentException("Cliente already exists: " + username);
+        }
+        cliente = new Cliente(name, NIF, username, hasher.hash(password));
+        em.persist(cliente);
     }
 
-    public Cliente find(long id) {
-        Cliente cliente = em.find(Cliente.class, id);
+    public Cliente find(String username) {
+        Cliente cliente = em.find(Cliente.class, username);
+        if(cliente == null) {
+            return null;
+        }
         Hibernate.initialize(cliente.getEncomendas());
         return cliente;
     }

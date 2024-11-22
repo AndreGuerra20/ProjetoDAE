@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class ClienteDTO implements Serializable {
     @Id
-    private long id;
+    private String username;
     private String name;
     private long NIF;
     private List<Long> lista_encomendas = new ArrayList<>();
@@ -19,19 +19,19 @@ public class ClienteDTO implements Serializable {
     public ClienteDTO() {
     }
 
-    public ClienteDTO(long id, String name, long NIF, List<Long> lista_encomendas) {
-        this.id = id;
+    public ClienteDTO(String username, String name, long NIF, List<Long> lista_encomendas) {
+        this.username = username;
         this.name = name;
         this.NIF = NIF;
         this.lista_encomendas = lista_encomendas;
     }
 
-    public long getId() {
-        return id;
+    public String getUsername() {
+        return username;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {
@@ -60,7 +60,7 @@ public class ClienteDTO implements Serializable {
 
     public static ClienteDTO from(Cliente cliente) {
         return new ClienteDTO(
-                cliente.getId(),
+                cliente.getUsername(),
                 cliente.getName(),
                 cliente.getNIF(),
                 cliente.getEncomendas().stream().map(Encomenda::getId).collect(Collectors.toList())
