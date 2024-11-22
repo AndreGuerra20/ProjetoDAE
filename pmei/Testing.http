@@ -44,8 +44,16 @@ Accept: application/json
 GET http://localhost:8080/PMEI/api/sensor
 Accept: application/json
 
-### Get average value
-GET http://localhost:8080/PMEI/api/sensor/1/media
+### Get average value  (EP 18)
+GET http://localhost:8080/PMEI/api/sensor/1/avg
+Accept: application/json
+
+### Get max value  (EP 16)
+GET http://localhost:8080/PMEI/api/sensor/1/max
+Accept: application/json
+
+### Get min value  (EP 17)
+GET http://localhost:8080/PMEI/api/sensor/1/min
 Accept: application/json
 
 # Eventos
