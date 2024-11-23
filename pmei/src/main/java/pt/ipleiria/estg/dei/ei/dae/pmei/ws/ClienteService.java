@@ -21,13 +21,20 @@ public class ClienteService {
     @GET
     @Path("/")
     public List<ClienteDTO> getAllClientes() {
-        return ClienteDTO.from(clienteBean.findAll());
+        List<ClienteDTO> listaClientes = ClienteDTO.from(clienteBean.findAll());
+        if(listaClientes.isEmpty()){
+            return null;
+        }
+        return listaClientes;
     }
 
     @GET
     @Path("{username}")
     public Response getCliente(@PathParam("username") String username) {
         var cliente = clienteBean.find(username);
+        if (cliente == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.ok(ClienteDTO.from(cliente)).build();
     }
 }

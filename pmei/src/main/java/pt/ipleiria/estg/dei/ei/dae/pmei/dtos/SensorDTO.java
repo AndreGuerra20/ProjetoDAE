@@ -20,7 +20,8 @@ public class SensorDTO implements Serializable {
     public SensorDTO() {
     }
 
-    public SensorDTO(String tipo, Boolean status, List<Long> lista_eventos) {
+    public SensorDTO(long id, String tipo, Boolean status, List<Long> lista_eventos) {
+        this.id = id;
         this.tipo = tipo;
         this.status = status;
         this.lista_eventos = lista_eventos;
@@ -60,6 +61,7 @@ public class SensorDTO implements Serializable {
 
     public static SensorDTO from(Sensor sensor) {
         return new SensorDTO(
+                sensor.getId(),
                 sensor.getTipo(),
                 sensor.getStatus(),
                 sensor.getEventos().stream().map(Evento::getId).collect(Collectors.toList())

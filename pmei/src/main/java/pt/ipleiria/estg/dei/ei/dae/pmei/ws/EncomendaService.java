@@ -19,7 +19,11 @@ public class EncomendaService {
     @GET
     @Path("/")
     public List<EncomendaDTO> getAllEncomendas() {
-        return EncomendaDTO.from(encomendaBean.findAll());
+        List<EncomendaDTO> listaEncomendas = EncomendaDTO.from(encomendaBean.findAll());
+        if(listaEncomendas.isEmpty()){
+            return null;
+        }
+        return listaEncomendas;
     }
 
     @GET

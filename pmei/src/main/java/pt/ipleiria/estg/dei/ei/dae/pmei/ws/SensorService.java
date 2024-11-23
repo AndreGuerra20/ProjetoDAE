@@ -3,10 +3,12 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.EventoDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.util.EventoComparator;
 
 import java.util.Collections;
@@ -22,44 +24,71 @@ public class SensorService {
     @GET
     @Path("/")
     public List<SensorDTO> getAllSensors() {
-        return SensorDTO.from(sensorBean.findAll());
+        List<SensorDTO> listaSensores = SensorDTO.from(sensorBean.findAll());
+        if(listaSensores.isEmpty()){
+            return null;
+        }
+        return listaSensores;
     }
 
     @GET
     @Path("{id}")
-    public SensorDTO getSensor(@PathParam("id") long id) {
-        return SensorDTO.from(sensorBean.findWithEventos(id));
+    public Response getSensor(@PathParam("id") long id) {
+        Sensor withEventos = sensorBean.findWithEventos(id);
+        if (withEventos == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(SensorDTO.from(withEventos)).build();
     }
 
     @GET
     @Path("{id}/min")
-    public double getSensorMin(@PathParam("id") long id) {
-        return sensorBean.getLowestValue(id);
+    public Response getSensorMin(@PathParam("id") long id) {
+        double lowestValue = sensorBean.getLowestValue(id);
+        if (lowestValue == Double.MAX_VALUE) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(lowestValue).build();
     }
 
     @GET
     @Path("{id}/max")
-    public double getSensorMax(@PathParam("id") long id) {
-        return sensorBean.getHighestValue(id);
+    public Response getSensorMax(@PathParam("id") long id) {
+        double highestValue = sensorBean.getHighestValue(id);
+        if (highestValue == Double.MIN_VALUE) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(highestValue).build();
     }
 
     @GET
     @Path("{id}/avg")
-    public double getSensorAvg(@PathParam("id") long id) {
-        return sensorBean.getAverageValue(id);
+    public Response getSensorAvg(@PathParam("id") long id) {
+        double averageValue = sensorBean.getAverageValue(id);
+        if (averageValue == Double.MIN_VALUE) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(averageValue).build();
     }
 
     @GET
     @Path("{id}/eventos")
     public List<EventoDTO> getSensorEventos(@PathParam("id") long id) {
-        return EventoDTO.from(sensorBean.findWithEventos(id).getEventos());
+        List<EventoDTO> listaEventos = EventoDTO.from(sensorBean.findWithEventos(id).getEventos());
+        if(listaEventos.isEmpty()){
+            return null;
+        }
+        return listaEventos;
     }
 
     @GET
     @Path("{id}/eventoRecente")
-    public EventoDTO getSensorEventoRecente(@PathParam("id") long id) {
+    public Response getSensorEventoRecente(@PathParam("id") long id) {
         List<Evento> eventos = sensorBean.findWithEventos(id).getEventos();
+        if (eventos.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         eventos.sort(new EventoComparator());
-        return EventoDTO.from(eventos.get(0));
+        return Response.ok(EventoDTO.from(eventos.get(0))).build();
     }
 }
