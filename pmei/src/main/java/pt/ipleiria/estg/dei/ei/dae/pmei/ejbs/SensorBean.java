@@ -4,6 +4,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Hibernate;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
@@ -50,5 +51,12 @@ public class SensorBean {
     public double getHighestValue(long id) {
         Sensor sensor = em.find(Sensor.class, id);
         return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).max().orElse(0);
+    }
+
+    public void createEvento(Sensor sensor, double valor) {
+        Evento evento = new Evento(Double.toString(valor), sensor);
+        sensor.addEvento(evento);
+        em.merge(sensor);
+        em.merge(evento);
     }
 }

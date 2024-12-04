@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.EventoDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorEventoDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
@@ -90,5 +91,19 @@ public class SensorService {
         }
         eventos.sort(new EventoComparator());
         return Response.ok(EventoDTO.from(eventos.get(0))).build();
+    }
+
+    //EP 04
+    //TODO: Falta devolver o sensor
+    @POST
+    @Path("/")
+    public Response postSensorEvento(SensorEventoDTO sensorEventoDTO){
+        System.out.println("id: " + sensorEventoDTO.getId() + " valor: " + sensorEventoDTO.getValor());
+        Sensor sensor = sensorBean.findWithEventos(sensorEventoDTO.getId());
+        if (sensor == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        sensorBean.createEvento(sensor, sensorEventoDTO.getValor());
+        return Response.ok().build();
     }
 }
