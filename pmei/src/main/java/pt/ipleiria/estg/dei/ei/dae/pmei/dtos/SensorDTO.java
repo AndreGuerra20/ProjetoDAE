@@ -1,8 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
 import jakarta.persistence.Id;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 
 import java.io.Serializable;
@@ -15,16 +13,16 @@ public class SensorDTO implements Serializable {
     private long id;
     private String tipo;
     private Boolean status;
-    private List<Long> lista_eventos = new ArrayList<>();
+    private List<EventoDTO> eventos = new ArrayList<>();
 
     public SensorDTO() {
     }
 
-    public SensorDTO(long id, String tipo, Boolean status, List<Long> lista_eventos) {
+    public SensorDTO(long id, String tipo, Boolean status, List<EventoDTO> eventos) {
         this.id = id;
         this.tipo = tipo;
         this.status = status;
-        this.lista_eventos = lista_eventos;
+        this.eventos = eventos;
     }
 
     public long getId() {
@@ -51,12 +49,12 @@ public class SensorDTO implements Serializable {
         this.status = status;
     }
 
-    public List<Long> getLista_eventos() {
-        return lista_eventos;
+    public List<EventoDTO> getEventos() {
+        return eventos;
     }
 
-    public void setLista_eventos(List<Long> lista_eventos) {
-        this.lista_eventos = lista_eventos;
+    public void setEventos(List<EventoDTO> eventos) {
+        this.eventos = eventos;
     }
 
     public static SensorDTO from(Sensor sensor) {
@@ -64,7 +62,7 @@ public class SensorDTO implements Serializable {
                 sensor.getId(),
                 sensor.getTipo(),
                 sensor.getStatus(),
-                sensor.getEventos().stream().map(Evento::getId).collect(Collectors.toList())
+                sensor.getEventos().stream().map(EventoDTO::from).collect(Collectors.toList())
         );
     }
 

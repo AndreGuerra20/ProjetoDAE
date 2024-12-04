@@ -10,7 +10,7 @@ Accept: application/json
 
 # Clientes
 ### Get um cliente
-GET http://localhost:8080/PMEI/api/cliente/1
+GET http://localhost:8080/PMEI/api/cliente/joao
 Accept: application/json
 
 ### Get todos os clientes

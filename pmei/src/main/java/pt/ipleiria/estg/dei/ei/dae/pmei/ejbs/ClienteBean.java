@@ -4,10 +4,10 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 
 import java.util.List;
 
@@ -28,16 +28,41 @@ public class ClienteBean {
         em.persist(cliente);
     }
 
+    @Transactional
     public Cliente find(String username) {
         Cliente cliente = em.find(Cliente.class, username);
         if(cliente == null) {
             return null;
         }
         Hibernate.initialize(cliente.getEncomendas());
+        for(Encomenda encomenda : cliente.getEncomendas()) {
+            Hibernate.initialize(encomenda.getVolumes());
+            for(Volume volume : encomenda.getVolumes()) {
+                Hibernate.initialize(volume.getProdutos());
+                Hibernate.initialize(volume.getSensores());
+                for (Sensor sensor : volume.getSensores()) {
+                    Hibernate.initialize(sensor.getEventos());
+                }
+            }
+        }
         return cliente;
     }
 
     public List<Cliente> findAll() {
-        return em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
+        List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
+        for (Cliente cliente : clientes) {
+            Hibernate.initialize(cliente.getEncomendas());
+            for(Encomenda encomenda : cliente.getEncomendas()) {
+                Hibernate.initialize(encomenda.getVolumes());
+                for(Volume volume : encomenda.getVolumes()) {
+                    Hibernate.initialize(volume.getProdutos());
+                    Hibernate.initialize(volume.getSensores());
+                    for (Sensor sensor : volume.getSensores()) {
+                        Hibernate.initialize(sensor.getEventos());
+                    }
+                }
+            }
+        }
+        return clientes;
     }
 }

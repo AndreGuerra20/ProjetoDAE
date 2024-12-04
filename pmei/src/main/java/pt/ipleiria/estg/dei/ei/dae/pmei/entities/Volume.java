@@ -1,6 +1,8 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +21,11 @@ public class Volume {
     private Encomenda encomenda;
 
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Produto> produtos = new ArrayList<>();
 
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Sensor> sensores = new ArrayList<>();
 
     public Volume() {

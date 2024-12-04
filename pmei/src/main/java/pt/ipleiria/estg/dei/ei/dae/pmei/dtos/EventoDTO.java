@@ -13,15 +13,13 @@ public class EventoDTO implements Serializable {
     private long id;
     private String valor;
     private String timestamp;
-    private long sensorId;
 
     public EventoDTO() {
     }
 
-    public EventoDTO(String valor, String timestamp, long sensorId) {
+    public EventoDTO(String valor, String timestamp) {
         this.valor = valor;
         this.timestamp = timestamp;
-        this.sensorId = sensorId;
     }
 
     public long getId() {
@@ -48,19 +46,10 @@ public class EventoDTO implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public long getSensorId() {
-        return sensorId;
-    }
-
-    public void setSensorId(long sensorId) {
-        this.sensorId = sensorId;
-    }
-
     public static EventoDTO from(Evento evento) {
         return new EventoDTO(
                 evento.getValor(),
-                evento.getTimestamp(),
-                evento.getSensor().getId()
+                evento.getTimestamp()
         );
     }
 

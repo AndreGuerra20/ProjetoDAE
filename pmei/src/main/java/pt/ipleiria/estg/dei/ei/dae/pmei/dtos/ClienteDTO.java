@@ -14,16 +14,16 @@ public class ClienteDTO implements Serializable {
     private String username;
     private String name;
     private long NIF;
-    private List<Long> lista_encomendas = new ArrayList<>();
+    private List<EncomendaDTO> encomendas = new ArrayList<>();
 
     public ClienteDTO() {
     }
 
-    public ClienteDTO(String username, String name, long NIF, List<Long> lista_encomendas) {
+    public ClienteDTO(String username, String name, long NIF, List<EncomendaDTO> encomendas) {
         this.username = username;
         this.name = name;
         this.NIF = NIF;
-        this.lista_encomendas = lista_encomendas;
+        this.encomendas = encomendas;
     }
 
     public String getUsername() {
@@ -50,12 +50,12 @@ public class ClienteDTO implements Serializable {
         this.NIF = NIF;
     }
 
-    public List<Long> getLista_encomendas() {
-        return lista_encomendas;
+    public List<EncomendaDTO> getEncomendas() {
+        return encomendas;
     }
 
-    public void setLista_encomendas(List<Long> lista_encomendas) {
-        this.lista_encomendas = lista_encomendas;
+    public void setEncomendas(List<EncomendaDTO> encomendas) {
+        this.encomendas = encomendas;
     }
 
     public static ClienteDTO from(Cliente cliente) {
@@ -63,7 +63,7 @@ public class ClienteDTO implements Serializable {
                 cliente.getUsername(),
                 cliente.getName(),
                 cliente.getNIF(),
-                cliente.getEncomendas().stream().map(Encomenda::getId).collect(Collectors.toList())
+                cliente.getEncomendas().stream().map(EncomendaDTO::from).collect(Collectors.toList())
         );
     }
 

@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
@@ -28,10 +29,16 @@ public class SensorBean {
         return em.find(Sensor.class, id);
     }
 
+    @Transactional
     public List<Sensor> findAll() {
-        return em.createNamedQuery("getAllSensores", Sensor.class).getResultList();
+        List<Sensor> sensores = em.createNamedQuery("getAllSensores", Sensor.class).getResultList();
+        for (Sensor sensor : sensores) {
+            Hibernate.initialize(sensor.getEventos());
+        }
+        return sensores;
     }
 
+    @Transactional
     public Sensor findWithEventos(long id) {
         Sensor sensor = em.find(Sensor.class, id);
         Hibernate.initialize(sensor.getEventos());
@@ -51,12 +58,5 @@ public class SensorBean {
     public double getHighestValue(long id) {
         Sensor sensor = em.find(Sensor.class, id);
         return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).max().orElse(0);
-    }
-
-    public void createEvento(Sensor sensor, double valor) {
-        Evento evento = new Evento(Double.toString(valor), sensor);
-        sensor.addEvento(evento);
-        em.merge(sensor);
-        em.merge(evento);
     }
 }

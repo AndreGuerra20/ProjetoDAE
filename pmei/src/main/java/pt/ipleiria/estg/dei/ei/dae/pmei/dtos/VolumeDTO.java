@@ -2,8 +2,6 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
 
 import jakarta.persistence.Id;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
 import java.io.Serializable;
@@ -15,19 +13,17 @@ public class VolumeDTO implements Serializable {
     @Id
     private long id;
     private String tipoEmbalagem;
-    private long encomendaId;
-    private List<Long> lista_produtos = new ArrayList<>();
-    private List<Long> lista_sensores = new ArrayList<>();
+    private List<ProdutoDTO> produtos = new ArrayList<>();
+    private List<SensorDTO> sensores = new ArrayList<>();
 
     public VolumeDTO() {
     }
 
-    public VolumeDTO(long id, String tipoEmbalagem, long encomendaId, List<Long> lista_produtos, List<Long> lista_sensores) {
+    public VolumeDTO(long id, String tipoEmbalagem, List<ProdutoDTO> produtos, List<SensorDTO> sensores) {
         this.id = id;
         this.tipoEmbalagem = tipoEmbalagem;
-        this.encomendaId = encomendaId;
-        this.lista_produtos = lista_produtos;
-        this.lista_sensores = lista_sensores;
+        this.produtos = produtos;
+        this.sensores = sensores;
     }
 
     public long getId() {
@@ -46,37 +42,28 @@ public class VolumeDTO implements Serializable {
         this.tipoEmbalagem = tipoEmbalagem;
     }
 
-    public long getEncomendaId() {
-        return encomendaId;
+    public List<ProdutoDTO> getProdutos() {
+        return produtos;
     }
 
-    public void setEncomendaId(long encomendaId) {
-        this.encomendaId = encomendaId;
+    public void setProdutos(List<ProdutoDTO> produtos) {
+        this.produtos = produtos;
     }
 
-    public List<Long> getLista_produtos() {
-        return lista_produtos;
+    public List<SensorDTO> getSensores() {
+        return sensores;
     }
 
-    public void setLista_produtos(List<Long> lista_produtos) {
-        this.lista_produtos = lista_produtos;
-    }
-
-    public List<Long> getLista_sensores() {
-        return lista_sensores;
-    }
-
-    public void setLista_sensores(List<Long> lista_sensores) {
-        this.lista_sensores = lista_sensores;
+    public void setSensores(List<SensorDTO> sensores) {
+        this.sensores = sensores;
     }
 
     public static VolumeDTO from(Volume volume) {
         return new VolumeDTO(
                 volume.getId(),
                 volume.getTipoEmbalagem(),
-                volume.getEncomenda().getId(),
-                volume.getProdutos().stream().map(Produto::getId).collect(Collectors.toList()),
-                volume.getSensores().stream().map(Sensor::getId).collect(Collectors.toList())
+                volume.getProdutos().stream().map(ProdutoDTO::from).collect(Collectors.toList()),
+                volume.getSensores().stream().map(SensorDTO::from).collect(Collectors.toList())
         );
     }
 
