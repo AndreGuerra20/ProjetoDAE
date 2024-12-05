@@ -12,7 +12,6 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.util.EventoComparator;
 
-import java.util.Collections;
 import java.util.List;
 
 @Path("sensor")
@@ -95,15 +94,15 @@ public class SensorService {
 
     //EP 04
     //TODO: Falta devolver o sensor
-//    @POST
-//    @Path("/")
-//    public Response postSensorEvento(SensorEventoDTO sensorEventoDTO){
-//        System.out.println("id: " + sensorEventoDTO.getId() + " valor: " + sensorEventoDTO.getValor());
-//        Sensor sensor = sensorBean.findWithEventos(sensorEventoDTO.getId());
-//        if (sensor == null) {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
-//        sensorBean.createEvento(sensor, sensorEventoDTO.getValor());
-//        return Response.ok().build();
-//    }
+    @POST
+    @Path("/")
+    public Response postSensorEvento(SensorEventoDTO sensorEventoDTO){
+        System.out.println("id: " + sensorEventoDTO.getId() + " valor: " + sensorEventoDTO.getValor());
+        Sensor sensor = sensorBean.findWithEventos(sensorEventoDTO.getId());
+        if (sensor == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        sensorBean.createEvento(sensor, sensorEventoDTO.getValor());
+        return Response.ok().build();
+    }
 }

@@ -17,7 +17,8 @@ public class EventoDTO implements Serializable {
     public EventoDTO() {
     }
 
-    public EventoDTO(String valor, String timestamp) {
+    public EventoDTO(long id, String valor, String timestamp) {
+        this.id = id;
         this.valor = valor;
         this.timestamp = timestamp;
     }
@@ -48,6 +49,7 @@ public class EventoDTO implements Serializable {
 
     public static EventoDTO from(Evento evento) {
         return new EventoDTO(
+                evento.getId(),
                 evento.getValor(),
                 evento.getTimestamp()
         );

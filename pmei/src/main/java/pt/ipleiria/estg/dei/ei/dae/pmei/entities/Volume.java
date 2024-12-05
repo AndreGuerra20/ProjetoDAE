@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "volumes")
-@NamedQueries(@NamedQuery(name = "getAllVolumes", query = "SELECT v FROM Volume v LEFT JOIN FETCH v.produtos LEFT JOIN FETCH v.sensores ORDER BY v.id"))
+@NamedQueries(@NamedQuery(name = "getAllVolumes", query = "SELECT v FROM Volume v ORDER BY v.id"))
 public class Volume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

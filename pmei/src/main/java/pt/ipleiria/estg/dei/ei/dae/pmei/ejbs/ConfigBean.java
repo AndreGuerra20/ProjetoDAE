@@ -35,25 +35,29 @@ public class ConfigBean {
     private static final Logger logger = Logger.getLogger("ConfigBean.logger");
 
     @PostConstruct
-    public void populateDB() throws InterruptedException {
-        clienteBean.create("João", 123456789, "joao", "123");
+    public void populateDB() {
+        try {
+            clienteBean.create("João", 123456789, "joao", "123");
 
-        encomendaBean.create("joao", "Pendente");
+            encomendaBean.create("joao", "Pendente");
 
-        volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
+            volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
 
-        produtoBean.create(2, volumeBean.find(1).getId());
-        produtoBean.create(3, volumeBean.find(1).getId());
+            produtoBean.create(2, volumeBean.find(1).getId());
+            produtoBean.create(3, volumeBean.find(1).getId());
 
-        sensorBean.create("Temperatura", true, volumeBean.find(1).getId());
+            sensorBean.create("Temperatura", true, volumeBean.find(1).getId());
 
-        eventoBean.create("25", sensorBean.find(1).getId());
-        sleep(1000);
-        eventoBean.create("24.3", sensorBean.find(1).getId());
-        sleep(1000);
-        eventoBean.create("26", sensorBean.find(1).getId());
-        sleep(1000);
-        eventoBean.create("25.3", sensorBean.find(1).getId());
+            eventoBean.create("25", sensorBean.find(1).getId());
+            sleep(1000);
+            eventoBean.create("24.3", sensorBean.find(1).getId());
+            sleep(1000);
+            eventoBean.create("26", sensorBean.find(1).getId());
+            sleep(1000);
+            eventoBean.create("25.3", sensorBean.find(1).getId());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
 
     }
 }
