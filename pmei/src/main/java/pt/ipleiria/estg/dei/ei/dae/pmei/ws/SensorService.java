@@ -96,13 +96,14 @@ public class SensorService {
     //TODO: Falta devolver o sensor
     @POST
     @Path("/")
-    public Response postSensorEvento(SensorEventoDTO sensorEventoDTO){
-        System.out.println("id: " + sensorEventoDTO.getId() + " valor: " + sensorEventoDTO.getValor());
-        Sensor sensor = sensorBean.findWithEventos(sensorEventoDTO.getId());
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response postSensorEvento(EventoDTO eventoDTO){
+        System.out.println("id: " + eventoDTO.getSensorId() + " valor: " + eventoDTO.getValor());
+        Sensor sensor = sensorBean.findWithEventos(eventoDTO.getSensorId());
         if (sensor == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        sensorBean.createEvento(sensor, sensorEventoDTO.getValor());
-        return Response.ok().build();
+        sensorBean.createEvento(sensor, Double.parseDouble(eventoDTO.getValor()));
+        return Response.ok(SensorDTO.from(sensor)).build();
     }
 }
