@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "sensores")
-@NamedQueries(@NamedQuery(name = "getAllSensores", query = "SELECT s FROM Sensor s LEFT JOIN FETCH s.eventos ORDER BY s.id"))
+@NamedQueries(@NamedQuery(name = "getAllSensores", query = "SELECT s FROM Sensor s ORDER BY s.id"))
 public class Sensor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

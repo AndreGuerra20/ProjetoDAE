@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "encomendas")
-@NamedQueries({@NamedQuery(name = "getAllEncomendas", query = "SELECT e FROM Encomenda e LEFT JOIN FETCH e.volumes ORDER BY e.id" // JPQL
+@NamedQueries({@NamedQuery(name = "getAllEncomendas", query = "SELECT e FROM Encomenda e ORDER BY e.id" // JPQL
 )})
 
 public class Encomenda {

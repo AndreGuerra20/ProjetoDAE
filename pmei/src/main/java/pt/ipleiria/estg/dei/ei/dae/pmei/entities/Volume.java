@@ -21,11 +21,9 @@ public class Volume {
     private Encomenda encomenda;
 
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
     private List<Produto> produtos = new ArrayList<>();
 
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
     private List<Sensor> sensores = new ArrayList<>();
 
     public Volume() {
