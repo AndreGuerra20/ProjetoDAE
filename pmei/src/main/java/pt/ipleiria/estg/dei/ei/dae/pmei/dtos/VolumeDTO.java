@@ -1,7 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
 
-import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
 import java.io.Serializable;
@@ -10,8 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class VolumeDTO implements Serializable {
-    @Id
-    private long id;
+    private long idVolume;
     private String tipoEmbalagem;
     private List<ProdutoDTO> produtos = new ArrayList<>();
     private List<SensorDTO> sensores = new ArrayList<>();
@@ -20,18 +18,18 @@ public class VolumeDTO implements Serializable {
     }
 
     public VolumeDTO(long id, String tipoEmbalagem, List<ProdutoDTO> produtos, List<SensorDTO> sensores) {
-        this.id = id;
+        this.idVolume = id;
         this.tipoEmbalagem = tipoEmbalagem;
         this.produtos = produtos;
         this.sensores = sensores;
     }
 
-    public long getId() {
-        return id;
+    public long getIdVolume() {
+        return idVolume;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setIdVolume(long idVolume) {
+        this.idVolume = idVolume;
     }
 
     public String getTipoEmbalagem() {
@@ -60,7 +58,7 @@ public class VolumeDTO implements Serializable {
 
     public static VolumeDTO from(Volume volume) {
         return new VolumeDTO(
-                volume.getId(),
+                volume.getIdVolume(),
                 volume.getTipoEmbalagem(),
                 volume.getProdutos().stream().map(ProdutoDTO::from).collect(Collectors.toList()),
                 volume.getSensores().stream().map(SensorDTO::from).collect(Collectors.toList())

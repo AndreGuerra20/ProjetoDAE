@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
-import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
 
 import java.io.Serializable;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProdutoDTO implements Serializable {
-    @Id
     private long id;
     private int quantidade;
 

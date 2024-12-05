@@ -1,0 +1,61 @@
+meta {
+  name: EP 01 - Criar Encomenda
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{uri}}encomenda
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "encomendaId": 11,
+    "customerId": 1,
+    "estado": "despachado",
+    "volumes": [
+      {
+        "idVolume": 301,
+        "produtos": [
+          {
+            "id": 102495,
+            "quantidade": 31
+          }
+        ],
+        "tipoEmbalagem": "Caixa cartão",
+        "sensores": [
+          {
+            "id": 10013,
+            "tipo": "Temperatura"
+          }
+        ]
+      },
+      {
+        "idVolume": 304, 
+        "produtos": [
+          {
+            "id": 592495,
+            "quantidade": 1
+          },
+          {
+            "id": 1419,
+            "quantidade": 3
+          }
+        ],
+        "tipoEmbalagem": "Caixa cartão com plástico bolha",
+        "sensores": [
+          {
+            "id": 1111,
+            "tipo": "Aceleracao"
+          },
+          {
+            "id": 701,
+            "tipo": "Localizacao"
+          }
+        ]
+      }
+    ]
+  }
+}

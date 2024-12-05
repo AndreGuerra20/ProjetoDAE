@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
-import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 
 import java.io.Serializable;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SensorDTO implements Serializable {
-    @Id
     private long id;
     private String tipo;
     private Boolean status;

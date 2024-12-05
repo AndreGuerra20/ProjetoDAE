@@ -1,7 +1,7 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
-import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,36 +9,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EncomendaDTO implements Serializable {
-    @Id
-    private long id;
-    private String clienteUsername;
+    private long encomendaId;
+    private long customerId;
     private String estado;
     private List<VolumeDTO> volumes = new ArrayList<>();
 
     public EncomendaDTO() {
     }
 
-    public EncomendaDTO(long id, String estado, String clienteUsername, List<VolumeDTO> volumes) {
-        this.id = id;
+    public EncomendaDTO(long id, String estado, long clienteId, List<VolumeDTO> volumes) {
+        this.encomendaId = id;
         this.estado = estado;
-        this.clienteUsername = clienteUsername;
+        this.customerId = clienteId;
         this.volumes = volumes;
     }
 
-    public long getId() {
-        return id;
+    public long getEncomendaId() {
+        return encomendaId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setEncomendaId(long encomendaId) {
+        this.encomendaId = encomendaId;
     }
 
-    public String getClienteUsername() {
-        return clienteUsername;
+    public long getCustomerId() {
+        return customerId;
     }
 
-    public void setClienteUsername(String clienteUsername) {
-        this.clienteUsername = clienteUsername;
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 
     public String getEstado() {
@@ -61,7 +60,7 @@ public class EncomendaDTO implements Serializable {
         return new EncomendaDTO(
                 encomenda.getId(),
                 encomenda.getEstado(),
-                encomenda.getCliente().getUsername(),
+                encomenda.getCliente().getId(),
                 encomenda.getVolumes().stream().map(VolumeDTO::from).collect(Collectors.toList())
         );
     }

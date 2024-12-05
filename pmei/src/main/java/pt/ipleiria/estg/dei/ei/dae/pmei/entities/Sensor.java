@@ -3,9 +3,7 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "sensores")
@@ -22,7 +20,7 @@ public class Sensor {
     @ManyToOne
     private Volume volume;
 
-    @OneToMany(mappedBy = "sensor")
+    @OneToMany(mappedBy = "sensor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Evento> eventos = new ArrayList<>();
 
     public Sensor() {
@@ -76,6 +74,6 @@ public class Sensor {
 
     @Override
     public String toString() {
-        return "Sensor{" + "id=" + id + ", tipo='" + tipo + '\'' + ", status=" + status + ", volume=" + volume.getId() + '}';
+        return "Sensor{" + "id=" + id + ", tipo='" + tipo + '\'' + ", status=" + status + ", volume=" + volume.getIdVolume() + '}';
     }
 }

@@ -28,23 +28,18 @@ public class ClienteBean {
         em.persist(cliente);
     }
 
-    @Transactional
     public Cliente find(String username) {
-        Cliente cliente = em.find(Cliente.class, username);
+        Cliente cliente = null;
+        List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
+        for (Cliente c : clientes) {
+            if (c.getUsername().equals(username)) {
+                cliente = c;
+            }
+        }
         if(cliente == null) {
             return null;
         }
         Hibernate.initialize(cliente.getEncomendas());
-        for(Encomenda encomenda : cliente.getEncomendas()) {
-            Hibernate.initialize(encomenda.getVolumes());
-            for(Volume volume : encomenda.getVolumes()) {
-                Hibernate.initialize(volume.getProdutos());
-                Hibernate.initialize(volume.getSensores());
-                for (Sensor sensor : volume.getSensores()) {
-                    Hibernate.initialize(sensor.getEventos());
-                }
-            }
-        }
         return cliente;
     }
 
@@ -52,16 +47,6 @@ public class ClienteBean {
         List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
         for (Cliente cliente : clientes) {
             Hibernate.initialize(cliente.getEncomendas());
-            for(Encomenda encomenda : cliente.getEncomendas()) {
-                Hibernate.initialize(encomenda.getVolumes());
-                for(Volume volume : encomenda.getVolumes()) {
-                    Hibernate.initialize(volume.getProdutos());
-                    Hibernate.initialize(volume.getSensores());
-                    for (Sensor sensor : volume.getSensores()) {
-                        Hibernate.initialize(sensor.getEventos());
-                    }
-                }
-            }
         }
         return clientes;
     }

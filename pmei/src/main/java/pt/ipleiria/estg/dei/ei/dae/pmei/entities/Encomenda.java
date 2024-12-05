@@ -16,7 +16,7 @@ public class Encomenda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToMany(mappedBy = "encomenda", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "encomenda", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Volume> volumes = new ArrayList<>();
 
     @ManyToOne
@@ -37,12 +37,19 @@ public class Encomenda {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public List<Volume> getVolumes() {
         return volumes;
     }
 
     public void setVolumes(List<Volume> volumes) {
         this.volumes = volumes;
+        for(Volume volume : volumes) {
+            volume.setEncomenda(this);
+        }
     }
 
     public Cliente getCliente() {

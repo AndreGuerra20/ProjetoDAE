@@ -5,6 +5,7 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,14 +40,14 @@ public class ConfigBean {
         try {
             clienteBean.create("João", 123456789, "joao", "123");
 
-            encomendaBean.create("joao", "Pendente");
+            encomendaBean.create(clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
 
             volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
 
-            produtoBean.create(2, volumeBean.find(1).getId());
-            produtoBean.create(3, volumeBean.find(1).getId());
+            produtoBean.create(2, volumeBean.find(1).getIdVolume());
+            produtoBean.create(3, volumeBean.find(1).getIdVolume());
 
-            sensorBean.create("Temperatura", true, volumeBean.find(1).getId());
+            sensorBean.create("Temperatura", true, volumeBean.find(1).getIdVolume());
 
             eventoBean.create("25", sensorBean.find(1).getId());
             sleep(1000);

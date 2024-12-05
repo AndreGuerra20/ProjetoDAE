@@ -48,7 +48,7 @@ public class Produto {
         return "Produto{" +
                 "id=" + id +
                 ", quantidade=" + quantidade +
-                ", volume=" + volume.getId() +
+                ", volume=" + volume.getIdVolume() +
                 '}';
     }
 }

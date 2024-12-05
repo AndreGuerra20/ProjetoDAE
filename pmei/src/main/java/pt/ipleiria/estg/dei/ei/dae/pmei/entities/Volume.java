@@ -1,29 +1,27 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "volumes")
-@NamedQueries(@NamedQuery(name = "getAllVolumes", query = "SELECT v FROM Volume v ORDER BY v.id"))
+@NamedQueries(@NamedQuery(name = "getAllVolumes", query = "SELECT v FROM Volume v ORDER BY v.idVolume"))
 public class Volume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long idVolume;
 
     private String tipoEmbalagem;
 
     @ManyToOne
     private Encomenda encomenda;
 
-    @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Produto> produtos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Sensor> sensores = new ArrayList<>();
 
     public Volume() {
@@ -34,8 +32,8 @@ public class Volume {
         this.encomenda = encomenda;
     }
 
-    public long getId() {
-        return id;
+    public long getIdVolume() {
+        return idVolume;
     }
 
     public String getTipoEmbalagem() {
@@ -70,10 +68,26 @@ public class Volume {
         this.sensores = sensores;
     }
 
+    public void addProduto(Produto produto) {
+        produtos.add(produto);
+    }
+
+    public void removeProduto(Produto produto) {
+        produtos.remove(produto);
+    }
+
+    public void addSensor(Sensor sensor) {
+        sensores.add(sensor);
+    }
+
+    public void removeSensor(Sensor sensor) {
+        sensores.remove(sensor);
+    }
+
     @Override
     public String toString() {
         return "Volume{" +
-                "id=" + id +
+                "id=" + idVolume +
                 ", tipoEmbalagem='" + tipoEmbalagem + '\'' +
                 '}';
     }
