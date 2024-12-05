@@ -1,0 +1,18 @@
+meta {
+  name: EP 04 - Evento Registado por Sensor
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{uri}}sensor/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": 1,
+    "valor": 31.2
+  }
+}
