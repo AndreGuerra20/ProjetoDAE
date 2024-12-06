@@ -6,7 +6,7 @@ const error = ref(null);
 
 async function fetchEncomendas() {
     try {
-        const { data } = await useFetch('http://localhost:8080/PMEI/api/encomenda');
+        const { data } = await useFetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda');
 
         // Safeguard: Ensure data is an array or fallback to an empty array
         encomendas.value = data.value || [];

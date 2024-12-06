@@ -12,12 +12,10 @@ post {
 
 body:json {
   {
-    "encomendaId": 11,
     "customerId": 1,
     "estado": "despachado",
     "volumes": [
       {
-        "idVolume": 301,
         "produtos": [
           {
             "id": 102495,
@@ -33,7 +31,6 @@ body:json {
         ]
       },
       {
-        "idVolume": 304, 
         "produtos": [
           {
             "id": 592495,
@@ -47,12 +44,12 @@ body:json {
         "tipoEmbalagem": "Caixa cartão com plástico bolha",
         "sensores": [
           {
-            "id": 1111,
-            "tipo": "Aceleracao"
+            "tipo": "Aceleracao",
+            "status": true
           },
           {
-            "id": 701,
-            "tipo": "Localizacao"
+            "tipo": "Localizacao",
+            "status": true
           }
         ]
       }

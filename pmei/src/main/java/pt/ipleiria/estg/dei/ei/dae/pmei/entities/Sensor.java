@@ -15,7 +15,7 @@ public class Sensor {
 
     private String tipo;
 
-    private Boolean status;
+    private Boolean status = false;
 
     @ManyToOne
     private Volume volume;
