@@ -11,6 +11,8 @@ async function fetchEncomendas() {
         // Safeguard: Ensure data is an array or fallback to an empty array
         encomendas.value = data.value || [];
 
+        console.log(encomendas.value);
+
         if (encomendas.value.length === 0) {
             error.value = 'No encomendas found.';
             return;
@@ -30,13 +32,13 @@ onMounted(fetchEncomendas);
     <p v-if="error" class="text-red-500">{{ error }}</p>
     <ul v-else class="space-y-4">
         <li v-for="encomenda in encomendas" :key="encomenda.id" class="p-4 border rounded-lg shadow-md bg-white">
-            <p class="font-semibold text-lg text-gray-700">ID: {{ encomenda.id }}</p>
-            <p class="text-gray-600">Cliente: {{ encomenda.clienteUsername || 'Loading...' }}</p>
+            <p class="font-semibold text-lg text-gray-700">ID: {{ encomenda.encomendaId }}</p>
+            <p class="text-gray-600">Cliente: {{ encomenda.customerId || 'Loading...' }}</p>
             <p class="text-gray-600">Estado: {{ encomenda.estado }}</p>
             <p class="text-gray-700 mt-2">Volumes: </p>
             <ul class="space-y-2 ml-4">
                 <li v-for="volume in encomenda.volumes" :key="volume" class="p-2 border rounded bg-gray-50">
-                    <p class="text-gray-600">ID: {{ volume.id || 'Loading...' }}</p>
+                    <p class="text-gray-600">ID: {{ volume.idVolume || 'Loading...' }}</p>
                     <p class="text-gray-600">Tipo de Embalagem: {{ volume.tipoEmbalagem || 'Loading...' }}</p>
                     <p class="text-gray-700 mt-2">Produtos: </p>
                     <ul class="space-y-2 ml-4">

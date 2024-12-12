@@ -72,6 +72,10 @@ public class Sensor {
         eventos.add(evento);
     }
 
+    public void addEventos(List<Evento> eventos) {
+        this.eventos.addAll(eventos);
+    }
+
     @Override
     public String toString() {
         return "Sensor{" + "id=" + id + ", tipo='" + tipo + '\'' + ", status=" + status + ", volume=" + volume.getIdVolume() + '}';

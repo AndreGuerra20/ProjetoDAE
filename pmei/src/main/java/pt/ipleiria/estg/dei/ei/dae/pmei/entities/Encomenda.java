@@ -72,6 +72,10 @@ public class Encomenda {
         this.volumes.add(volume);
     }
 
+    public void removeVolume(Volume volume) {
+        this.volumes.remove(volume);
+    }
+
     @Override
     public String toString() {
         return "Encomenda{" + "id=" + id + ", volumes=" + volumes + ", cliente=" + cliente + ", estado='" + estado + '\'' + '}';

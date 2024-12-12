@@ -72,12 +72,20 @@ public class Volume {
         produtos.add(produto);
     }
 
+    public void addProdutos(List<Produto> produtos) {
+        this.produtos.addAll(produtos);
+    }
+
     public void removeProduto(Produto produto) {
         produtos.remove(produto);
     }
 
     public void addSensor(Sensor sensor) {
         sensores.add(sensor);
+    }
+
+    public void addSensores(List<Sensor> sensores) {
+        this.sensores.addAll(sensores);
     }
 
     public void removeSensor(Sensor sensor) {

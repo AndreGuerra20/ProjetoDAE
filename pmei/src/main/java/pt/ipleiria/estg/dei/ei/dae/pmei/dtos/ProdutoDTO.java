@@ -8,14 +8,16 @@ import java.util.stream.Collectors;
 
 public class ProdutoDTO implements Serializable {
     private long id;
-    private int quantidade;
+    private String descricao;
+    private boolean precisaEmbalagemAdicional;
 
     public ProdutoDTO() {
     }
 
-    public ProdutoDTO(long id, int quantidade) {
+    public ProdutoDTO(long id, String descricao, boolean precisaEmbalagemAdicional) {
         this.id = id;
-        this.quantidade = quantidade;
+        this.descricao = descricao;
+        this.precisaEmbalagemAdicional = precisaEmbalagemAdicional;
     }
 
     public long getId() {
@@ -26,18 +28,27 @@ public class ProdutoDTO implements Serializable {
         this.id = id;
     }
 
-    public int getQuantidade() {
-        return quantidade;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public boolean isPrecisaEmbalagemAdicional() {
+        return precisaEmbalagemAdicional;
+    }
+
+    public void setPrecisaEmbalagemAdicional(boolean precisaEmbalagemAdicional) {
+        this.precisaEmbalagemAdicional = precisaEmbalagemAdicional;
     }
 
     public static ProdutoDTO from(Produto produto) {
         return new ProdutoDTO(
                 produto.getId(),
-                produto.getQuantidade()
+                produto.getDescricao(),
+                produto.isPrecisaEmbalagemAdicional()
         );
     }
 

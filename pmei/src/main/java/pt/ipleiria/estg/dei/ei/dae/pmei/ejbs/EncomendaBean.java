@@ -1,6 +1,8 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 
+import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 public class EncomendaBean {
     @PersistenceContext
     private EntityManager em;
+
+    @EJB
+    private ProdutoBean produtoBean;
 
     public Encomenda create(long clienteId, String estado, List<Volume> volumes) {
         var cliente = em.find(Cliente.class, clienteId);
@@ -43,13 +48,8 @@ public class EncomendaBean {
         encomenda.setVolumes(volumesRequest.stream().map(volDto -> new Volume(volDto.getTipoEmbalagem(), encomenda)).collect(Collectors.toList()));
         for(Volume volume : encomenda.getVolumes()) {
             for(VolumeDTO volumeDTO : volumesRequest) {
-                volume.setProdutos(volumeDTO.getProdutos().stream().map(dto -> new Produto(dto.getQuantidade(), volume)).collect(Collectors.toList()));
-                volume.setSensores(volumeDTO.getSensores().stream().map(dto -> new Sensor(dto.getTipo(), dto.getStatus(), volume)).collect(Collectors.toList()));
-                for(Sensor sensor : volume.getSensores()) {
-                    for(SensorDTO sensorDTO : volumeDTO.getSensores()) {
-                        sensor.setEventos(sensorDTO.getEventos().stream().map(dto -> new Evento(dto.getValor(), sensor)).collect(Collectors.toList()));
-                    }
-                }
+                volume.addProdutos(volumeDTO.getProdutos().stream().map(dto -> produtoBean.find(dto.getId())).collect(Collectors.toList()));
+                volume.addSensores(volumeDTO.getSensores().stream().map(dto -> new Sensor(dto.getTipo(), dto.getStatus(), volume)).collect(Collectors.toList()));
             }
         }
         em.persist(encomenda);
