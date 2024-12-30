@@ -19,7 +19,7 @@ public class Volume {
     private Encomenda encomenda;
 
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Produto> produtos = new ArrayList<>();
+    private List<LinhaProduto> produtos = new ArrayList<>();
 
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Sensor> sensores = new ArrayList<>();
@@ -52,11 +52,11 @@ public class Volume {
         this.encomenda = encomenda;
     }
 
-    public List<Produto> getProdutos() {
+    public List<LinhaProduto> getProdutos() {
         return produtos;
     }
 
-    public void setProdutos(List<Produto> produtos) {
+    public void setProdutos(List<LinhaProduto> produtos) {
         this.produtos = produtos;
     }
 
@@ -68,11 +68,11 @@ public class Volume {
         this.sensores = sensores;
     }
 
-    public void addProduto(Produto produto) {
+    public void addProduto(LinhaProduto produto) {
         produtos.add(produto);
     }
 
-    public void addProdutos(List<Produto> produtos) {
+    public void addProdutos(List<LinhaProduto> produtos) {
         this.produtos.addAll(produtos);
     }
 
@@ -94,9 +94,6 @@ public class Volume {
 
     @Override
     public String toString() {
-        return "Volume{" +
-                "id=" + idVolume +
-                ", tipoEmbalagem='" + tipoEmbalagem + '\'' +
-                '}';
+        return "Volume{" + "id=" + idVolume + ", tipoEmbalagem='" + tipoEmbalagem + '\'' + '}';
     }
 }

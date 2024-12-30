@@ -45,11 +45,7 @@ public class LinhaProdutoDTO implements Serializable {
     }
 
     public static LinhaProdutoDTO from(LinhaProduto linhaProduto) {
-        return new LinhaProdutoDTO(
-                linhaProduto.getProduto().getId(),
-                linhaProduto.getQuantidade(),
-                linhaProduto.getVolume().getIdVolume()
-        );
+        return new LinhaProdutoDTO(linhaProduto.getProduto().getId(), linhaProduto.getQuantidade(), linhaProduto.getVolume().getIdVolume());
     }
 
     public static List<LinhaProdutoDTO> from(List<LinhaProduto> linhaProdutos) {

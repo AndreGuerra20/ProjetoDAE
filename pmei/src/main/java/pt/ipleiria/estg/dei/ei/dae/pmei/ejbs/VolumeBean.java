@@ -32,7 +32,7 @@ public class VolumeBean {
         List<Volume> volumes = em.createNamedQuery("getAllVolumes", Volume.class).getResultList();
         for (Volume volume : volumes) {
             Hibernate.initialize(volume.getProdutos());
-            for(Sensor sensor : volume.getSensores()) {
+            for (Sensor sensor : volume.getSensores()) {
                 Hibernate.initialize(sensor.getEventos());
             }
         }

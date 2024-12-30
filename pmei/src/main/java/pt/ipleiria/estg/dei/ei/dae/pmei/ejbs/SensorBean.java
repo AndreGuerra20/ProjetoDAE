@@ -18,7 +18,7 @@ public class SensorBean {
 
     public void create(String tipo, boolean estado, long volume_id) {
         var volume = em.find(Volume.class, volume_id);
-        if(volume == null) {
+        if (volume == null) {
             throw new IllegalArgumentException("Volume {" + volume_id + "} not found");
         }
         Sensor sensor = new Sensor(tipo, estado, volume);

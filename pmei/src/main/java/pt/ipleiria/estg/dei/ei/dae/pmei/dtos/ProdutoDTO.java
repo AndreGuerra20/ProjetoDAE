@@ -45,11 +45,7 @@ public class ProdutoDTO implements Serializable {
     }
 
     public static ProdutoDTO from(Produto produto) {
-        return new ProdutoDTO(
-                produto.getId(),
-                produto.getDescricao(),
-                produto.isPrecisaEmbalagemAdicional()
-        );
+        return new ProdutoDTO(produto.getId(), produto.getDescricao(), produto.isPrecisaEmbalagemAdicional());
     }
 
     public static List<ProdutoDTO> from(List<Produto> produtos) {

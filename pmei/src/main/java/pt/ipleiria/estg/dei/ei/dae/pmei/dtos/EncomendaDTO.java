@@ -1,7 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
 import java.io.Serializable;
 import java.util.ArrayList;

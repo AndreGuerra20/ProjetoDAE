@@ -2,7 +2,6 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
 import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,12 +58,7 @@ public class ClienteDTO implements Serializable {
     }
 
     public static ClienteDTO from(Cliente cliente) {
-        return new ClienteDTO(
-                cliente.getUsername(),
-                cliente.getName(),
-                cliente.getNIF(),
-                cliente.getEncomendas().stream().map(EncomendaDTO::from).collect(Collectors.toList())
-        );
+        return new ClienteDTO(cliente.getUsername(), cliente.getName(), cliente.getNIF(), cliente.getEncomendas().stream().map(EncomendaDTO::from).collect(Collectors.toList()));
     }
 
     public static List<ClienteDTO> from(List<Cliente> clientes) {

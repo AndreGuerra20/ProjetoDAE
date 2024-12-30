@@ -28,6 +28,9 @@ public class ConfigBean {
     private ProdutoBean produtoBean;
 
     @EJB
+    private LinhaProdutoBean linhaProdutoBean;
+
+    @EJB
     private SensorBean sensorBean;
 
     @EJB
@@ -44,8 +47,11 @@ public class ConfigBean {
 
             volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
 
-            produtoBean.create(2, volumeBean.find(1).getIdVolume());
-            produtoBean.create(3, volumeBean.find(1).getIdVolume());
+            produtoBean.create("Peixe", true);
+            produtoBean.create("Comando Remoto", false);
+
+            linhaProdutoBean.create(produtoBean.find(1).getId(), 2, volumeBean.find(1).getIdVolume());
+            linhaProdutoBean.create(produtoBean.find(2).getId(), 1, volumeBean.find(1).getIdVolume());
 
             sensorBean.create("Temperatura", true, volumeBean.find(1).getIdVolume());
 

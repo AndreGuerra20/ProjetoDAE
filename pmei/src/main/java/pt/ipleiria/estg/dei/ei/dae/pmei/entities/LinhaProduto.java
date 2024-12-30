@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 import jakarta.persistence.*;
 
 @Entity
+@NamedQueries({@NamedQuery(name = "getAllLinhaProdutos", query = "SELECT lp FROM LinhaProduto lp")})
 public class LinhaProduto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,9 +19,10 @@ public class LinhaProduto {
     public LinhaProduto() {
     }
 
-    public LinhaProduto(Produto produto, int quantidade) {
+    public LinhaProduto(Produto produto, int quantidade, Volume volume) {
         this.produto = produto;
         this.quantidade = quantidade;
+        this.volume = volume;
     }
 
     public long getId() {

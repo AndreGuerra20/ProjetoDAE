@@ -43,7 +43,7 @@ onMounted(fetchEncomendas);
                     <p class="text-gray-700 mt-2">Produtos: </p>
                     <ul class="space-y-2 ml-4">
                         <li v-for="produto in volume.produtos" :key="produto" class="p-2 border rounded bg-gray-100">
-                            <p class="text-gray-600">ID: {{ produto.id || 'Loading...' }}</p>
+                            <p class="text-gray-600">ID: {{ produto.produtoId || 'Loading...' }}</p>
                             <p class="text-gray-600">Quantidade: {{ produto.quantidade || 'Loading...' }}</p>
                         </li>
                     </ul>

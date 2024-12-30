@@ -45,11 +45,7 @@ public class EventoDTO implements Serializable {
     }
 
     public static EventoDTO from(Evento evento) {
-        return new EventoDTO(
-                evento.getSensor().getId(),
-                evento.getValor(),
-                evento.getTimestamp()
-        );
+        return new EventoDTO(evento.getSensor().getId(), evento.getValor(), evento.getTimestamp());
     }
 
     public static List<EventoDTO> from(List<Evento> eventos) {

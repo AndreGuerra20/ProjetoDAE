@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
-
 import java.io.Serializable;
 
 public class SensorEventoDTO implements Serializable {

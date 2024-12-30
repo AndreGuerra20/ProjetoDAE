@@ -56,12 +56,7 @@ public class SensorDTO implements Serializable {
     }
 
     public static SensorDTO from(Sensor sensor) {
-        return new SensorDTO(
-                sensor.getId(),
-                sensor.getTipo(),
-                sensor.getStatus(),
-                sensor.getEventos().stream().map(EventoDTO::from).collect(Collectors.toList())
-        );
+        return new SensorDTO(sensor.getId(), sensor.getTipo(), sensor.getStatus(), sensor.getEventos().stream().map(EventoDTO::from).collect(Collectors.toList()));
     }
 
     public static List<SensorDTO> from(List<Sensor> sensores) {

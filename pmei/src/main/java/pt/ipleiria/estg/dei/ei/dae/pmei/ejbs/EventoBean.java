@@ -15,7 +15,7 @@ public class EventoBean {
 
     public void create(String valor, long sensorId) {
         var sensor = em.find(Sensor.class, sensorId);
-        if(sensor == null) {
+        if (sensor == null) {
             throw new IllegalArgumentException("Sensor {" + sensorId + "} not found");
         }
         Evento evento = new Evento(valor, sensor);

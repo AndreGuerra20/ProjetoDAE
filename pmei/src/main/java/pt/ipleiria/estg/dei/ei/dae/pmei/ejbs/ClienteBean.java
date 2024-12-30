@@ -4,9 +4,8 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class ClienteBean {
                 cliente = c;
             }
         }
-        if(cliente == null) {
+        if (cliente == null) {
             return null;
         }
         Hibernate.initialize(cliente.getEncomendas());

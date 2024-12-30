@@ -8,8 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "encomendas")
-@NamedQueries({@NamedQuery(name = "getAllEncomendas", query = "SELECT e FROM Encomenda e ORDER BY e.id"
-)})
+@NamedQueries({@NamedQuery(name = "getAllEncomendas", query = "SELECT e FROM Encomenda e ORDER BY e.id")})
 
 public class Encomenda {
     @Id
@@ -47,7 +46,7 @@ public class Encomenda {
 
     public void setVolumes(List<Volume> volumes) {
         this.volumes = volumes;
-        for(Volume volume : volumes) {
+        for (Volume volume : volumes) {
             volume.setEncomenda(this);
         }
     }

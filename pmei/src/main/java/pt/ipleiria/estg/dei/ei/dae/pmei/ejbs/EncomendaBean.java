@@ -2,16 +2,15 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.EventoDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.ProdutoDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +22,11 @@ public class EncomendaBean {
     private EntityManager em;
 
     @EJB
-    private ProdutoBean produtoBean;
+    private LinhaProdutoBean linhaProdutoBean;
 
     public Encomenda create(long clienteId, String estado, List<Volume> volumes) {
         var cliente = em.find(Cliente.class, clienteId);
-        if(cliente == null) {
+        if (cliente == null) {
             throw new IllegalArgumentException("Cliente {" + clienteId + "} not found");
         }
         Encomenda encomenda = new Encomenda(cliente, estado);
@@ -37,18 +36,18 @@ public class EncomendaBean {
     }
 
     public Encomenda createWeb(long clienteId, String estado, List<VolumeDTO> volumesRequest) {
-        if(volumesRequest == null) {
+        if (volumesRequest == null) {
             volumesRequest = new ArrayList<>();
         }
         var cliente = em.find(Cliente.class, clienteId);
-        if(cliente == null) {
+        if (cliente == null) {
             throw new IllegalArgumentException("Cliente {" + clienteId + "} not found");
         }
         Encomenda encomenda = new Encomenda(cliente, estado);
         encomenda.setVolumes(volumesRequest.stream().map(volDto -> new Volume(volDto.getTipoEmbalagem(), encomenda)).collect(Collectors.toList()));
-        for(Volume volume : encomenda.getVolumes()) {
-            for(VolumeDTO volumeDTO : volumesRequest) {
-                volume.addProdutos(volumeDTO.getProdutos().stream().map(dto -> produtoBean.find(dto.getId())).collect(Collectors.toList()));
+        for (Volume volume : encomenda.getVolumes()) {
+            for (VolumeDTO volumeDTO : volumesRequest) {
+                volume.addProdutos(volumeDTO.getProdutos().stream().map(dto -> linhaProdutoBean.find(dto.getProdutoId())).collect(Collectors.toList()));
                 volume.addSensores(volumeDTO.getSensores().stream().map(dto -> new Sensor(dto.getTipo(), dto.getStatus(), volume)).collect(Collectors.toList()));
             }
         }
@@ -63,9 +62,9 @@ public class EncomendaBean {
     @Transactional
     public List<Encomenda> findAll() {
         List<Encomenda> encomendas = em.createNamedQuery("getAllEncomendas", Encomenda.class).getResultList();
-        for(Encomenda encomenda : encomendas) {
+        for (Encomenda encomenda : encomendas) {
             Hibernate.initialize(encomenda.getVolumes());
-            for(Volume volume : encomenda.getVolumes()) {
+            for (Volume volume : encomenda.getVolumes()) {
                 Hibernate.initialize(volume.getSensores());
                 for (Sensor sensor : volume.getSensores()) {
                     Hibernate.initialize(sensor.getEventos());
@@ -80,7 +79,7 @@ public class EncomendaBean {
     public Encomenda findWithVolumes(long id) {
         Encomenda encomenda = em.find(Encomenda.class, id);
         Hibernate.initialize(encomenda.getVolumes());
-        for(Volume volume : encomenda.getVolumes()) {
+        for (Volume volume : encomenda.getVolumes()) {
             Hibernate.initialize(volume.getProdutos());
             Hibernate.initialize(volume.getSensores());
             for (Sensor sensor : volume.getSensores()) {
