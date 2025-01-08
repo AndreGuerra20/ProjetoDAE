@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.ClienteDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ClienteBean;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 
 import java.util.List;
@@ -17,6 +18,9 @@ import java.util.List;
 public class ClienteService {
     @EJB
     private ClienteBean clienteBean;
+
+    @EJB
+    private UserBean userBean;
 
     @GET
     @Path("/")
@@ -35,6 +39,17 @@ public class ClienteService {
         if (cliente == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        return Response.ok(ClienteDTO.from(cliente)).build();
+    }
+
+    @GET
+    @Path("getName/{clienteId}")
+    public Response getClienteName(@PathParam("clienteId") long clienteId) {
+        var user = userBean.find(clienteId);
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        var cliente = clienteBean.find(user.getUsername());
         return Response.ok(ClienteDTO.from(cliente)).build();
     }
 }

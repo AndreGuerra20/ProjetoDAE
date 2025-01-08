@@ -4,6 +4,17 @@ import { ref, onMounted } from 'vue';
 const encomendas = ref([]);
 const error = ref(null);
 
+async function getClienteNome(clientId) {
+    try {
+        const { data } = await useFetch(`http://localhost:8080/PMEI/monitorizacao/api/cliente/getName/${clientId}`);
+
+        return data.value.name;
+    } catch (err) {
+        console.error('Error fetching cliente:', err);
+        return 'Unknown';
+    }
+}
+
 async function fetchEncomendas() {
     try {
         const { data } = await useFetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda');
@@ -33,7 +44,7 @@ onMounted(fetchEncomendas);
     <ul v-else class="space-y-4">
         <li v-for="encomenda in encomendas" :key="encomenda.id" class="p-4 border rounded-lg shadow-md bg-white">
             <p class="font-semibold text-lg text-gray-700">ID: {{ encomenda.encomendaId }}</p>
-            <p class="text-gray-600">Cliente: {{ encomenda.customerId || 'Loading...' }}</p>
+            <p class="text-gray-600">Cliente: {{ getClienteNome(encomenda.customerId) || 'Loading...' }}</p>
             <p class="text-gray-600">Estado: {{ encomenda.estado }}</p>
             <p class="text-gray-700 mt-2">Volumes: </p>
             <ul class="space-y-2 ml-4">
@@ -59,4 +70,7 @@ onMounted(fetchEncomendas);
             </ul>
         </li>
     </ul>
+    <div class="mt-4 flex justify-center">
+        <button class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" @click="fetchEncomendas">Refresh Encomendas</button>
+    </div>
 </template>

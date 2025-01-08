@@ -26,4 +26,8 @@ public class UserBean {
         return user != null && user.getPassword().equals(hasher.hash(password));
     }
 
+    public User find(long id) {
+        return em.find(User.class, id);
+    }
+
 }
