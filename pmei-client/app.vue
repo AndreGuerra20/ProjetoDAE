@@ -3,10 +3,41 @@ import { ref, onMounted } from 'vue';
 
 const encomendas = ref([]);
 const error = ref(null);
+const messages = ref([])
+
+const token = ref(null);
 
 async function fetchEncomendas() {
     try {
-        const { data } = await useFetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda');
+        await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            },
+            body: JSON.stringify({
+                username: 'henri',
+                password: '123'
+            }),
+            onResponse({ request, response, options }) {
+                messages.value.push({
+                    method: options.method,
+                    request: request,
+                    status: response.status,
+                    statusText: response.statusText,
+                    payload: response._data
+                })
+                if (response.status == 200) {
+                    token.value = response._data
+                }
+            }
+        })
+
+        const { data } = await useFetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda', {
+            headers: {
+                Authorization: `Bearer ${token.value}`
+            }
+        });
 
         // Safeguard: Ensure data is an array or fallback to an empty array
         encomendas.value = data.value || [];
@@ -60,6 +91,8 @@ onMounted(fetchEncomendas);
         </li>
     </ul>
     <div class="mt-4 flex justify-center">
-        <button class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" @click="fetchEncomendas">Refresh Encomendas</button>
+        <button
+            class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+            @click="fetchEncomendas">Refresh Encomendas</button>
     </div>
 </template>
