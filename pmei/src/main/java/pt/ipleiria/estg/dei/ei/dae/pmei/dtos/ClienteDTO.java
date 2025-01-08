@@ -58,7 +58,7 @@ public class ClienteDTO implements Serializable {
     }
 
     public static ClienteDTO from(Cliente cliente) {
-        return new ClienteDTO(cliente.getUsername(), cliente.getName(), cliente.getNIF(), cliente.getEncomendas().stream().map(EncomendaDTO::from).collect(Collectors.toList()));
+        return new ClienteDTO(cliente.getUsername(), cliente.getNome(), cliente.getNIF(), cliente.getEncomendas().stream().map(EncomendaDTO::from).collect(Collectors.toList()));
     }
 
     public static List<ClienteDTO> from(List<Cliente> clientes) {

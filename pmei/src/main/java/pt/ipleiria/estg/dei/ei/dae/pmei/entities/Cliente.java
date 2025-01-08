@@ -8,8 +8,6 @@ import java.util.List;
 @Entity
 @NamedQueries(@NamedQuery(name = "getAllClientes", query = "SELECT u FROM User u ORDER BY u.username"))
 public class Cliente extends User {
-    private String name;
-
     private long NIF;
 
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
@@ -19,17 +17,8 @@ public class Cliente extends User {
     }
 
     public Cliente(String name, long NIF, String username, String password) {
-        super(username, password);
-        this.name = name;
+        super(username, password, name);
         this.NIF = NIF;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public long getNIF() {
@@ -58,6 +47,6 @@ public class Cliente extends User {
 
     @Override
     public String toString() {
-        return "Cliente{" + "username=" + getUsername() + ", name='" + name + '\'' + ", NIF=" + NIF + '}';
+        return "Cliente{" + "username=" + getUsername() + ", name='" + getNome() + '\'' + ", NIF=" + NIF + '}';
     }
 }

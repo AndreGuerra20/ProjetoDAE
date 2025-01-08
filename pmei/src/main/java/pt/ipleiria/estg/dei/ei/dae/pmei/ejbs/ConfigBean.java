@@ -19,6 +19,12 @@ public class ConfigBean {
     private ClienteBean clienteBean;
 
     @EJB
+    private LogisticaBean logisticaBean;
+
+    @EJB
+    private GestorBean gestorBean;
+
+    @EJB
     private EncomendaBean encomendaBean;
 
     @EJB
@@ -42,6 +48,8 @@ public class ConfigBean {
     public void populateDB() {
         try {
             clienteBean.create("João", 123456789, "joao", "123");
+            logisticaBean.create("Henrique", "FUNC1", "henri", "123");
+            gestorBean.create("Andre", "FUNC2", "andre", "123");
 
             encomendaBean.create(clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
 

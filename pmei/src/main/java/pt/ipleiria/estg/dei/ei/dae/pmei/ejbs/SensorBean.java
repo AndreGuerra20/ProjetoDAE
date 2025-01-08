@@ -3,7 +3,6 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
@@ -29,7 +28,6 @@ public class SensorBean {
         return em.find(Sensor.class, id);
     }
 
-    @Transactional
     public List<Sensor> findAll() {
         List<Sensor> sensores = em.createNamedQuery("getAllSensores", Sensor.class).getResultList();
         for (Sensor sensor : sensores) {
@@ -38,7 +36,6 @@ public class SensorBean {
         return sensores;
     }
 
-    @Transactional
     public Sensor findWithEventos(long id) {
         Sensor sensor = em.find(Sensor.class, id);
         Hibernate.initialize(sensor.getEventos());

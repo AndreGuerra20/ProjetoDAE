@@ -1,15 +1,17 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.EventoDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorEventoDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorSemEventosDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
+import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import pt.ipleiria.estg.dei.ei.dae.pmei.util.EventoComparator;
 
 import java.util.List;
@@ -17,14 +19,16 @@ import java.util.List;
 @Path("sensor")
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
+@Authenticated
+@RolesAllowed({"Logistica","Gestor"})
 public class SensorService {
     @EJB
     private SensorBean sensorBean;
 
     @GET
     @Path("/")
-    public List<SensorDTO> getAllSensors() {
-        List<SensorDTO> listaSensores = SensorDTO.from(sensorBean.findAll());
+    public List<SensorSemEventosDTO> getAllSensors() {
+        List<SensorSemEventosDTO> listaSensores = SensorSemEventosDTO.from(sensorBean.findAll());
         if(listaSensores.isEmpty()){
             return null;
         }
@@ -41,6 +45,7 @@ public class SensorService {
         return Response.ok(SensorDTO.from(withEventos)).build();
     }
 
+    @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/min")
     public Response getSensorMin(@PathParam("id") long id) {
@@ -51,6 +56,7 @@ public class SensorService {
         return Response.ok(lowestValue).build();
     }
 
+    @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/max")
     public Response getSensorMax(@PathParam("id") long id) {
@@ -61,6 +67,7 @@ public class SensorService {
         return Response.ok(highestValue).build();
     }
 
+    @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/avg")
     public Response getSensorAvg(@PathParam("id") long id) {
@@ -81,6 +88,7 @@ public class SensorService {
         return listaEventos;
     }
 
+    @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/eventoRecente")
     public Response getSensorEventoRecente(@PathParam("id") long id) {

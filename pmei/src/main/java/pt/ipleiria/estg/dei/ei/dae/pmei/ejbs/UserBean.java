@@ -5,8 +5,11 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Hibernate;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
+
+import java.util.List;
 
 @Stateless
 public class UserBean {
@@ -16,8 +19,17 @@ public class UserBean {
     private Hasher hasher;
 
     public User findOrFail(String username) {
-        var user = em.getReference(User.class, username);
-        Hibernate.initialize(user);
+//        var user = em.getReference(User.class, username);
+//        Hibernate.initialize(user);
+//        return user;
+        User user = null;
+        List<User> users = em.createNamedQuery("getAllUsers", User.class).getResultList();
+        for (User c : users) {
+            if (c.getUsername().equals(username)) {
+                user = c;
+                break;
+            }
+        }
         return user;
     }
 

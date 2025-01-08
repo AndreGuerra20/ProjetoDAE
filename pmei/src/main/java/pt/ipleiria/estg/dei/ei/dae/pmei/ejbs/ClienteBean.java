@@ -4,8 +4,10 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.ws.rs.client.Client;
 import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 
 import java.util.List;
@@ -29,10 +31,10 @@ public class ClienteBean {
 
     public Cliente find(String username) {
         Cliente cliente = null;
-        List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
-        for (Cliente c : clientes) {
+        List<User> clientes = em.createNamedQuery("getAllUsers", User.class).getResultList();
+        for (User c : clientes) {
             if (c.getUsername().equals(username)) {
-                cliente = c;
+                cliente = (Cliente)c;
             }
         }
         if (cliente == null) {
