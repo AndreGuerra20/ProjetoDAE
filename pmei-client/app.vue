@@ -4,17 +4,6 @@ import { ref, onMounted } from 'vue';
 const encomendas = ref([]);
 const error = ref(null);
 
-async function getClienteNome(clientId) {
-    try {
-        const { data } = await useFetch(`http://localhost:8080/PMEI/monitorizacao/api/cliente/getName/${clientId}`);
-
-        return data.value.name;
-    } catch (err) {
-        console.error('Error fetching cliente:', err);
-        return 'Unknown';
-    }
-}
-
 async function fetchEncomendas() {
     try {
         const { data } = await useFetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda');
@@ -44,7 +33,7 @@ onMounted(fetchEncomendas);
     <ul v-else class="space-y-4">
         <li v-for="encomenda in encomendas" :key="encomenda.id" class="p-4 border rounded-lg shadow-md bg-white">
             <p class="font-semibold text-lg text-gray-700">ID: {{ encomenda.encomendaId }}</p>
-            <p class="text-gray-600">Cliente: {{ getClienteNome(encomenda.customerId) || 'Loading...' }}</p>
+            <p class="text-gray-600">Cliente: {{ encomenda.customerId || 'Loading...' }}</p>
             <p class="text-gray-600">Estado: {{ encomenda.estado }}</p>
             <p class="text-gray-700 mt-2">Volumes: </p>
             <ul class="space-y-2 ml-4">
@@ -54,7 +43,7 @@ onMounted(fetchEncomendas);
                     <p class="text-gray-700 mt-2">Produtos: </p>
                     <ul class="space-y-2 ml-4">
                         <li v-for="produto in volume.produtos" :key="produto" class="p-2 border rounded bg-gray-100">
-                            <p class="text-gray-600">ID: {{ produto.produtoId || 'Loading...' }}</p>
+                            <p class="text-gray-600">ID: {{ produto.id || 'Loading...' }}</p>
                             <p class="text-gray-600">Quantidade: {{ produto.quantidade || 'Loading...' }}</p>
                         </li>
                     </ul>

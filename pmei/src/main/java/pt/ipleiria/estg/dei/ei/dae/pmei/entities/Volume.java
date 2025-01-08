@@ -76,7 +76,7 @@ public class Volume {
         this.produtos.addAll(produtos);
     }
 
-    public void removeProduto(Produto produto) {
+    public void removeProduto(LinhaProduto produto) {
         produtos.remove(produto);
     }
 

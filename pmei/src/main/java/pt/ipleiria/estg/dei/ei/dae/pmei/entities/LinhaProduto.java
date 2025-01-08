@@ -52,4 +52,14 @@ public class LinhaProduto {
     public void setVolume(Volume volume) {
         this.volume = volume;
     }
+
+    @Override
+    public String toString() {
+        return "LinhaProduto{" +
+                "id=" + id +
+                ", produto=" + produto +
+                ", quantidade=" + quantidade +
+                ", volume=" + volume +
+                '}';
+    }
 }

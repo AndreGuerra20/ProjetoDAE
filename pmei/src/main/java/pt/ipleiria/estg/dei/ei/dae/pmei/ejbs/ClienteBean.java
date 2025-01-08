@@ -42,20 +42,6 @@ public class ClienteBean {
         return cliente;
     }
 
-    public Cliente findWithId(long id) {
-        Cliente cliente = null;
-        List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
-        for (Cliente c : clientes) {
-            if (c.getId() == id) {
-                cliente = c;
-            }
-        }
-        if (cliente == null) {
-            return null;
-        }
-        return cliente;
-    }
-
     public List<Cliente> findAll() {
         List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
         for (Cliente cliente : clientes) {

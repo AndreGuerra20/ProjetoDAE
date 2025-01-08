@@ -7,25 +7,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LinhaProdutoDTO implements Serializable {
-    private long produtoId;
+    private long id;
     private int quantidade;
     private long volumeId;
 
     public LinhaProdutoDTO() {
     }
 
-    public LinhaProdutoDTO(long produtoId, int quantidade, long volumeId) {
-        this.produtoId = produtoId;
+    public LinhaProdutoDTO(long id, int quantidade, long volumeId) {
+        this.id = id;
         this.quantidade = quantidade;
         this.volumeId = volumeId;
     }
 
-    public long getProdutoId() {
-        return produtoId;
+    public long getId() {
+        return id;
     }
 
-    public void setProdutoId(long produtoId) {
-        this.produtoId = produtoId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public int getQuantidade() {

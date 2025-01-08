@@ -43,6 +43,7 @@ public class EncomendaService {
     @Path("/")
     public Response createEncomenda(EncomendaDTO encomendaRequest) {
         Encomenda encomenda = encomendaBean.createWeb(encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
-        return Response.ok(EncomendaDTO.from(encomenda)).build();
+        var xpto = encomendaBean.findWithVolumes(encomenda.getId());
+        return Response.ok(EncomendaDTO.from(xpto)).build();
     }
 }

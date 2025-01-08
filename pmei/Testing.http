@@ -14,52 +14,50 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "encomendaId": 11,
   "customerId": 1,
-  "estado": "despachado",
+  "estado": "Despachado",
   "volumes": [
     {
-      "idVolume": 301,
       "produtos": [
         {
-          "id": 102495,
+          "id": 1,
           "quantidade": 31
         }
       ],
       "tipoEmbalagem": "Caixa cartão",
       "sensores": [
         {
-          "id": 10013,
-          "tipo": "Temperatura"
+          "tipo": "Temperatura",
+          "status": true
         }
       ]
     },
     {
-      "idVolume": 304,
       "produtos": [
         {
-          "id": 592495,
+          "id": 2,
           "quantidade": 1
         },
         {
-          "id": 1419,
+          "id": 1,
           "quantidade": 3
         }
       ],
       "tipoEmbalagem": "Caixa cartão com plástico bolha",
       "sensores": [
         {
-          "id": 1111,
-          "tipo": "Aceleracao"
+          "tipo": "Aceleracao",
+          "status": true
         },
         {
-          "id": 701,
-          "tipo": "Localizacao"
+          "tipo": "Localizacao",
+          "status": true
         }
       ]
     }
   ]
 }
+
 ###
 
 # Clientes

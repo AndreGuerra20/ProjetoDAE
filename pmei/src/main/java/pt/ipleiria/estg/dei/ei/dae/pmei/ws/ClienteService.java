@@ -41,15 +41,4 @@ public class ClienteService {
         }
         return Response.ok(ClienteDTO.from(cliente)).build();
     }
-
-    @GET
-    @Path("getName/{clienteId}")
-    public Response getClienteName(@PathParam("clienteId") long clienteId) {
-        var user = userBean.find(clienteId);
-        if (user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        var cliente = clienteBean.find(user.getUsername());
-        return Response.ok(ClienteDTO.from(cliente)).build();
-    }
 }

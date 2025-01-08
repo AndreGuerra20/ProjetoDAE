@@ -45,23 +45,23 @@ public class ConfigBean {
 
             encomendaBean.create(clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
 
-            volumeBean.create("Caixa Isotérmica", encomendaBean.find(1).getId());
+            volumeBean.create("Caixa Isotérmica", 1);
 
             produtoBean.create("Peixe", true);
             produtoBean.create("Comando Remoto", false);
 
-            linhaProdutoBean.create(produtoBean.find(1).getId(), 2, volumeBean.find(1).getIdVolume());
-            linhaProdutoBean.create(produtoBean.find(2).getId(), 1, volumeBean.find(1).getIdVolume());
+            linhaProdutoBean.create(1, 2, 1);
+            linhaProdutoBean.create(2, 1, 1);
 
-            sensorBean.create("Temperatura", true, volumeBean.find(1).getIdVolume());
+            sensorBean.create("Temperatura", true, 1);
 
-            eventoBean.create("25", sensorBean.find(1).getId());
+            eventoBean.create("25", 1);
             sleep(1000);
-            eventoBean.create("24.3", sensorBean.find(1).getId());
+            eventoBean.create("24.3", 1);
             sleep(1000);
-            eventoBean.create("26", sensorBean.find(1).getId());
+            eventoBean.create("26", 1);
             sleep(1000);
-            eventoBean.create("25.3", sensorBean.find(1).getId());
+            eventoBean.create("25.3", 1);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
