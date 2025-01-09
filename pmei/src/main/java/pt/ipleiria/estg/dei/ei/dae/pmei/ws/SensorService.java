@@ -5,9 +5,7 @@ import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.EventoDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.SensorSemEventosDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
@@ -78,10 +76,11 @@ public class SensorService {
         return Response.ok(averageValue).build();
     }
 
+    //EP 20
     @GET
     @Path("{id}/eventos")
-    public List<EventoDTO> getSensorEventos(@PathParam("id") long id) {
-        List<EventoDTO> listaEventos = EventoDTO.from(sensorBean.findWithEventos(id).getEventos());
+    public List<SensorEventoDTO> getSensorEventos(@PathParam("id") long id) {
+        List<SensorEventoDTO> listaEventos = SensorEventoDTO.from(sensorBean.findWithEventos(id).getEventos());
         if(listaEventos.isEmpty()){
             return null;
         }
@@ -101,17 +100,15 @@ public class SensorService {
     }
 
     //EP 04
-    //TODO: Falta devolver o sensor
     @POST
-    @Path("/")
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response postSensorEvento(EventoDTO eventoDTO){
-        System.out.println("id: " + eventoDTO.getSensorId() + " valor: " + eventoDTO.getValor());
-        Sensor sensor = sensorBean.findWithEventos(eventoDTO.getSensorId());
+    public Response postSensorEvento(@PathParam("id") long SensorId, EventoDTOValor eventoDTO) {
+        Sensor sensor = sensorBean.findWithEventos(SensorId);
         if (sensor == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        sensorBean.createEvento(sensor, Double.parseDouble(eventoDTO.getValor()));
+        sensorBean.createEvento(sensor, eventoDTO.getValor());
         return Response.ok(SensorDTO.from(sensor)).build();
     }
 }

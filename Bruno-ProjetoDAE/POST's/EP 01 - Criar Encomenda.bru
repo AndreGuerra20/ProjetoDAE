@@ -7,11 +7,7 @@ meta {
 post {
   url: {{uri}}encomenda
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhbmRyZSIsImlhdCI6MTczNjM2NjIyMiwiZXhwIjoxNzM2MzY5ODIyfQ.rWJymxHVKn6GejwikwZgyKTh5EBbdl0KRmyp54PmXmRF75YvFcLtazjE2zQX7IEK
+  auth: none
 }
 
 body:json {
@@ -59,4 +55,9 @@ body:json {
       }
     ]
   }
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }

@@ -5,15 +5,18 @@ meta {
 }
 
 post {
-  url: {{uri}}sensor/
+  url: {{uri}}sensor/4
   body: json
   auth: none
 }
 
 body:json {
   {
-    "sensorId": 1,
-    "valor": "31.2",
-    "timestamp": "12"
+    "valor": "46.316"
   }
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }

@@ -1,0 +1,23 @@
+meta {
+  name: EP 10 - Login com Cliente
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{uri}}auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "joao",
+    "password": "123"
+  }
+}
+
+script:post-response {
+  var token = res.getBody()
+  bru.setEnvVar("token", token)
+}

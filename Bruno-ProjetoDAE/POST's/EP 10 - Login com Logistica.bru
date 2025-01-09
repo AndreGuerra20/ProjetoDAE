@@ -1,0 +1,23 @@
+meta {
+  name: EP 10 - Login com Logistica
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{uri}}auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "henri",
+    "password": "123"
+  }
+}
+
+script:post-response {
+  var token = res.getBody()
+  bru.setEnvVar("token", token)
+}

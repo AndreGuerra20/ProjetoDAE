@@ -62,6 +62,9 @@ public class ConfigBean {
             linhaProdutoBean.create(2, 1, 1);
 
             sensorBean.create("Temperatura", true, 1);
+            sensorBean.create("Pressao", true, 1);
+            sensorBean.create("Posicionamento Global", true, 1);
+            sensorBean.create("Aceleracao", true, 1);
 
             eventoBean.create("25", 1);
             sleep(1000);

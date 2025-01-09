@@ -9,3 +9,8 @@ get {
   body: none
   auth: none
 }
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}
