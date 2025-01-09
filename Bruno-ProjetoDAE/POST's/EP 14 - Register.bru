@@ -1,0 +1,24 @@
+meta {
+  name: EP 14 - Register
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{uri}}auth/register
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhbmRyZSIsImlhdCI6MTczNjQyNDk2OCwiZXhwIjoxNzM2NDI4NTY4fQ.TYi8X_K1ojpIJWiUZIxV3fACE-DLf7NeN2yNuQRp3eNrkpB7lCi2CEI0lSxXGwp5
+}
+
+body:json {
+  {
+    "username": "gestor1",
+    "password": "123",
+    "nome": "Gestor1",
+    "codFuncionario": "FUNC3"
+  }
+}

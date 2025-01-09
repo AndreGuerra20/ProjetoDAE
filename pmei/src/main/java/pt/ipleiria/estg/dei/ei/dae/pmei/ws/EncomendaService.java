@@ -41,13 +41,58 @@ public class EncomendaService {
         return Response.ok(EncomendaDTO.from(encomenda)).build();
     }
 
-    // EP 01 - Um utilizador, autenticado como logística, cria uma nova encomenda utilizando o protocolo HTTP, verbo POST, para o sítio: `/monitorizacao/api/encomenda`
+    /**
+     * EP 01 - Logistica cria encomenda nova
+     *
+     * @param encomendaRequest Encomenda proveniente do pedido
+     * @return Encomenda criada
+     */
     @POST
     @Path("/")
     @RolesAllowed({"Logistica"})
     public Response createEncomenda(EncomendaDTO encomendaRequest) {
         Encomenda encomenda = encomendaBean.createWeb(encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
-        var xpto = encomendaBean.findWithVolumes(encomenda.getId());
-        return Response.ok(EncomendaDTO.from(xpto)).build();
+        var encomendaCriada = encomendaBean.findWithVolumes(encomenda.getId());
+        return Response.ok(EncomendaDTO.from(encomendaCriada)).build();
+    }
+
+    /**
+     * EP 12 - O gestor acede aos sensores de uma encomenda
+     *
+     * @param id ID da encomenda
+     * @return Lista dos sensores da encomenda
+     */
+    @GET
+    @Path("{id}/sensores")
+    @RolesAllowed({"Gestor"})
+    public Response getSensores(@PathParam("id") long id) {
+        List<SensorSemEventosDTO> sensores = new ArrayList<>();
+        Encomenda encomenda = encomendaBean.findWithVolumes(id);
+        if (encomenda == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        for (Volume volume : encomenda.getVolumes()) {
+            for (Sensor sensor : volume.getSensores()) {
+                SensorSemEventosDTO sensorSemEventosDTO = SensorSemEventosDTO.from(sensor);
+                sensores.add(sensorSemEventosDTO);
+            }
+        }
+        return Response.ok(sensores).build();
+    }
+
+    /**
+     * EP 22 - A encomenda é finalizada
+     *
+     * @return Encomenda atualizada depois de finalizada
+     */
+    @PATCH
+    @Path("/")
+    @RolesAllowed({"Logistica"})
+    public Response finalizeEncomenda(EncomendaDTO encomendaRequest) {
+        Encomenda encomenda = encomendaBean.areAllVolumesDelivered(encomendaRequest.getCustomerId());
+        if(encomenda == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(EncomendaDTO.from(encomenda)).build();
     }
 }

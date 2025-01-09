@@ -12,15 +12,17 @@ public class VolumeDTO implements Serializable {
     private String tipoEmbalagem;
     private List<LinhaProdutoDTO> produtos = new ArrayList<>();
     private List<SensorDTO> sensores = new ArrayList<>();
+    private boolean isEntregue;
 
     public VolumeDTO() {
     }
 
-    public VolumeDTO(long id, String tipoEmbalagem, List<LinhaProdutoDTO> produtos, List<SensorDTO> sensores) {
+    public VolumeDTO(long id, String tipoEmbalagem, List<LinhaProdutoDTO> produtos, List<SensorDTO> sensores, boolean isEntregue) {
         this.idVolume = id;
         this.tipoEmbalagem = tipoEmbalagem;
         this.produtos = produtos;
         this.sensores = sensores;
+        this.isEntregue = isEntregue;
     }
 
     public long getIdVolume() {
@@ -55,8 +57,16 @@ public class VolumeDTO implements Serializable {
         this.sensores = sensores;
     }
 
+    public boolean isEntregue() {
+        return isEntregue;
+    }
+
+    public void setEntregue(boolean entregue) {
+        isEntregue = entregue;
+    }
+
     public static VolumeDTO from(Volume volume) {
-        return new VolumeDTO(volume.getIdVolume(), volume.getTipoEmbalagem(), volume.getProdutos().stream().map(LinhaProdutoDTO::from).collect(Collectors.toList()), volume.getSensores().stream().map(SensorDTO::from).collect(Collectors.toList()));
+        return new VolumeDTO(volume.getIdVolume(), volume.getTipoEmbalagem(), volume.getProdutos().stream().map(LinhaProdutoDTO::from).collect(Collectors.toList()), volume.getSensores().stream().map(SensorDTO::from).collect(Collectors.toList()), volume.isEntregue());
     }
 
     public static List<VolumeDTO> from(List<Volume> volumes) {

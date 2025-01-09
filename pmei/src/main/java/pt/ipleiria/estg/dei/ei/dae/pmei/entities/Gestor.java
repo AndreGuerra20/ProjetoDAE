@@ -1,8 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.*;
 
 @Entity
 @NamedQueries(@NamedQuery(name = "getAllGestores", query = "SELECT g FROM Gestor g ORDER BY g.username"))

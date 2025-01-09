@@ -19,13 +19,22 @@ public class LogisticaBean {
     @Inject
     private Hasher hasher;
 
-    public void create(String name, String codFuncionario, String username, String password) {
+    public Logistica create(String name, String codFuncionario, String username, String password) {
         var logistica = find(username);
         if (logistica != null) {
             throw new IllegalArgumentException("Logistica already exists: " + username);
         }
+        List<User> logisticas = em.createNamedQuery("getAllUsers", User.class).getResultList();
+        for (User lg : logisticas) {
+            if(lg instanceof Logistica) {
+                if(((Logistica) lg).getCodFuncionario().equals(codFuncionario)) {
+                    throw new IllegalArgumentException("Logistica " + lg.getUsername() + " already has that codFuncionario: " + codFuncionario);
+                }
+            }
+        }
         logistica = new Logistica(username, hasher.hash(password),name,codFuncionario);
         em.persist(logistica);
+        return logistica;
     }
 
     public Logistica find(String username) {

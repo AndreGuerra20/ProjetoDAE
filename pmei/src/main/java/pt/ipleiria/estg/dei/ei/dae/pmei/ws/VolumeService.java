@@ -1,21 +1,32 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.ProdutoDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ProdutoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.VolumeBean;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.LinhaProduto;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
+import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("volume")
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
+@Authenticated
 public class VolumeService {
     @EJB
     private VolumeBean volumeBean;
+
+    @EJB
+    private ProdutoBean produtoBean;
 
     @GET
     @Path("/")
@@ -35,5 +46,30 @@ public class VolumeService {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(VolumeDTO.from(withBoth)).build();
+    }
+
+    /**
+     * EP 13 - Um gestor acede aos produtos de um volume
+     *
+     * @param id ID do volume
+     * @return Lista de produtos do volume
+     */
+    @GET
+    @Path("{id}/produtos")
+    @RolesAllowed({"Gestor"})
+    public Response getVolumeProdutos(@PathParam("id") long id) {
+        List<ProdutoDTO> produtoDTOS = new ArrayList<>();
+        Volume volume = volumeBean.findWithProdutos(id);
+        if (volume == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        for (LinhaProduto lp : volume.getProdutos()) {
+            Produto p = produtoBean.find(lp.getProduto().getId());
+            if (p == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            produtoDTOS.add(ProdutoDTO.from(p));
+        }
+        return Response.ok(produtoDTOS).build();
     }
 }

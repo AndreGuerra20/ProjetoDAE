@@ -1,98 +1,32 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-
-const encomendas = ref([]);
-const error = ref(null);
-const messages = ref([])
-
-const token = ref(null);
-
-async function fetchEncomendas() {
-    try {
-        await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            },
-            body: JSON.stringify({
-                username: 'henri',
-                password: '123'
-            }),
-            onResponse({ request, response, options }) {
-                messages.value.push({
-                    method: options.method,
-                    request: request,
-                    status: response.status,
-                    statusText: response.statusText,
-                    payload: response._data
-                })
-                if (response.status == 200) {
-                    token.value = response._data
-                }
-            }
-        })
-
-        const { data } = await useFetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda', {
-            headers: {
-                Authorization: `Bearer ${token.value}`
-            }
-        });
-
-        // Safeguard: Ensure data is an array or fallback to an empty array
-        encomendas.value = data.value || [];
-
-        console.log(encomendas.value);
-
-        if (encomendas.value.length === 0) {
-            error.value = 'No encomendas found.';
-            return;
-        }
-    } catch (err) {
-        console.error('Error fetching encomendas:', err);
-        error.value = 'Failed to load encomendas.';
-    }
-}
-
-// Fetch data on component mount
-onMounted(fetchEncomendas);
-</script>
-
 <template>
-    <h2 class="text-2xl font-bold mb-4 text-gray-800">Encomendas</h2>
-    <p v-if="error" class="text-red-500">{{ error }}</p>
-    <ul v-else class="space-y-4">
-        <li v-for="encomenda in encomendas" :key="encomenda.id" class="p-4 border rounded-lg shadow-md bg-white">
-            <p class="font-semibold text-lg text-gray-700">ID: {{ encomenda.encomendaId }}</p>
-            <p class="text-gray-600">Cliente: {{ encomenda.customerId || 'Loading...' }}</p>
-            <p class="text-gray-600">Estado: {{ encomenda.estado }}</p>
-            <p class="text-gray-700 mt-2">Volumes: </p>
-            <ul class="space-y-2 ml-4">
-                <li v-for="volume in encomenda.volumes" :key="volume" class="p-2 border rounded bg-gray-50">
-                    <p class="text-gray-600">ID: {{ volume.idVolume || 'Loading...' }}</p>
-                    <p class="text-gray-600">Tipo de Embalagem: {{ volume.tipoEmbalagem || 'Loading...' }}</p>
-                    <p class="text-gray-700 mt-2">Produtos: </p>
-                    <ul class="space-y-2 ml-4">
-                        <li v-for="produto in volume.produtos" :key="produto" class="p-2 border rounded bg-gray-100">
-                            <p class="text-gray-600">ID: {{ produto.id || 'Loading...' }}</p>
-                            <p class="text-gray-600">Quantidade: {{ produto.quantidade || 'Loading...' }}</p>
-                        </li>
-                    </ul>
-                    <p class="text-gray-700 mt-2">Sensores: </p>
-                    <ul class="space-y-2 ml-4">
-                        <li v-for="sensor in volume.sensores" :key="sensor" class="p-2 border rounded bg-gray-100">
-                            <p class="text-gray-600">ID: {{ sensor.id || 'Loading...' }}</p>
-                            <p class="text-gray-600">Tipo: {{ sensor.tipo || 'Loading...' }}</p>
-                            <p class="text-gray-600">Status: {{ sensor.status || 'Loading...' }}</p>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <div class="mt-4 flex justify-center">
-        <button
-            class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-            @click="fetchEncomendas">Refresh Encomendas</button>
-    </div>
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="text-xl font-bold text-blue-600">
+                            <NuxtLink to="/">PMEI</NuxtLink>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <NuxtLink 
+                            to="/SGO" 
+                            class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
+                            Management
+                        </NuxtLink>
+                        <NuxtLink 
+                            to="/SDL" 
+                            class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
+                            Logistics
+                        </NuxtLink>
+                        <NuxtLink 
+                            to="/SAC" 
+                            class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
+                            Customer
+                        </NuxtLink>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    <NuxtPage />
 </template>

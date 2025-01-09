@@ -24,12 +24,15 @@ public class Volume {
     @OneToMany(mappedBy = "volume", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Sensor> sensores = new ArrayList<>();
 
+    private boolean isEntregue;
+
     public Volume() {
     }
 
     public Volume(String tipoEmbalagem, Encomenda encomenda) {
         this.tipoEmbalagem = tipoEmbalagem;
         this.encomenda = encomenda;
+        this.isEntregue = false;
     }
 
     public long getIdVolume() {
@@ -92,8 +95,16 @@ public class Volume {
         sensores.remove(sensor);
     }
 
+    public boolean isEntregue() {
+        return isEntregue;
+    }
+
+    public void setEntregue(boolean entregue) {
+        isEntregue = entregue;
+    }
+
     @Override
     public String toString() {
-        return "Volume{" + "id=" + idVolume + ", tipoEmbalagem='" + tipoEmbalagem + '\'' + '}';
+        return "Volume{" + "id=" + idVolume + ", tipoEmbalagem='" + tipoEmbalagem + ", isEntregue='" + isEntregue + '\'' + '}';
     }
 }

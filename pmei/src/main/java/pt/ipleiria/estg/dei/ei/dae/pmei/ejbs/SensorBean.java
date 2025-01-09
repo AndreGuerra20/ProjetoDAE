@@ -70,7 +70,7 @@ public class SensorBean {
         return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).max().orElse(0);
     }
 
-    public void createEvento(Sensor sensor, String valor) {
+    public Evento createEvento(Sensor sensor, String valor) {
         if (sensor == null) {
             throw new IllegalArgumentException("Sensor cannot be null");
         }
@@ -118,6 +118,8 @@ public class SensorBean {
         }
         Evento evento = new Evento(valor, sensor);
         sensor.addEvento(evento);
+        em.merge(sensor);
         em.merge(evento);
+        return evento;
     }
 }

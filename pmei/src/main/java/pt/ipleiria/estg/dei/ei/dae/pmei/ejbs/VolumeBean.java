@@ -41,12 +41,18 @@ public class VolumeBean {
 
     public Volume findWithProdutos(long id) {
         Volume volume = em.find(Volume.class, id);
+        if(volume == null) {
+            throw new IllegalArgumentException("Volume {" + id + "} not found");
+        }
         Hibernate.initialize(volume.getProdutos());
         return volume;
     }
 
     public Volume findWithSensores(long id) {
         Volume volume = em.find(Volume.class, id);
+        if(volume == null) {
+            throw new IllegalArgumentException("Volume {" + id + "} not found");
+        }
         Hibernate.initialize(volume.getSensores());
         for (Sensor sensor : volume.getSensores()) {
             Hibernate.initialize(sensor.getEventos());
@@ -56,6 +62,9 @@ public class VolumeBean {
 
     public Volume findWithBoth(long id) {
         Volume volume = em.find(Volume.class, id);
+        if(volume == null) {
+            throw new IllegalArgumentException("Volume {" + id + "} not found");
+        }
         Hibernate.initialize(volume.getProdutos());
         for (Sensor sensor : volume.getSensores()) {
             Hibernate.initialize(sensor.getEventos());

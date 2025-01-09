@@ -6,6 +6,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EventoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
@@ -23,8 +24,17 @@ public class SensorService {
     @EJB
     private SensorBean sensorBean;
 
+    @EJB
+    private EventoBean eventoBean;
+
+    /**
+     * EP 02 - Um gestor visualiza todos os sensores
+     *
+     * @return Lista dos sensores na base de dados
+     */
     @GET
     @Path("/")
+    @RolesAllowed({"Gestor"})
     public List<SensorSemEventosDTO> getAllSensors() {
         List<SensorSemEventosDTO> listaSensores = SensorSemEventosDTO.from(sensorBean.findAll());
         if(listaSensores.isEmpty()){
@@ -43,6 +53,12 @@ public class SensorService {
         return Response.ok(SensorDTO.from(withEventos)).build();
     }
 
+    /**
+     * EP 17 - Um gestor pretende visualizar a leitura mais baixa de um sensor
+     *
+     * @param id ID do sensor
+     * @return Valor da leitura
+     */
     @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/min")
@@ -54,6 +70,12 @@ public class SensorService {
         return Response.ok(lowestValue).build();
     }
 
+    /**
+     * EP 16 - Um gestor pretende visualizar a leitura mais elevada de um sensor
+     *
+     * @param id ID do sensor
+     * @return Valor da leitura
+     */
     @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/max")
@@ -65,6 +87,12 @@ public class SensorService {
         return Response.ok(highestValue).build();
     }
 
+    /**
+     * EP 18 - Um gestor pretende visualizar a média das leituras de um sensor
+     *
+     * @param id ID do sensor
+     * @return Valor da média
+     */
     @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/avg")
@@ -76,7 +104,12 @@ public class SensorService {
         return Response.ok(averageValue).build();
     }
 
-    //EP 20
+    /**
+     * EP 20 - Um gestor pretende visualizar todas as leituras de um sensor
+     *
+     * @param id ID do sensor
+     * @return Lista de leituras do sensor
+     */
     @GET
     @Path("{id}/eventos")
     public List<SensorEventoDTO> getSensorEventos(@PathParam("id") long id) {
@@ -87,19 +120,35 @@ public class SensorService {
         return listaEventos;
     }
 
+    /**
+     * EP 03 - Um gestor vizualiza a última leitura de um sensor
+     *
+     * @param id ID do sensor
+     * @return Dados da última leitura
+     */
     @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/eventoRecente")
     public Response getSensorEventoRecente(@PathParam("id") long id) {
-        List<Evento> eventos = sensorBean.findWithEventos(id).getEventos();
-        if (eventos.isEmpty()) {
+        Sensor sensor = sensorBean.findWithEventos(id);
+        if(sensor == null){
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        List<Evento> eventos = sensor.getEventos();
+        if (eventos.isEmpty()) {
+            // return Response containing the message "No events registered"
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
         eventos.sort(new EventoComparator());
         return Response.ok(EventoDTO.from(eventos.get(0))).build();
     }
 
-    //EP 04
+    //TODO: Falta devolver o sensor
+    /**
+     * EP 04 - Criar uma leitura nova de um sensor
+     *
+     * @return Dados do sensor, com a leitura criada
+     */
     @POST
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)

@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{uri}}sensor/1
+  url: {{uri}}sensor/3/eventoRecente
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJoZW5yaSIsImlhdCI6MTczNjQzMjA1OCwiZXhwIjoxNzM2NDM1NjU4fQ.ItPN3DZgdZDm7CU0XziIOrXuRD7BeRAnP1fRTFsW57YvfKcxknMde5rXvFoQD-OD
 }

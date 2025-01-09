@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -10,7 +11,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.AuthDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.GestorAuthDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.GestorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
+import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.TokenIssuer;
 
 @Path("auth")
@@ -23,6 +28,15 @@ public class AuthService {
     @EJB
     private UserBean userBean;
 
+    @EJB
+    private GestorBean gestorBean;
+
+    /**
+     * EP 10 - Um utilizador faz login
+     *
+     * @param auth Informação para fazer login
+     * @return Token para efeitos de autenticação e autorização
+     */
     @POST
     @Path("/login")
     public Response authenticate(@Valid AuthDTO auth) {
@@ -31,5 +45,24 @@ public class AuthService {
             return Response.ok(token).build();
         }
         return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    /**
+     * EP 14 - Criar um gestor novo
+     *
+     * @param gestorDTO Dados para a criação como nome, codFuncionario, etc
+     * @return Token para efeitos de autenticação e autorização
+     */
+    @POST
+    @Path("/user")
+    @Authenticated
+    @RolesAllowed({"Gestor"})
+    public Response register(@Valid GestorAuthDTO gestorDTO) {
+        Gestor gestor = gestorBean.create(gestorDTO.getNome(),gestorDTO.getCodFuncionario(), gestorDTO.getUsername(), gestorDTO.getPassword());
+        if(gestor == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        String token = tokenIssuer.issue(gestor.getUsername());
+        return Response.ok(token).build();
     }
 }
