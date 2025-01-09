@@ -1,21 +1,23 @@
 meta {
-  name: EP 01 - Criar Encomenda
+  name: EP 01 - Criar Uma Encomenda
   type: http
-  seq: 4
+  seq: 6
 }
 
 post {
   url: {{uri}}encomenda
   body: json
-  auth: none
+  auth: bearer
+}
+
 auth:bearer {
-  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJoZW5yaSIsImlhdCI6MTczNjQzMjc3MywiZXhwIjoxNzM2NDM2MzczfQ.opGe8lSs0vnORsyQspCeig_w1Ix2BF7gRun1SWaXiSEfDBPHxTP1nDv5O3vzr0ZH
+  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJoZW5yaSIsImlhdCI6MTczNjQzNDgyOSwiZXhwIjoxNzM2NDM4NDI5fQ.OIAwE1TQ7gv5d9yiFwdplVPLDaAjlJcqMAwuCuyOxXvtgZ1mrmBGQi9wb08OG_BB
 }
 
 body:json {
   {
     "customerId": 1,
-    "estado": "Despachado",
+    "estado": "Despachada",
     "volumes": [
       {
         "produtos": [
@@ -50,16 +52,11 @@ body:json {
             "status": true
           },
           {
-            "tipo": "Localizacao",
+            "tipo": "Posicionamento Global",
             "status": true
           }
         ]
       }
     ]
   }
-}
-
-script:pre-request {
-  var token = "Bearer " + bru.getEnvVar("token")
-  req.setHeader("Authorization",token)
 }
