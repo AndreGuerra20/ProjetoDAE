@@ -5,7 +5,12 @@ meta {
 }
 
 get {
-  url: {{uri}}
+  url: {{uri}}volume/1/sensores
   body: none
   auth: none
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }
