@@ -8,6 +8,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -70,5 +71,20 @@ public class VolumeBean {
             Hibernate.initialize(sensor.getEventos());
         }
         return volume;
+    }
+
+    public List<Sensor> findAllSensors(long id) {
+        List<Sensor> sensores = em.createNamedQuery("getAllSensores", Sensor.class).getResultList();
+        List<Sensor> sensoresByVolumeId = new ArrayList<>();
+        for (Sensor sensor : sensores) {
+            if (sensor.getVolume().getIdVolume() == id) {
+                Hibernate.initialize(sensor.getEventos());
+                sensoresByVolumeId.add(sensor);
+            }
+        }
+        if (sensoresByVolumeId.isEmpty()) {
+            return null;
+        }
+        return sensoresByVolumeId;
     }
 }

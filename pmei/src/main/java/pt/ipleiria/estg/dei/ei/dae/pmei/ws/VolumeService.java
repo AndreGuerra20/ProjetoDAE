@@ -5,12 +5,12 @@ import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.ProdutoDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ProdutoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.VolumeBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.LinhaProduto;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 
@@ -46,6 +46,23 @@ public class VolumeService {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(VolumeDTO.from(withBoth)).build();
+    }
+
+    /**
+     * EP 19 - O gestor acede aos sensores de um volume
+     *
+     * @return Dados dos sensores do volume
+     */
+    @RolesAllowed({"Gestor"})
+    @GET
+    @Path("{id}/sensores")
+    public List<SensorUltimoEventoDTO> getSensores(@PathParam("id") long id) {
+        List<Sensor> sensores = volumeBean.findAllSensors(id);
+        if (sensores.isEmpty()) {
+            return null;
+        }
+        System.out.println(sensores);
+        return SensorUltimoEventoDTO.from(sensores);
     }
 
     /**
