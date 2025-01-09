@@ -4,14 +4,14 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.AuthDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.GestorAuthDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.UserDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.GestorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
@@ -22,6 +22,9 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.security.TokenIssuer;
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
 public class AuthService {
+    @Context
+    private SecurityContext securityContext;
+
     @Inject
     private TokenIssuer tokenIssuer;
 
@@ -64,5 +67,14 @@ public class AuthService {
         }
         String token = tokenIssuer.issue(gestor.getUsername());
         return Response.ok(token).build();
+    }
+
+    @GET
+    @Authenticated
+    @Path("/user")
+    public Response getAuthenticatedUser() {
+        var username = securityContext.getUserPrincipal().getName();
+        var user = userBean.findOrFail(username);
+        return Response.ok(UserDTO.from(user)).build();
     }
 }

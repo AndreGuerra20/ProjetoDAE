@@ -1,39 +1,19 @@
 <script setup>
 import { ref,onMounted } from 'vue'
+import {useAuthStore} from "~/store/auth-store.js"
+const config = useRuntimeConfig()
+const api = config.public.API_URL
+
+const authStore = useAuthStore()
+const {token, user} = storeToRefs(authStore)
 
 const error = ref(null)
 const messages = ref([])
 const encomendas = ref([])
-const token = ref(null)
 
 async function fetchEncomendas() {
-    error.value = null;
     try {
-        await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            },
-            body: JSON.stringify({
-                username: 'henri',
-                password: '123'
-            }),
-            onResponse({ request, response, options }) {
-                messages.value.push({
-                    method: options.method,
-                    request: request,
-                    status: response.status,
-                    statusText: response.statusText,
-                    payload: response._data
-                })
-                if (response.status == 200) {
-                    token.value = response._data
-                }
-            }
-        })
-
-        await $fetch('http://localhost:8080/PMEI/monitorizacao/api/encomenda', {
+        await $fetch(`${api}/encomenda`, {
             headers: {
                 Authorization: `Bearer ${token.value}`
             },
@@ -57,6 +37,7 @@ async function fetchEncomendas() {
 }
 
 onMounted(() => {
+    //authStore.loadUser()
     fetchEncomendas()
 })
 </script>
