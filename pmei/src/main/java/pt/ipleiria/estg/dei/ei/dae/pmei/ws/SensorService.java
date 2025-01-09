@@ -13,6 +13,8 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import pt.ipleiria.estg.dei.ei.dae.pmei.util.EventoComparator;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Path("sensor")
@@ -141,6 +143,29 @@ public class SensorService {
         }
         eventos.sort(new EventoComparator());
         return Response.ok(EventoDTO.from(eventos.get(0))).build();
+    }
+
+    /**
+     * EP 05 - O gestor pede informação da última leitura registada por todos os sensores do tipo escolhido ativos
+     *
+     * @return Dados dos últimos eventos para os sensores do tipo escolhido
+     */
+    @RolesAllowed({"Gestor"})
+    @GET
+    @Path("tipo/{tiposensor}")
+    public List<EventoDTO> getUltimosSensoresAtivos(@PathParam("tiposensor") String tiposensor) {
+        List<Sensor> sensores = sensorBean.findWithTipo(tiposensor);
+        List<Evento> eventos = new ArrayList<>();
+        if (sensores.isEmpty()) {
+            return null;
+        }
+        for (Sensor sensor : sensores) {
+            List<Evento> eventosBySensor = sensor.getEventos();
+            eventosBySensor.sort(new EventoComparator());
+            Evento ultimoEvento = eventosBySensor.get(0);
+            eventos.add(ultimoEvento);
+        }
+        return EventoDTO.from(eventos);
     }
 
     //TODO: Falta devolver o sensor

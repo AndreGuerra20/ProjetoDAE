@@ -9,6 +9,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
 
@@ -53,6 +54,17 @@ public class SensorBean {
         Sensor sensor = em.find(Sensor.class, id);
         Hibernate.initialize(sensor.getEventos());
         return sensor;
+    }
+
+    public List<Sensor> findWithTipo(String tipo) {
+        List<Sensor> sensores = findAll();
+        List<Sensor> sensoresByTipo = new ArrayList<>();
+        for (Sensor sensor : sensores) {
+            if (sensor.getTipo().equals(tipo) && sensor.getStatus()) {
+                sensoresByTipo.add(sensor);
+            }
+        }
+        return sensoresByTipo;
     }
 
     public double getAverageValue(long id) {

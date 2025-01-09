@@ -1,0 +1,16 @@
+meta {
+  name: EP 05 - Get último evento por tipo sensor
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{uri}}sensor/tipo/Temperatura
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}
