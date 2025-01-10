@@ -58,7 +58,7 @@ public class EncomendaService {
     @Path("/")
     @RolesAllowed({"Logistica"})
     public Response createEncomenda(EncomendaDTO encomendaRequest) throws MyConstraintViolationException, MyEntityNotFoundException {
-        Encomenda encomenda = encomendaBean.createWeb(encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
+        Encomenda encomenda = encomendaBean.createWeb(encomendaRequest.getEncomendaId(),encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
         var encomendaCriada = encomendaBean.findWithVolumes(encomenda.getId());
         return Response.ok(EncomendaDTO.from(encomendaCriada)).build();
     }
@@ -112,7 +112,7 @@ public class EncomendaService {
     @POST
     @Path("{id}")
     @RolesAllowed({"Logistica"})
-    public Response addVolumesToEncomenda(@PathParam("id") long id, List<VolumeDTO> volumesRequest) {
+    public Response addVolumesToEncomenda(@PathParam("id") long id, List<VolumeDTO> volumesRequest) throws MyEntityNotFoundException {
         System.out.println("Adding volumes to encomenda " + id);
         Encomenda encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {

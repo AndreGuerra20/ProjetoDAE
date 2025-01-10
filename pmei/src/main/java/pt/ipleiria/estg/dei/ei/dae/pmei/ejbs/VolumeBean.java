@@ -7,6 +7,7 @@ import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,16 @@ public class VolumeBean {
         em.merge(volume);
     }
 
-    public void create(String tipoEmbalagem, long encomenda_id) {
+    public void create(long volumeId,String tipoEmbalagem, long encomenda_id) throws MyEntityExistsException {
         var encomenda = em.find(Encomenda.class, encomenda_id);
         if (encomenda == null) {
             throw new IllegalArgumentException("Encomenda {" + encomenda_id + "} not found");
         }
-        Volume volume = new Volume(tipoEmbalagem, encomenda);
+        Volume volume = em.find(Volume.class, volumeId);
+        if (volume != null) {
+            throw new MyEntityExistsException("Volume wiht Id{" + volumeId + "} already exists");
+        }
+        volume = new Volume(volumeId,tipoEmbalagem, encomenda);
         em.persist(volume);
     }
 

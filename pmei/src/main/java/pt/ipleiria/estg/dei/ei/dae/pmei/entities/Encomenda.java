@@ -12,7 +12,6 @@ import java.util.List;
 
 public class Encomenda {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @OneToMany(mappedBy = "encomenda", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -27,7 +26,8 @@ public class Encomenda {
     public Encomenda() {
     }
 
-    public Encomenda(Cliente cliente, String estado) {
+    public Encomenda(long id,Cliente cliente, String estado) {
+        this.id = id;
         this.cliente = cliente;
         this.estado = estado;
     }

@@ -1,10 +1,17 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +50,7 @@ public class ConfigBean {
     private EventoBean eventoBean;
 
     private static final Logger logger = Logger.getLogger("ConfigBean.logger");
+    private static final String CSV_FILE = "/products.csv";
 
     @PostConstruct
     public void populateDB() {
@@ -51,22 +59,49 @@ public class ConfigBean {
             logisticaBean.create("Henrique", "FUNC1", "henri", "123");
             gestorBean.create("Andre", "FUNC2", "andre", "123");
 
-            encomendaBean.create(clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
+            encomendaBean.create(1,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
 
-            volumeBean.create("Caixa Isotérmica", 1);
-            volumeBean.create("Caixa", 1);
+            volumeBean.create(1,"Caixa Isotérmica", 1);
+            volumeBean.create(2,"Caixa", 1);
 
-            produtoBean.create("Peixe", true);
-            produtoBean.create("Comando Remoto", true);
+            produtoBean.create(1,"Peixe", true);
+            produtoBean.create(2,"Comando Remoto", true);
+
+
+            //Se quiser ler o ficheiro CSV
+            //Correr o comando na root do projeto
+            //docker cp src/main/resources/products.csv pmei-webserver-1:/products.csv
+            try (CSVReader csvReader = new CSVReader(new FileReader(CSV_FILE))) {
+                csvReader.readNext();
+
+                String[] linha;
+                int i = 2;
+                while ((linha = csvReader.readNext()) != null) {
+                    i++;
+                    String descricao = linha[0];
+                    int precisaEmbalagem = Integer.parseInt(linha[1]);
+                    System.out.println("Produto: " + descricao + " precisa de embalagem: " + precisaEmbalagem);
+                    if (i == 500){
+                        break;
+                    }
+                    if (produtoBean.findAll().size()%100 == 0){
+                        System.out.println("Foram inseridos 100 produtos");
+                    }
+                    produtoBean.create(i, descricao, precisaEmbalagem == 1);
+                }
+            } catch (IOException | CsvValidationException e) {
+                System.out.println("Ficheiro não encontrado");
+            }
+
 
             linhaProdutoBean.create(1, 2, 1);
             linhaProdutoBean.create(2, 1, 2);
 
-            sensorBean.create("Temperatura", true, 1);
-            sensorBean.create("Temperatura", true, 2);
-            sensorBean.create("Pressao", true, 2);
-            sensorBean.create("Posicionamento Global", true, 1);
-            sensorBean.create("Aceleracao", true, 1);
+            sensorBean.create(1,"Temperatura", true, 1);
+            sensorBean.create(2,"Temperatura", true, 2);
+            sensorBean.create(3,"Pressao", true, 2);
+            sensorBean.create(4,"Posicionamento Global", true, 1);
+            sensorBean.create(5,"Aceleracao", true, 1);
 
             eventoBean.create("25", 1);
             sleep(1000);

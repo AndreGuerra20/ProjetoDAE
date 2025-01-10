@@ -7,6 +7,7 @@ import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -27,16 +28,20 @@ public class SensorBean {
 
     private static final DecimalFormat dfTemperatura = new DecimalFormat("0.00");
     private static final DecimalFormat dfPressao = new DecimalFormat("0.000");
-    private static final String regex = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),\\s*[-+]?((1[0-7]\\d|[1-9]?\\d)(\\.\\d+)?|180(\\.0+)?)$";
-    private static final Pattern pattern = Pattern.compile(regex);
+    private static final String regexPosicao = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),\\s*[-+]?((1[0-7]\\d|[1-9]?\\d)(\\.\\d+)?|180(\\.0+)?)$";
+    private static final Pattern pattern = Pattern.compile(regexPosicao);
     private static final DecimalFormat dfAceleracao = new DecimalFormat("0.00");
 
-    public void create(String tipo, boolean estado, long volume_id) {
+    public void create(long id,String tipo, boolean estado, long volume_id) throws MyEntityExistsException {
         var volume = em.find(Volume.class, volume_id);
         if (volume == null) {
             throw new IllegalArgumentException("Volume {" + volume_id + "} not found");
         }
-        Sensor sensor = new Sensor(tipo, estado, volume);
+        Sensor sensor = em.find(Sensor.class, id);
+        if (sensor != null) {
+            throw new MyEntityExistsException("Sensor with Id{" + id + "} already exists");
+        }
+        sensor = new Sensor(id,tipo, estado, volume);
         em.persist(sensor);
     }
 

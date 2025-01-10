@@ -12,7 +12,6 @@ public class Sensor {
     private static final List<String> sensorTypes = List.of("Temperatura", "Pressao", "Posicionamento Global", "Aceleracao");
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String tipo;
@@ -28,7 +27,8 @@ public class Sensor {
     public Sensor() {
     }
 
-    public Sensor(String tipo, Boolean status, Volume volume) {
+    public Sensor(long id,String tipo, Boolean status, Volume volume) {
+        this.id = id;
         if (!sensorTypes.contains(tipo)) {
             throw new IllegalArgumentException("Invalid sensor type");
         }

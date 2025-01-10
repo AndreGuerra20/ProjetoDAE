@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.List;
 @NamedQueries(@NamedQuery(name = "getAllVolumes", query = "SELECT v FROM Volume v ORDER BY v.idVolume"))
 public class Volume {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idVolume;
 
     private String tipoEmbalagem;
@@ -29,7 +29,8 @@ public class Volume {
     public Volume() {
     }
 
-    public Volume(String tipoEmbalagem, Encomenda encomenda) {
+    public Volume(long id,String tipoEmbalagem, Encomenda encomenda) {
+        this.idVolume = id;
         this.tipoEmbalagem = tipoEmbalagem;
         this.encomenda = encomenda;
         this.isEntregue = false;

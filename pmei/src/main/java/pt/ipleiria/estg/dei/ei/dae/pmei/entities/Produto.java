@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 @NamedQueries({@NamedQuery(name = "getAllProdutos", query = "SELECT p FROM Produto p ORDER BY p.id")})
 public class Produto {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String descricao;
@@ -17,7 +16,8 @@ public class Produto {
     public Produto() {
     }
 
-    public Produto(String descricao, boolean precisaEmbalagemAdicional) {
+    public Produto(long id,String descricao, boolean precisaEmbalagemAdicional) {
+        this.id = id;
         this.descricao = descricao;
         this.precisaEmbalagemAdicional = precisaEmbalagemAdicional;
     }

@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
 import jakarta.validation.ConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 
 import java.util.List;
 
@@ -14,9 +15,13 @@ public class ProdutoBean {
     @PersistenceContext
     private EntityManager em;
 
-    public void create(String desc, boolean precisaEmbalagem) throws MyConstraintViolationException {
+    public void create(long id,String desc, boolean precisaEmbalagem) throws MyConstraintViolationException, MyEntityExistsException {
+        Produto produto = em.find(Produto.class, id);
+        if (produto != null) {
+            throw new MyEntityExistsException("Produto with Id{" + id + "} already exists");
+        }
         try {
-            Produto produto = new Produto(desc, precisaEmbalagem);
+            produto = new Produto(id,desc, precisaEmbalagem);
             em.persist(produto);
             em.flush();
         } catch (ConstraintViolationException e) {

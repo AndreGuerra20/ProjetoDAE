@@ -112,6 +112,7 @@ public class SensorService {
      * @param id ID do sensor
      * @return Lista de leituras do sensor
      */
+    @RolesAllowed({"Gestor"})
     @GET
     @Path("{id}/eventos")
     public List<SensorEventoDTO> getSensorEventos(@PathParam("id") long id) {

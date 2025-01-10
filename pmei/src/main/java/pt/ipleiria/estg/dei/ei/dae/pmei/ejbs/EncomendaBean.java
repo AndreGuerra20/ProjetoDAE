@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 
 import java.util.ArrayList;
@@ -26,13 +27,13 @@ public class EncomendaBean {
     @EJB
     private ProdutoBean produtoBean;
 
-    public Encomenda create(long clienteId, String estado, List<Volume> volumes) throws MyEntityNotFoundException, MyConstraintViolationException {
+    public Encomenda create(long encomendaId,long clienteId, String estado, List<Volume> volumes) throws MyEntityNotFoundException, MyConstraintViolationException {
         var cliente = em.find(Cliente.class, clienteId);
         if (cliente == null) {
             throw new MyEntityNotFoundException("Cliente {" + clienteId + "} not found");
         }
         try {
-            Encomenda encomenda = new Encomenda(cliente, estado);
+            Encomenda encomenda = new Encomenda(encomendaId,cliente, estado);
             encomenda.setVolumes(volumes);
             em.persist(encomenda);
             em.flush();
@@ -42,7 +43,7 @@ public class EncomendaBean {
         }
     }
 
-    public Encomenda createWeb(long clienteId, String estado, List<VolumeDTO> volumesRequest) throws MyEntityNotFoundException, MyConstraintViolationException {
+    public Encomenda createWeb(long encomendaId,long clienteId, String estado, List<VolumeDTO> volumesRequest) throws MyEntityNotFoundException, MyConstraintViolationException {
         if (volumesRequest == null) {
             volumesRequest = new ArrayList<>();
         }
@@ -50,21 +51,37 @@ public class EncomendaBean {
         if (cliente == null) {
             throw new MyEntityNotFoundException("Cliente {" + clienteId + "} not found");
         }
-        Encomenda encomenda = create(clienteId,estado,volumesRequest.stream().map(volDto -> {
-            Volume vol = new Volume();
-            vol.setTipoEmbalagem(volDto.getTipoEmbalagem());
+        Encomenda encomenda = em.find(Encomenda.class, encomendaId);
+        if (encomenda != null) {
+            throw new IllegalArgumentException("Encomenda with Id{" + encomendaId + "} already exists");
+        }
+        encomenda = create(encomendaId,clienteId,estado,volumesRequest.stream().map(volDto -> {
+            Volume volume = em.find(Volume.class, volDto.getIdVolume());
+            if (volume != null) {
+                throw new IllegalArgumentException("Volume with Id{" + volDto.getIdVolume() + "} already exists");
+            }
+            Volume vol = new Volume(volDto.getIdVolume(),volDto.getTipoEmbalagem(),null);
+            //vol.setTipoEmbalagem(volDto.getTipoEmbalagem());
             vol.setProdutos(volDto.getProdutos().stream().map(lpDto -> {
                 LinhaProduto produto = new LinhaProduto();
-                produto.setProduto(produtoBean.find(lpDto.getId()));
+                Produto p = produtoBean.find(lpDto.getId());
+                if (p == null) {
+                    throw new MyEntityNotFoundException("Produto with Id{" + lpDto.getId() + "} not found");
+                }
+                produto.setProduto(p);
                 produto.setQuantidade(lpDto.getQuantidade());
                 produto.setVolume(vol);
                 return produto;
             }).collect(Collectors.toList()));
             vol.setSensores(volDto.getSensores().stream().map(sensorDTO -> {
-                Sensor sensor = new Sensor();
-                sensor.setTipo(sensorDTO.getTipo());
-                sensor.setStatus(sensorDTO.getStatus());
-                sensor.setVolume(vol);
+                Sensor s = em.find(Sensor.class, sensorDTO.getId());
+                if (s != null) {
+                    throw new MyEntityExistsException("Sensor with Id{" + sensorDTO.getId() + "} already exists");
+                }
+                Sensor sensor = new Sensor(sensorDTO.getId(),sensorDTO.getTipo(),sensorDTO.getStatus(),vol);
+                //sensor.setTipo(sensorDTO.getTipo());
+                //sensor.setStatus(sensorDTO.getStatus());
+                //sensor.setVolume(vol);
                 return sensor;
             }).collect(Collectors.toList()));
             return vol;
