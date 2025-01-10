@@ -15,6 +15,8 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.UserDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.GestorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.TokenIssuer;
 
@@ -60,7 +62,7 @@ public class AuthService {
     @Path("/user")
     @Authenticated
     @RolesAllowed({"Gestor"})
-    public Response register(@Valid GestorAuthDTO gestorDTO) {
+    public Response register(@Valid GestorAuthDTO gestorDTO) throws MyConstraintViolationException, MyEntityExistsException {
         Gestor gestor = gestorBean.create(gestorDTO.getNome(),gestorDTO.getCodFuncionario(), gestorDTO.getUsername(), gestorDTO.getPassword());
         if(gestor == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();

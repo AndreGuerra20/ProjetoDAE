@@ -1,0 +1,61 @@
+meta {
+  name: EP 15 - Adicionar Volumes a uma Encomenda
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{uri}}encomenda/1
+  body: json
+  auth: none
+}
+
+body:json {
+  [{           
+        "produtos":
+        [        
+          {          
+            "id": 1,          
+            "quantidade": 11        
+          },
+          {
+            "id": 2,
+            "quantidade": 5
+          }      
+        ],      
+        "tipoEmbalagem": "Caixa cartão",      
+        "sensores": 
+        [        
+          {          
+            "id": 10013,          
+            "tipo": "Temperatura"        
+          },
+          {
+            "id": 952,
+            "tipo": "Posicionamento Global"
+          }      
+        ]    
+      },
+      {         
+        "produtos":
+        [        
+          {          
+            "id": 1,          
+            "quantidade": 2        
+          }    
+        ],      
+        "tipoEmbalagem": "Embalagem de Esferovite",      
+        "sensores": 
+        [        
+          {          
+            "id": 10013,          
+            "tipo": "Temperatura"        
+          }    
+        ]    
+      }]
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}

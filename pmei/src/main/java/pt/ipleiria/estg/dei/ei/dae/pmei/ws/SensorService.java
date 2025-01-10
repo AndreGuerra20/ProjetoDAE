@@ -167,7 +167,7 @@ public class SensorService {
         }
         return SensorEventoEncomendaDTO.from(eventos);
     }
-    
+
     /**
      * EP 04 - Criar uma leitura nova de um sensor
      *

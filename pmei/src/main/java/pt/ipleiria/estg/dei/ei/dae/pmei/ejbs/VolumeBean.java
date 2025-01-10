@@ -16,6 +16,10 @@ public class VolumeBean {
     @PersistenceContext
     private EntityManager em;
 
+    public void update(Volume volume) {
+        em.merge(volume);
+    }
+
     public void create(String tipoEmbalagem, long encomenda_id) {
         var encomenda = em.find(Encomenda.class, encomenda_id);
         if (encomenda == null) {

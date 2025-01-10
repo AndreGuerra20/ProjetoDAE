@@ -7,11 +7,15 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EncomendaBean;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ProdutoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("encomenda")
 @Consumes({MediaType.APPLICATION_JSON})
@@ -20,6 +24,9 @@ import java.util.List;
 public class EncomendaService {
     @EJB
     private EncomendaBean encomendaBean;
+
+    @EJB
+    private ProdutoBean produtoBean;
 
     @GET
     @Path("/")
@@ -50,7 +57,7 @@ public class EncomendaService {
     @POST
     @Path("/")
     @RolesAllowed({"Logistica"})
-    public Response createEncomenda(EncomendaDTO encomendaRequest) {
+    public Response createEncomenda(EncomendaDTO encomendaRequest) throws MyConstraintViolationException, MyEntityNotFoundException {
         Encomenda encomenda = encomendaBean.createWeb(encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
         var encomendaCriada = encomendaBean.findWithVolumes(encomenda.getId());
         return Response.ok(EncomendaDTO.from(encomendaCriada)).build();
@@ -88,11 +95,61 @@ public class EncomendaService {
     @PATCH
     @Path("/")
     @RolesAllowed({"Logistica"})
-    public Response finalizeEncomenda(EncomendaDTO encomendaRequest) {
+    public Response finalizeEncomenda(EncomendaDTO encomendaRequest) throws MyEntityNotFoundException {
         Encomenda encomenda = encomendaBean.areAllVolumesDelivered(encomendaRequest.getCustomerId());
         if(encomenda == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(EncomendaDTO.from(encomenda)).build();
+    }
+
+    //TODO - Passsar maior parte do código para o EncomendaBean
+    /**
+     * EP 15 - Adicionar novos volumes a uma encomenda que já existe
+     *
+     * @return Encomenda atualizada
+     */
+    @POST
+    @Path("{id}")
+    @RolesAllowed({"Logistica"})
+    public Response addVolumesToEncomenda(@PathParam("id") long id, List<VolumeDTO> volumesRequest) {
+        System.out.println("Adding volumes to encomenda " + id);
+        Encomenda encomenda = encomendaBean.findWithVolumes(id);
+        if (encomenda == null) {
+            System.out.println("Encomenda not found");
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        for (VolumeDTO volumeDTO : volumesRequest) {
+            Volume volume = new Volume();
+            volume.setTipoEmbalagem(volumeDTO.getTipoEmbalagem());
+            volume.setEncomenda(encomenda);
+
+            List<LinhaProduto> produtos = volumeDTO.getProdutos().stream().map(produtoDTO -> {
+                Produto produto = produtoBean.find(produtoDTO.getId());
+                if (produto == null) {
+                    throw new WebApplicationException("Produto not found", Response.Status.NOT_FOUND);
+                }
+                LinhaProduto linhaProduto = new LinhaProduto();
+                linhaProduto.setProduto(produto);
+                linhaProduto.setQuantidade(produtoDTO.getQuantidade());
+                linhaProduto.setVolume(volume);
+                return linhaProduto;
+            }).collect(Collectors.toList());
+
+            List<Sensor> sensores = volumeDTO.getSensores().stream().map(sensorDTO -> {
+                Sensor sensor = new Sensor();
+                sensor.setTipo(sensorDTO.getTipo());
+                sensor.setStatus(true);
+                sensor.setVolume(volume);
+                return sensor;
+            }).collect(Collectors.toList());
+
+            volume.setProdutos(produtos);
+            volume.setSensores(sensores);
+            encomenda.addVolume(volume);
+            encomendaBean.update(encomenda);
+        }
+        return Response.ok(EncomendaDTO.from(encomendaBean.findWithVolumes(id))).build();
     }
 }

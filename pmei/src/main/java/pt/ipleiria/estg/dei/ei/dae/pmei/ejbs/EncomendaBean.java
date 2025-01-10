@@ -123,4 +123,8 @@ public class EncomendaBean {
         em.merge(encomenda);
         return encomenda;
     }
+
+    public void update(Encomenda encomenda) {
+        em.merge(encomenda);
+    }
 }
