@@ -1,97 +1,85 @@
 <script setup>
-const managementStats = [
-    {
-        title: 'Total Packages',
-        value: '1,234',
-        trend: '+12%',
-        color: 'blue'
-    },
-    {
-        title: 'Active Orders',
-        value: '156',
-        trend: '+5%',
-        color: 'green'
-    },
-    {
-        title: 'Pending Approval',
-        value: '23',
-        trend: '-2%',
-        color: 'yellow'
-    }
-]
+import {onMounted, ref} from 'vue'
 
-const recentOrders = [
-    {
-        id: 'ORD001',
-        customer: 'Tech Solutions Inc.',
-        items: 12,
-        status: 'Approved',
-        value: '$2,450',
-        date: '2024-03-10'
-    },
-    {
-        id: 'ORD002',
-        customer: 'Global Logistics Ltd.',
-        items: 8,
-        status: 'Pending',
-        value: '$1,840',
-        date: '2024-03-09'
-    },
-    {
-        id: 'ORD003',
-        customer: 'Fast Delivery Co.',
-        items: 15,
-        status: 'Processing',
-        value: '$3,200',
-        date: '2024-03-08'
-    }
-]
+const route = useRoute()
+const error = ref(null)
+const sensors = ref(null)
+const orders = ref(null)
+const token = ref(null)
+let status = null
+const sensorsSize = ref(null)
+
+async function fetch() {
+  error.value = null;
+  try {
+    // First get the authentication token
+    const authResponse = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        username: 'henri',
+        password: '123'
+      })
+    })
+    token.value = authResponse
+
+    // Then fetch the encomenda details
+    sensors.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensor`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+
+    orders.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomenda`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+
+  } catch (err) {
+    console.error('Error fetching encomenda details:', err)
+    error.value = 'Failed to load encomenda details.'
+  }
+}
+
+onMounted(async () => {
+  await fetch()
+  console.log(orders.value)
+  sensorsSize.value = sensors.value.length
+})
+
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-100 p-4">
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Management Dashboard</h1>
+  <div class="min-h-screen bg-gray-100 p-4">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Management Dashboard</h1>
 
-            <!-- Statistics Overview -->
-            <div class="grid md:grid-cols-3 gap-4 mb-6">
-                <div v-for="stat in managementStats" :key="stat.title" 
-                     class="bg-white rounded-lg shadow-md p-4">
-                    <h3 class="font-semibold mb-2">{{ stat.title }}</h3>
-                    <div class="flex items-center justify-between">
-                        <p class="text-3xl font-bold" :class="`text-${stat.color}-600`">{{ stat.value }}</p>
-                        <span :class="`text-${stat.color}-600 text-sm`">{{ stat.trend }}</span>
-                    </div>
-                </div>
-            </div>
+      <!-- Order Management -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Recent Orders</h2>
+        </div>
 
-            <!-- Order Management -->
-            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Recent Orders</h2>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                        New Order
-                    </button>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr class="bg-gray-50">
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="order in recentOrders" :key="order.id">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ order.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ order.customer }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ order.items }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+            <tr class="bg-gray-50">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See order</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="order in orders" :key="order.id">
+              <td class="px-6 py-4 whitespace-nowrap">{{ order.encomendaId }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ order.customerId }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ order.estado }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
                                     <span :class="{
                                         'px-2 py-1 text-xs rounded-full': true,
                                         'bg-green-100 text-green-800': order.status === 'Approved',
@@ -100,35 +88,85 @@ const recentOrders = [
                                     }">
                                         {{ order.status }}
                                     </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ order.value }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ order.date }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Performance Metrics -->
-            <div class="bg-white rounded-lg shadow-md p-4">
-                <h2 class="text-xl font-semibold mb-4">Performance Metrics</h2>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h3 class="font-semibold mb-2">Order Processing Time</h3>
-                        <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
-                            <div class="bg-blue-500 h-full w-3/4"></div>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-2">Average: 2.5 hours</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h3 class="font-semibold mb-2">Customer Satisfaction</h3>
-                        <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
-                            <div class="bg-green-500 h-full w-4/5"></div>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-2">Rating: 4.5/5</p>
-                    </div>
-                </div>
-            </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ order.value }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ order.date }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <NuxtLink :to="`/SGO/orders/${order.encomendaId}`" class="text-blue-500 hover:text-blue-600">
+                  View Order
+                </NuxtLink>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      <!-- Sensors -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">All Sensors</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+            <tr class="bg-gray-50">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See events</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="sensor in sensors" :key="sensor.id">
+              <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                                      <span v-if="sensor.status === true ? status = 'Active' : status = 'Inative'"
+                                            :class="{
+                                          'px-2 py-1 text-xs rounded-full': true,
+                                          'bg-green-100 text-green-800': sensor.status === true,
+                                          'bg-yellow-100 text-yellow-800': sensor.status === false
+                                      }">
+                                          {{ status }}
+                                      </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">
+                  View Events
+                </NuxtLink>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" class="px-6 py-4 whitespace-nowrap"># of sensors: {{ sensorsSize }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- Performance Metrics -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <h2 class="text-xl font-semibold mb-4">Performance Metrics</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h3 class="font-semibold mb-2">Order Processing Time</h3>
+            <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
+              <div class="bg-blue-500 h-full w-3/4"></div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">Average: 2.5 hours</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h3 class="font-semibold mb-2">Customer Satisfaction</h3>
+            <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
+              <div class="bg-green-500 h-full w-4/5"></div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">Rating: 4.5/5</p>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
