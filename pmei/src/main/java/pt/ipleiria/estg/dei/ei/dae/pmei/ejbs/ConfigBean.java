@@ -67,10 +67,6 @@ public class ConfigBean {
             produtoBean.create(1,"Peixe", true);
             produtoBean.create(2,"Comando Remoto", true);
 
-
-            //Se quiser ler o ficheiro CSV
-            //Correr o comando na root do projeto
-            //docker cp src/main/resources/products.csv pmei-webserver-1:/products.csv
             try (CSVReader csvReader = new CSVReader(new FileReader(CSV_FILE))) {
                 csvReader.readNext();
 
@@ -80,12 +76,11 @@ public class ConfigBean {
                     i++;
                     String descricao = linha[0];
                     int precisaEmbalagem = Integer.parseInt(linha[1]);
-                    System.out.println("Produto: " + descricao + " precisa de embalagem: " + precisaEmbalagem);
                     if (i == 500){
                         break;
                     }
                     if (produtoBean.findAll().size()%100 == 0){
-                        System.out.println("Foram inseridos 100 produtos");
+                        System.out.println("Foram inseridos +100 produtos");
                     }
                     produtoBean.create(i, descricao, precisaEmbalagem == 1);
                 }
