@@ -32,6 +32,7 @@ ps:
 
 deploy: build
 	docker compose cp target/${APPLICATION_NAME}.war webserver:/opt/jboss/wildfly/standalone/deployments
+	docker cp src/main/resources/products.csv pmei-webserver-1:/products.csv
 
 monitor: deploy logs
 
