@@ -153,7 +153,7 @@ public class SensorService {
     @RolesAllowed({"Gestor"})
     @GET
     @Path("tipo/{tiposensor}")
-    public List<EventoDTO> getUltimosSensoresAtivos(@PathParam("tiposensor") String tiposensor) {
+    public List<SensorEventoEncomendaDTO> getUltimosSensoresAtivos(@PathParam("tiposensor") String tiposensor) {
         List<Sensor> sensores = sensorBean.findWithTipo(tiposensor);
         List<Evento> eventos = new ArrayList<>();
         if (sensores.isEmpty()) {
@@ -165,7 +165,7 @@ public class SensorService {
             Evento ultimoEvento = eventosBySensor.get(0);
             eventos.add(ultimoEvento);
         }
-        return EventoDTO.from(eventos);
+        return SensorEventoEncomendaDTO.from(eventos);
     }
 
     //TODO: Falta devolver o sensor
