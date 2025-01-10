@@ -20,8 +20,10 @@ public class SensorBean {
 
     public static final double MAX_TEMPERATURE = 60.00;
     public static final double MIN_TEMPERATURE = -30.00;
-    public static final double MAX_ACCELERATION = 100;
+    public static final double MAX_ACCELERATION = 100.0;
     public static final double MIN_ACCELERATION = 0.1;
+    public static final double MAX_PRESSURE = 110.000;
+    public static final double MIN_PRESSURE = 60.000;
 
     private static final DecimalFormat dfTemperatura = new DecimalFormat("0.00");
     private static final DecimalFormat dfPressao = new DecimalFormat("0.000");
@@ -104,6 +106,10 @@ public class SensorBean {
             case "Pressao":
                 try {
                     valor = dfPressao.format(Double.parseDouble(valor));
+                    double f = Double.parseDouble(valor);
+                    if (f < MIN_PRESSURE || f > MAX_PRESSURE) {
+                        throw new IllegalArgumentException("Invalid pressure, value must be between " + MIN_PRESSURE + " and " + MAX_PRESSURE);
+                    }
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid pressure,value must be a number");
                 }
@@ -130,7 +136,6 @@ public class SensorBean {
         }
         Evento evento = new Evento(valor, sensor);
         sensor.addEvento(evento);
-        em.merge(sensor);
         em.merge(evento);
         return evento;
     }
