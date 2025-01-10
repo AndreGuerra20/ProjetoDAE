@@ -8,6 +8,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.LinhaProduto;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 
 import java.util.List;
 
@@ -16,14 +17,14 @@ public class LinhaProdutoBean {
     @PersistenceContext
     private EntityManager em;
 
-    public LinhaProduto create(long produto_id, int quantidade, long volume_id) {
+    public LinhaProduto create(long produto_id, int quantidade, long volume_id) throws MyEntityNotFoundException {
         var produto = em.find(Produto.class, produto_id);
         if(produto == null) {
-            throw new IllegalArgumentException("Produto {" + produto_id + "} not found");
+            throw new MyEntityNotFoundException("Produto {" + produto_id + "} not found");
         }
         var volume = em.find(Volume.class, volume_id);
         if(volume == null) {
-            throw new IllegalArgumentException("Volume {" + volume_id + "} not found");
+            throw new MyEntityNotFoundException("Volume {" + volume_id + "} not found");
         }
         LinhaProduto linhaProduto = new LinhaProduto(produto, quantidade, volume);
         em.persist(linhaProduto);

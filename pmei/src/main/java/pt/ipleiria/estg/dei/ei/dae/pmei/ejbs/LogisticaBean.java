@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Logistica;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 
 import java.util.List;
@@ -19,10 +20,10 @@ public class LogisticaBean {
     @Inject
     private Hasher hasher;
 
-    public Logistica create(String name, String codFuncionario, String username, String password) {
+    public Logistica create(String name, String codFuncionario, String username, String password) throws MyEntityExistsException {
         var logistica = find(username);
         if (logistica != null) {
-            throw new IllegalArgumentException("Logistica already exists: " + username);
+            throw new MyEntityExistsException("Logistica already exists: " + username);
         }
         List<User> logisticas = em.createNamedQuery("getAllUsers", User.class).getResultList();
         for (User lg : logisticas) {

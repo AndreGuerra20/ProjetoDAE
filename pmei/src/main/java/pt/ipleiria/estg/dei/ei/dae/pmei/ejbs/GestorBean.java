@@ -4,8 +4,11 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.ConstraintViolationException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 
 import java.util.List;
@@ -18,10 +21,10 @@ public class GestorBean {
     @Inject
     private Hasher hasher;
 
-    public Gestor create(String name, String codFuncionario, String username, String password) {
+    public Gestor create(String name, String codFuncionario, String username, String password) throws MyEntityExistsException, MyConstraintViolationException {
         var gestor = find(username);
         if (gestor != null) {
-            throw new IllegalArgumentException("Gestor already exists: " + username);
+            throw new MyEntityExistsException("Gestor already exists: " + username);
         }
         List<User> gestores = em.createNamedQuery("getAllUsers", User.class).getResultList();
         for (User g : gestores) {
@@ -31,9 +34,15 @@ public class GestorBean {
                 }
             }
         }
-        gestor = new Gestor(username, hasher.hash(password),name,codFuncionario);
-        em.persist(gestor);
-        return gestor;
+        try {
+            gestor = new Gestor(username, hasher.hash(password),name,codFuncionario);
+            em.persist(gestor);
+            em.flush();
+            return gestor;
+        } catch (ConstraintViolationException e) {
+            throw new MyConstraintViolationException(e);
+        }
+
     }
 
     public Gestor find(String username) {

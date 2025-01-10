@@ -4,9 +4,12 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.ConstraintViolationException;
 import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +26,29 @@ public class EncomendaBean {
     @EJB
     private ProdutoBean produtoBean;
 
-    public Encomenda create(long clienteId, String estado, List<Volume> volumes) {
+    public Encomenda create(long clienteId, String estado, List<Volume> volumes) throws MyEntityNotFoundException, MyConstraintViolationException {
         var cliente = em.find(Cliente.class, clienteId);
         if (cliente == null) {
-            throw new IllegalArgumentException("Cliente {" + clienteId + "} not found");
+            throw new MyEntityNotFoundException("Cliente {" + clienteId + "} not found");
         }
-        Encomenda encomenda = new Encomenda(cliente, estado);
-        encomenda.setVolumes(volumes);
-        em.persist(encomenda);
-        return encomenda;
+        try {
+            Encomenda encomenda = new Encomenda(cliente, estado);
+            encomenda.setVolumes(volumes);
+            em.persist(encomenda);
+            em.flush();
+            return encomenda;
+        } catch (ConstraintViolationException e) {
+            throw new MyConstraintViolationException(e);
+        }
     }
 
-    public Encomenda createWeb(long clienteId, String estado, List<VolumeDTO> volumesRequest) {
+    public Encomenda createWeb(long clienteId, String estado, List<VolumeDTO> volumesRequest) throws MyEntityNotFoundException, MyConstraintViolationException {
         if (volumesRequest == null) {
             volumesRequest = new ArrayList<>();
         }
         var cliente = em.find(Cliente.class, clienteId);
         if (cliente == null) {
-            throw new IllegalArgumentException("Cliente {" + clienteId + "} not found");
+            throw new MyEntityNotFoundException("Cliente {" + clienteId + "} not found");
         }
         Encomenda encomenda = create(clienteId,estado,volumesRequest.stream().map(volDto -> {
             Volume vol = new Volume();
@@ -101,10 +109,10 @@ public class EncomendaBean {
         return encomenda;
     }
 
-    public Encomenda areAllVolumesDelivered(long id) {
+    public Encomenda areAllVolumesDelivered(long id) throws MyEntityNotFoundException {
         Encomenda encomenda = findWithVolumes(id);
         if(encomenda == null) {
-            throw new IllegalArgumentException("Encomenda {" + id + "} not found");
+            throw new MyEntityNotFoundException("Encomenda {" + id + "} not found");
         }
         for (Volume volume : encomenda.getVolumes()) {
             if (!volume.isEntregue()) {

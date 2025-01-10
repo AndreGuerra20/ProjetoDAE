@@ -4,10 +4,14 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.client.Client;
 import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 
 import java.util.List;
@@ -20,13 +24,18 @@ public class ClienteBean {
     @Inject
     private Hasher hasher;
 
-    public void create(String name, long NIF, String username, String password) {
+    public void create(String name, long NIF, String username, String password) throws MyEntityExistsException, MyConstraintViolationException {
         var cliente = find(username);
         if (cliente != null) {
-            throw new IllegalArgumentException("Cliente already exists: " + username);
+            throw new MyEntityExistsException("Cliente already exists: " + username);
         }
-        cliente = new Cliente(name, NIF, username, hasher.hash(password));
-        em.persist(cliente);
+        try {
+            cliente = new Cliente(name, NIF, username, hasher.hash(password));
+            em.persist(cliente);
+            em.flush();
+        } catch (ConstraintViolationException e) {
+            throw new MyConstraintViolationException(e);
+        }
     }
 
     public Cliente find(String username) {
