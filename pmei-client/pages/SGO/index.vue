@@ -78,19 +78,16 @@ onMounted(async () => {
             <tr v-for="order in orders" :key="order.id">
               <td class="px-6 py-4 whitespace-nowrap">{{ order.encomendaId }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ order.customerId }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ order.estado }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                                     <span :class="{
                                         'px-2 py-1 text-xs rounded-full': true,
-                                        'bg-green-100 text-green-800': order.status === 'Approved',
-                                        'bg-yellow-100 text-yellow-800': order.status === 'Pending',
-                                        'bg-blue-100 text-blue-800': order.status === 'Processing'
+                                        'bg-green-100 text-green-800': order.estado === 'Entregue',
+                                        'bg-yellow-100 text-yellow-800': order.estado === 'Pendente',
+                                        'bg-blue-100 text-blue-800': order.estado === 'Despachado'
                                     }">
-                                        {{ order.status }}
+                                        {{ order.estado }}
                                     </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ order.value }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ order.date }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <NuxtLink :to="`/SGO/orders/${order.encomendaId}`" class="text-blue-500 hover:text-blue-600">
                   View Order
