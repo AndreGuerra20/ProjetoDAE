@@ -7,9 +7,10 @@ meta {
 get {
   url: {{uri}}encomenda/1/sensores
   body: none
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJnZXN0b3IxIiwiaWF0IjoxNzM2NDI0OTkzLCJleHAiOjE3MzY0Mjg1OTN9.LGmPh6pAkkHgmK9WHJJh9QtTgXuGb9YxmJYjWtnzVLLOg6AkJWFxd4O7iCyD8MQ5
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }

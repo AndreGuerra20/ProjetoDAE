@@ -1,4 +1,5 @@
 <template>
+  <ClientOnly>
   <!-- Navigation Bar -->
   <nav class="bg-white shadow-md ">
     <div class="max-w-7xl mx-auto px-4">
@@ -24,10 +25,6 @@
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
             Customer
           </NuxtLink>
-          <div class="flex items-center">
-            <img class="inline-block size-[55px] rounded-full border-2 border-blue-600"
-                 :src="imageUrl" alt="Avatar">
-          </div>
           <NuxtLink
               v-if="!authStore.isAuthenticated()"
               to="/auth/login"
@@ -40,6 +37,7 @@
     </div>
   </nav>
   <slot/>
+  </ClientOnly>
 
 </template>
 
@@ -47,11 +45,6 @@
 import {useAuthStore} from "~/store/auth-store.js";
 const router = useRouter()
 const authStore = useAuthStore()
-
-const baseUrl = "https://thispersondoesnotexist.com";
-
-// Estado reativo para o URL da imagem
-const imageUrl = ref(baseUrl);
 
 function logout() {
   authStore.logout()
