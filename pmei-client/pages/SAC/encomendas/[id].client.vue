@@ -1,6 +1,6 @@
 <script setup>
 import {onMounted, ref} from 'vue'
-import L from 'leaflet'
+
 const route = useRoute()
 const error = ref(null)
 const encomenda = ref(null)
@@ -14,26 +14,24 @@ async function fetchEncomendaDetails() {
     error.value = null;
     try {
         // First get the authentication token
-        const authResponse = await $fetch(`${api}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            },
-            body: JSON.stringify({
-                username: 'henri',
-                password: '123'
-            })
+      token.value = await $fetch(`${api}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            username: 'henri',
+            password: '123'
+          })
         })
-        token.value = authResponse
 
         // Then fetch the encomenda details
-        const response = await $fetch(`${api}/encomenda/${route.params.id}`, {
-            headers: {
-                Authorization: `Bearer ${token.value}`
-            }
+      encomenda.value = await $fetch(`${api}/encomenda/${route.params.id}`, {
+          headers: {
+            Authorization: `Bearer ${token.value}`
+          }
         })
-        encomenda.value = response
     } catch (err) {
         console.error('Error fetching encomenda details:', err)
         error.value = 'Failed to load encomenda details.'
@@ -67,7 +65,14 @@ async function fetchEncomendaDetails() {
 }
 
 function volumeHasSensor(volumeId) {
-    return marcadores.value.find(marcador => marcador.volumeId === volumeId).eventos.length > 0
+  const marcador = marcadores.value.find(marcador => marcador.volumeId === volumeId);
+
+  if (marcador) {
+    const neventos = marcador.eventos;
+    return !!(neventos && neventos.length > 0);
+  } else {
+    return false;
+  }
 }
 
 //Dá erro mas funciona B) (Nuxt é horrível)
@@ -93,16 +98,34 @@ function toggleMap(volumeId) {
     marcadores.value.find(marcador => marcador.volumeId === volumeId).showMap = !marcadores.value.find(marcador => marcador.volumeId === volumeId).showMap
 }
 
+const btnMapText = (marcadores, volume) => {
+  const marcador = marcadores.find(marcador => marcador.volumeId === volume.idVolume)
+  if (marcador) {
+    if (marcador.hasOwnProperty('showMap')) {
+      const showMap = marcador.showMap
+      if (showMap) {
+        return 'Hide Map'
+      } else {
+        return 'Show Map'
+      }
+    } else {
+      return '';
+    }
+  } else {
+    return '';
+  }
+};
+
 const map = ref(null);
 
 onMounted(async () => {
-    await fetchEncomendaDetails()
+  await fetchEncomendaDetails()
 })
 </script>
 
 <template>
-  <ClientOnly>
-    <div class="min-h-screen bg-gray-100 p-4">
+
+    <div v-if="encomenda" class="min-h-screen bg-gray-100 p-4">
         <div class="max-w-4xl mx-auto">
             <div class="mb-6">
                 <NuxtLink to="/SAC" class="text-blue-500 hover:text-blue-600 flex items-center">
@@ -160,11 +183,12 @@ onMounted(async () => {
                                         {{ volume.isEntregue ? 'Entregue' : 'Pendente' }}
                                     </span>
                                 </div>
+                              <div v-if="marcadores">
                                 <!-- Map Section -->
                                 <!-- TODO: Tornar o mapa responsivo -->
                                 <div>
                                   <button @click="toggleMap(volume.idVolume)" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">
-                                    {{ marcadores.find(marcador => marcador.volumeId === volume.idVolume).showMap ? 'Hide Map' : 'Show Map' }}</button>
+                                    {{ btnMapText(marcadores,volume) }}</button>
                                 </div>
                                 <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}" class="mt-1" v-if="volumeHasSensor(volume.idVolume) && marcadores.find(marcador => marcador.volumeId === volume.idVolume).showMap">
                                   <LMap
@@ -173,7 +197,6 @@ onMounted(async () => {
                                       :max-zoom="18"
                                       :center="calculateCenter(marcadores.find(marcador => marcador.volumeId === volume.idVolume).eventos)"
                                       :use-global-leaflet="true"
-                                      @ready="onMapReady"
                                   >
                                     <LTileLayer
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -189,7 +212,9 @@ onMounted(async () => {
                                     <LPolyline :lat-lngs="marcadores.find(marcador => marcador.volumeId === volume.idVolume)?.eventos.map(evento => ({ lat: parseFloat(evento.valor.split(',')[0]), lng: parseFloat(evento.valor.split(',')[1]) }))"></LPolyline>
                                   </LMap>
                                 </div>
-                            </div>
+
+                              </div>
+                                </div>
                         </div>
                     </div>
 
@@ -208,5 +233,5 @@ onMounted(async () => {
             </div>
         </div>
     </div>
-  </ClientOnly>
+
 </template>
