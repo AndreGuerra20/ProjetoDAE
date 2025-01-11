@@ -25,12 +25,15 @@ async function fetch() {
     })
     token.value = authResponse
 
-    // Then fetch the encomenda details
+    // Then fetch the sensors
     sensors.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensor`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     })
+
+    //filter sensors
+    sensors.value = sensors.value.filter(sensor => sensor.status === true)
 
     orders.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomenda`, {
       headers: {
@@ -113,7 +116,7 @@ const styleStatusBadge = (status) => {
       <!-- Sensors -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">All Sensors</h2>
+          <h2 class="text-xl font-semibold">All Active Sensors</h2>
         </div>
 
         <div class="overflow-x-auto">

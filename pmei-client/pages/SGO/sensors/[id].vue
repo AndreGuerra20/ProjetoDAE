@@ -58,8 +58,14 @@ const styleStatusBadge = (status) => {
 //change timestamp format
 const formatDate = (timestamp) => {
   const date = new Date(timestamp)
+  let month = date.getMonth() + 1
+
   // dd-mm-yyyy hh:mm:ss
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  const dateString = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}/${month + 1 < 10 ? '0' + month : month}/${date.getFullYear()}`
+  const timeString = `${date.getHours() < 10 ? '0' + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`
+
+  return `${dateString} ${timeString}`
+
 }
 
 </script>

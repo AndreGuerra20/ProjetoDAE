@@ -35,7 +35,7 @@ async function fetch() {
 }
 
 const isDelivered = (volume) => {
-  return volume ? 'Yes' : 'No'
+  return volume === true ? 'Yes' : 'No'
 }
 
 const getSensorStatus = (status) => {
@@ -85,8 +85,7 @@ onMounted(async () => {
                 <div class="flex items-center justify-between py-2">
                   <p class="text-lg font-semibold text-gray-800">ID {{ volume.idVolume }}</p>
                   <p class="text-sm text-gray-600 ml-2 font-medium">Type: {{ volume.tipoEmbalagem }}</p>
-                  <p class="text-sm text-gray-600 ml-2 font-medium">Delivered: {{ isDelivered(volume) }}
-                  </p>
+                  <p class="text-sm text-gray-600 ml-2 font-medium">Delivered: {{ isDelivered(volume) }}</p>
                 </div>
                 <table class="min-w-full">
                   <thead>
@@ -94,6 +93,7 @@ onMounted(async () => {
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Sensor</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See Sensors</th>
                   </tr>
                   </thead>
                   <tbody class="bg-gray-50 divide-y divide-gray-200">
@@ -104,6 +104,9 @@ onMounted(async () => {
                       <span :class="styleStatusBadge(sensor.status)">
                       {{ getSensorStatus(sensor.status) }}
                       </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">View Sensor</NuxtLink>
                     </td>
                   </tr>
                   </tbody>
