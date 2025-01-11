@@ -1,16 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import {onMounted, ref} from 'vue'
 
 const route = useRoute()
-const error = ref(null)
+const error = ref('')
 const token = ref(null)
 const order = ref(null)
 
 async function fetch() {
-  error.value = null;
+
   try {
     // First get the authentication token
-    const authResponse = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
+    token.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,21 +21,38 @@ async function fetch() {
         password: '123'
       })
     })
-    token.value = authResponse
 
-    // fetch the sensor
-    const response = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomenda/${route.params.id}`, {
+    // fetch the order
+    order.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomenda/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     })
-
-    order.value = response
   } catch (err) {
     console.error('Error fetching events:', err)
     error.value = 'Failed to load events.'
   }
 }
+
+const isDelivered = (volume) => {
+  return volume ? 'Yes' : 'No'
+}
+
+const getSensorStatus = (status) => {
+  return status === true ? 'Active' : 'Inative'
+}
+
+const styleStatusBadge = (status) => {
+  if (status === true) {
+    return ['px-2 py-1 text-xs rounded-full bg-green-100 text-green-800'];
+  }
+  else if (status === false) {
+    return ['px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800'];
+  }
+  else {
+    return ['px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800'];
+  }
+};
 
 onMounted(async () => {
   await fetch()
@@ -62,24 +79,38 @@ onMounted(async () => {
       <div v-if="order" class="bg-white rounded-lg shadow-md p-6">
         <div class="border-b pb-4 mb-4">
           <h1 class="text-2xl font-bold text-gray-800 pb-4">Volumes</h1>
-          <table class="min-w-full">
-            <thead>
-            <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Volume</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package Type</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See sensors</th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="volume in order.volumes" :key="volume.idVolume">
-              <td class="px-6 py-4 whitespace-nowrap">{{ volume.idVolume }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ volume.tipoEmbalagem }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <NuxtLink :to="`/SGO/volumes/${volume.idVolume}`" class="text-blue-500 hover:text-blue-600">See sensors</NuxtLink>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+          <div v-for="volume in order.volumes" :key="volume.idVolume">
+
+              <div class="pb-6">
+                <div class="flex items-center justify-between py-2">
+                  <p class="text-lg font-semibold text-gray-800">ID {{ volume.idVolume }}</p>
+                  <p class="text-sm text-gray-600 ml-2 font-medium">Type: {{ volume.tipoEmbalagem }}</p>
+                  <p class="text-sm text-gray-600 ml-2 font-medium">Delivered: {{ isDelivered(volume) }}
+                  </p>
+                </div>
+                <table class="min-w-full">
+                  <thead>
+                  <tr class="bg-gray-100">
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Sensor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  </tr>
+                  </thead>
+                  <tbody class="bg-gray-50 divide-y divide-gray-200">
+                  <tr v-for="sensor in volume.sensores" :key="sensor.id">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span :class="styleStatusBadge(sensor.status)">
+                      {{ getSensorStatus(sensor.status) }}
+                      </span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+          </div>
         </div>
       </div>
 

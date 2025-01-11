@@ -6,7 +6,6 @@ const error = ref(null)
 const sensors = ref(null)
 const orders = ref(null)
 const token = ref(null)
-let status = null
 const sensorsSize = ref(null)
 
 async function fetch() {
@@ -51,6 +50,22 @@ onMounted(async () => {
   sensorsSize.value = sensors.value.length
 })
 
+const getSensorStatus = (status) => {
+  return status === true ? 'Active' : 'Inative'
+}
+
+const styleStatusBadge = (status) => {
+  if (status === true || status === 'Entregue') {
+    return ['px-2 py-1 text-xs rounded-full bg-green-100 text-green-800'];
+  }
+  else if (status === false || status === 'Pendente') {
+    return ['px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800'];
+  }
+  else {
+    return ['px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800'];
+  }
+};
+
 </script>
 
 <template>
@@ -68,7 +83,8 @@ onMounted(async () => {
           <table class="min-w-full">
             <thead>
             <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer ID
+              </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See order</th>
@@ -79,12 +95,7 @@ onMounted(async () => {
               <td class="px-6 py-4 whitespace-nowrap">{{ order.encomendaId }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ order.customerId }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                                    <span :class="{
-                                        'px-2 py-1 text-xs rounded-full': true,
-                                        'bg-green-100 text-green-800': order.estado === 'Entregue',
-                                        'bg-yellow-100 text-yellow-800': order.estado === 'Pendente',
-                                        'bg-blue-100 text-blue-800': order.estado === 'Despachado'
-                                    }">
+                                    <span :class="styleStatusBadge(order.estado)">
                                         {{ order.estado }}
                                     </span>
               </td>
@@ -120,14 +131,9 @@ onMounted(async () => {
               <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                                      <span v-if="sensor.status === true ? status = 'Active' : status = 'Inative'"
-                                            :class="{
-                                          'px-2 py-1 text-xs rounded-full': true,
-                                          'bg-green-100 text-green-800': sensor.status === true,
-                                          'bg-yellow-100 text-yellow-800': sensor.status === false
-                                      }">
-                                          {{ status }}
-                                      </span>
+                  <span :class="styleStatusBadge(sensor.status)">
+                      {{ getSensorStatus(sensor.status) }}
+                  </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">

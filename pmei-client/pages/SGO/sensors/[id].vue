@@ -1,16 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import {onMounted, ref} from 'vue'
 
 const route = useRoute()
-const error = ref(null)
+const error = ref('')
 const token = ref(null)
 const sensor = ref(null)
 
 async function fetchEvents() {
-  error.value = null;
+
   try {
     // First get the authentication token
-    const authResponse = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
+    token.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,16 +21,13 @@ async function fetchEvents() {
         password: '123'
       })
     })
-    token.value = authResponse
 
     // fetch the sensor
-    const response = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensor/${route.params.id}`, {
+    sensor.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensor/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     })
-
-    sensor.value = response
   } catch (err) {
     console.error('Error fetching events:', err)
     error.value = 'Failed to load events.'
@@ -41,6 +38,22 @@ onMounted(async () => {
   await fetchEvents()
   console.log(sensor.value)
 })
+
+const getSensorStatus = (status) => {
+  return status === true ? 'Active' : 'Inactive'
+}
+
+const styleStatusBadge = (status) => {
+  if (status === true) {
+    return ['px-2 py-1 text-xs rounded-full bg-green-100 text-green-800'];
+  }
+  else if (status === false) {
+    return ['px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800'];
+  }
+  else {
+    return ['px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800'];
+  }
+};
 
 //change timestamp format
 const formatDate = (timestamp) => {
@@ -72,12 +85,8 @@ const formatDate = (timestamp) => {
             <p class="text-l font-bold">Type</p>
             <span class="text-sm">{{ sensor.tipo }}</span>
             <p class="text-l font-bold">Status</p>
-            <span v-if="sensor.status === 'True' ? sensor.status = 'Active' : sensor.status = 'Inative'" :class="{
-                                          'px-2 py-1 text-xs rounded-full': true,
-                                          'bg-green-100 text-green-800': sensor.status === 'Active',
-                                          'bg-yellow-100 text-yellow-800': sensor.status === 'Inative'
-            }">
-                {{ sensor.status }}
+            <span :class="styleStatusBadge(sensor.status)">
+                {{ getSensorStatus(sensor.status) }}
             </span>
           </div>
       </div>
