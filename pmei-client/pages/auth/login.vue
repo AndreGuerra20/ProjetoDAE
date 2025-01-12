@@ -66,7 +66,17 @@ async function login() {
           })
           if (response.status == 200) {
             authStore.login(token.value, response._data)
-            router.push('/')
+            // if role is cliente
+            if (authStore.role === 'Cliente') {
+              router.push('/SAC')
+            } else if (authStore.role === 'Gestor') {
+              router.push('/SGO')
+            } else if (authStore.role === 'Logistica') {
+              router.push('/SDL')
+            } else {
+              router.push('/')
+            }
+
           }
         }
       })
