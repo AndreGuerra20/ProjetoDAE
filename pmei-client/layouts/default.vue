@@ -53,26 +53,4 @@ function logout() {
   location.reload()
 }
 
-const btnSGO = ref(false)
-const btnSDL = ref(false)
-const btnSAC = ref(false)
-
-onMounted(() => {
-  if (authStore.user) {
-    if (authStore.role === 'Gestor') {
-      btnSGO.value = false
-      btnSAC.value = true
-      btnSDL.value = true
-    } else if (authStore.role === 'Logistica') {
-      btnSGO.value = true
-      btnSDL.value = false
-      btnSAC.value = true
-    } else if (authStore.role === 'Cliente') {
-      btnSGO.value = true
-      btnSAC.value = false
-      btnSDL.value = true
-    }
-  }
-
-})
 </script>
