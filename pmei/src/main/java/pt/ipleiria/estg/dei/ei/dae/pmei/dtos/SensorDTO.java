@@ -11,12 +11,12 @@ public class SensorDTO implements Serializable {
     private long id;
     private String tipo;
     private Boolean status;
-    private List<EventoDTO> eventos = new ArrayList<>();
+    private List<SensorEventoDTO> eventos = new ArrayList<>();
 
     public SensorDTO() {
     }
 
-    public SensorDTO(long id, String tipo, Boolean status, List<EventoDTO> eventos) {
+    public SensorDTO(long id, String tipo, Boolean status, List<SensorEventoDTO> eventos) {
         this.id = id;
         this.tipo = tipo;
         this.status = status;
@@ -47,16 +47,16 @@ public class SensorDTO implements Serializable {
         this.status = status;
     }
 
-    public List<EventoDTO> getEventos() {
+    public List<SensorEventoDTO> getEventos() {
         return eventos;
     }
 
-    public void setEventos(List<EventoDTO> eventos) {
+    public void setEventos(List<SensorEventoDTO> eventos) {
         this.eventos = eventos;
     }
 
     public static SensorDTO from(Sensor sensor) {
-        return new SensorDTO(sensor.getId(), sensor.getTipo(), sensor.getStatus(), sensor.getEventos().stream().map(EventoDTO::from).collect(Collectors.toList()));
+        return new SensorDTO(sensor.getId(), sensor.getTipo(), sensor.getStatus(), sensor.getEventos().stream().map(SensorEventoDTO::from).collect(Collectors.toList()));
     }
 
     public static List<SensorDTO> from(List<Sensor> sensores) {
