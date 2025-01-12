@@ -14,6 +14,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -53,11 +54,25 @@ public class ClienteBean {
         return cliente;
     }
 
-    public List<Cliente> findAll() {
-        List<Cliente> clientes = em.createNamedQuery("getAllClientes", Cliente.class).getResultList();
-        for (Cliente cliente : clientes) {
-            Hibernate.initialize(cliente.getEncomendas());
+    public Cliente find(long id) {
+        List<Cliente> clientes = findAll();
+        for (Cliente c : clientes) {
+            if (c.getId() == id) {
+                return c;
+            }
         }
-        return clientes;
+        return null;
+    }
+
+    public List<Cliente> findAll() {
+        List<User> clientes = em.createNamedQuery("getAllUsers", User.class).getResultList();
+        List<Cliente> clientesList = new ArrayList<>();
+        for (User cliente : clientes) {
+            if(cliente instanceof Cliente){
+                Hibernate.initialize(((Cliente) cliente).getEncomendas());
+                clientesList.add((Cliente) cliente);
+            }
+        }
+        return clientesList;
     }
 }

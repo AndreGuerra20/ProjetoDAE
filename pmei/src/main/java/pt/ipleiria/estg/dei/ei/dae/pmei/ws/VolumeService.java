@@ -3,8 +3,10 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ProdutoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.VolumeBean;
@@ -28,6 +30,9 @@ public class VolumeService {
     @EJB
     private ProdutoBean produtoBean;
 
+    @Context
+    private SecurityContext securityContext;
+
     @GET
     @Path("/")
     public List<VolumeDTO> getAllVolumes() {
@@ -44,6 +49,11 @@ public class VolumeService {
         Volume withBoth = volumeBean.findWithBoth(id);
         if (withBoth == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(securityContext.isUserInRole("Cliente")){
+            if (!withBoth.getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
         }
         return Response.ok(VolumeDTO.from(withBoth)).build();
     }

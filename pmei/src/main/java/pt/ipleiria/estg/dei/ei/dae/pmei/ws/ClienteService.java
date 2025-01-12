@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.ClienteDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ClienteBean;
-import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 
 import java.util.List;

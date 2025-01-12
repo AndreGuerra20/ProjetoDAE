@@ -108,8 +108,8 @@ const btnMapText = (marcadores, volume) => {
 const map = ref(null);
 
 onMounted(async () => {
-  authStore.loadUser()
-  token.value = authStore.token
+  // authStore.loadUser()
+  // token.value = authStore.token
   await fetchEncomendaDetails()
 })
 
@@ -202,7 +202,7 @@ onBeforeMount(() => {
                       :zoom="calculateZoom(marcadores.find(marcador => marcador.volumeId === volume.idVolume).eventos)"
                       :max-zoom="18"
                       :center="calculateCenter(marcadores.find(marcador => marcador.volumeId === volume.idVolume).eventos)"
-                      :use-global-leaflet="true">
+                      :use-global-leaflet="false">
                       <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
                         layer-type="base" name="OpenStreetMap" />

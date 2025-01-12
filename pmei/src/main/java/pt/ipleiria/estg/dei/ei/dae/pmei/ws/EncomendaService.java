@@ -3,9 +3,12 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ClienteBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EncomendaBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.ProdutoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
@@ -28,6 +31,12 @@ public class EncomendaService {
     @EJB
     private ProdutoBean produtoBean;
 
+    @EJB
+    private ClienteBean clienteBean;
+
+    @Context
+    private SecurityContext securityContext;
+
     @GET
     @Path("/")
     public List<EncomendaDTO> getAllEncomendas() {
@@ -43,7 +52,15 @@ public class EncomendaService {
     public Response getEncomenda(@PathParam("id") long id) {
         var encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {
-            return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(securityContext.isUserInRole("Cliente")){
+            var cliente = clienteBean.find(encomenda.getCliente().getId());
+            if (cliente == null || !cliente.getUsername().equals(securityContext.getUserPrincipal().getName())) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+        } else if(securityContext.isUserInRole("Logistica")){
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
         return Response.ok(EncomendaDTO.from(encomenda)).build();
     }
@@ -71,12 +88,17 @@ public class EncomendaService {
      */
     @GET
     @Path("{id}/sensores")
-    @RolesAllowed({"Gestor"})
+    @RolesAllowed({"Gestor","Cliente"})
     public Response getSensores(@PathParam("id") long id) {
         List<SensorSemEventosDTO> sensores = new ArrayList<>();
         Encomenda encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(securityContext.isUserInRole("Cliente")){
+            if (!encomenda.getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
         }
         for (Volume volume : encomenda.getVolumes()) {
             for (Sensor sensor : volume.getSensores()) {

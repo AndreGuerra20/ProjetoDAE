@@ -3,8 +3,10 @@ package pt.ipleiria.estg.dei.ei.dae.pmei.ws;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EventoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
@@ -14,20 +16,21 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import pt.ipleiria.estg.dei.ei.dae.pmei.util.EventoComparator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Path("sensores")
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 @Authenticated
-@RolesAllowed({"Logistica","Gestor"})
 public class SensorService {
     @EJB
     private SensorBean sensorBean;
 
     @EJB
     private EventoBean eventoBean;
+
+    @Context
+    private SecurityContext securityContext;
 
     /**
      * EP 02 - Um gestor visualiza todos os sensores
@@ -51,6 +54,11 @@ public class SensorService {
         Sensor withEventos = sensorBean.findWithEventos(id);
         if (withEventos == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(securityContext.isUserInRole("Cliente")){
+            if (!withEventos.getVolume().getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
         }
         return Response.ok(SensorDTO.from(withEventos)).build();
     }
@@ -116,7 +124,16 @@ public class SensorService {
     @GET
     @Path("{id}/eventos")
     public List<SensorEventoDTO> getSensorEventos(@PathParam("id") long id) {
-        List<SensorEventoDTO> listaEventos = SensorEventoDTO.from(sensorBean.findWithEventos(id).getEventos());
+        Sensor sensor = sensorBean.findWithEventos(id);
+        if (sensor == null) {
+            return null;
+        }
+        if(securityContext.isUserInRole("Cliente")){
+            if (!sensor.getVolume().getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
+                return null;
+            }
+        }
+        List<SensorEventoDTO> listaEventos = SensorEventoDTO.from(sensor.getEventos());
         if(listaEventos.isEmpty()){
             return null;
         }
@@ -129,7 +146,7 @@ public class SensorService {
      * @param id ID do sensor
      * @return Dados da última leitura
      */
-    @RolesAllowed({"Gestor"})
+    @RolesAllowed({"Gestor","Cliente"})
     @GET
     @Path("{id}/eventoRecente")
     public Response getSensorEventoRecente(@PathParam("id") long id) {
@@ -137,9 +154,13 @@ public class SensorService {
         if(sensor == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        if(securityContext.isUserInRole("Cliente")){
+            if (!sensor.getVolume().getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+        }
         List<Evento> eventos = sensor.getEventos();
         if (eventos.isEmpty()) {
-            // return Response containing the message "No events registered"
             return Response.status(Response.Status.NO_CONTENT).build();
         }
         eventos.sort(new EventoComparator());
@@ -149,6 +170,7 @@ public class SensorService {
     /**
      * EP 05 - O gestor pede informação da última leitura registada por todos os sensores do tipo escolhido ativos
      *
+     * @param tiposensor Tipo de sensor
      * @return Dados dos últimos eventos para os sensores do tipo escolhido
      */
     @RolesAllowed({"Gestor"})
@@ -172,10 +194,12 @@ public class SensorService {
     /**
      * EP 04 - Criar uma leitura nova de um sensor
      *
+     * @param SensorId ID do sensor
      * @return Dados do sensor, com a leitura criada
      */
     @POST
     @Path("{id}")
+    @RolesAllowed({"Gestor"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postSensorEvento(@PathParam("id") long SensorId, EventoDTOValor eventoDTO) {
         Sensor sensor = sensorBean.findWithEventos(SensorId);
