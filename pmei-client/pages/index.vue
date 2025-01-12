@@ -1,7 +1,20 @@
 <script setup>
+import { useAuthStore } from '~/store/auth-store';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const logout = () => {
+    authStore.logout();
+    router.push('/login');
+};
+
+const user = authStore.user;
+const isGestor = user?.role === 'Gestor';
+const isLogistica = user?.role === 'Logistica';
+const isCliente = user?.role === 'Cliente';
 </script>
-
-
 <template>
     <div class="min-h-screen bg-gray-100">
         <!-- Main Content -->

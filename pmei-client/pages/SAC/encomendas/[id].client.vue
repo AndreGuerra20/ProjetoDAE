@@ -112,6 +112,19 @@ onMounted(async () => {
   token.value = authStore.token
   await fetchEncomendaDetails()
 })
+
+onBeforeMount(() => {
+  if (!authStore.token) {
+    authStore.loadUser()
+  }
+  if(!authStore.user) {
+    router.push('/auth/login')
+  }
+  if(authStore.role !== 'Cliente') {
+    router.push('/auth/login')
+  }
+  token.value = authStore.token
+})
 </script>
 
 <template>

@@ -9,7 +9,7 @@ const config = useRuntimeConfig()
 const api = config.public.API_URL
 const authStore = useAuthStore()
 
-const {token, user} = storeToRefs(authStore)
+const {token, user, role} = storeToRefs(authStore)
 const error = ref(null)
 
 const messages = ref([])
@@ -64,6 +64,18 @@ onMounted(async () => {
   await fetchEncomendas()
 })
 
+onBeforeMount(() => {
+  if (!authStore.token) {
+    authStore.loadUser()
+  }
+  if(!authStore.user) {
+    router.push('/auth/login')
+  }
+  if(authStore.role !== 'Logistica') {
+    router.push('/auth/login')
+  }
+  token.value = authStore.token
+})
 </script>
 
 <template>

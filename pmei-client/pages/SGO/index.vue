@@ -1,7 +1,12 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router';
 
+import { useAuthStore } from '~/store/auth-store';
+
+const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 const error = ref(null)
 const sensors = ref(null)
 const orders = ref(null)
@@ -11,20 +16,6 @@ const sensorsSize = ref(null)
 async function fetch() {
   error.value = null;
   try {
-    // First get the authentication token
-    const authResponse = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        username: 'henri',
-        password: '123'
-      })
-    })
-    token.value = authResponse
-
     // Then fetch the sensors
     sensors.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores`, {
       headers: {
@@ -69,6 +60,20 @@ const styleStatusBadge = (status) => {
   }
 };
 
+
+onBeforeMount(() => {
+  if (!authStore.token) {
+    authStore.loadUser()
+  }
+  if(!authStore.user) {
+    router.push('/auth/login')
+  }
+  if(authStore.role !== 'Gestor') {
+    router.push('/auth/login')
+  }
+  token.value = authStore.token
+})
+
 </script>
 
 <template>
@@ -85,29 +90,32 @@ const styleStatusBadge = (status) => {
         <div class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
-            <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID da encomenda
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID do cliente</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Detalhes</th>
-            </tr>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID da
+                  encomenda
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID do cliente
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Detalhes
+                </th>
+              </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="order in orders" :key="order.id">
-              <td class="px-6 py-4 whitespace-nowrap">{{ order.encomendaId }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ order.customerId }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                                    <span :class="styleStatusBadge(order.estado)">
-                                        {{ order.estado }}
-                                    </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <NuxtLink :to="`/SGO/orders/${order.encomendaId}`" class="text-blue-500 hover:text-blue-600">
-                  +
-                </NuxtLink>
-              </td>
-            </tr>
+              <tr v-for="order in orders" :key="order.id">
+                <td class="px-6 py-4 whitespace-nowrap">{{ order.encomendaId }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ order.customerId }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="styleStatusBadge(order.estado)">
+                    {{ order.estado }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <NuxtLink :to="`/SGO/orders/${order.encomendaId}`" class="text-blue-500 hover:text-blue-600">
+                    +
+                  </NuxtLink>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -122,57 +130,36 @@ const styleStatusBadge = (status) => {
         <div class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
-            <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Eventos</th>
-            </tr>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Eventos
+                </th>
+              </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="sensor in sensors" :key="sensor.id">
-              <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <tr v-for="sensor in sensors" :key="sensor.id">
+                <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="styleStatusBadge(sensor.status)">
-                      {{ getSensorStatus(sensor.status) }}
+                    {{ getSensorStatus(sensor.status) }}
                   </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">
-                  +
-                </NuxtLink>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="4" class="px-6 py-4 whitespace-nowrap"># de sensores: {{ sensorsSize }}</td>
-            </tr>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">
+                    +
+                  </NuxtLink>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" class="px-6 py-4 whitespace-nowrap"># de sensores: {{ sensorsSize }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
-
-
-      <!-- TODO: Performance Metrics -->
-      <!-- <div class="bg-white rounded-lg shadow-md p-4">
-        <h2 class="text-xl font-semibold mb-4">Performance Metrics</h2>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h3 class="font-semibold mb-2">Order Processing Time</h3>
-            <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
-              <div class="bg-blue-500 h-full w-3/4"></div>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">Average: 2.5 hours</p>
-          </div>
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h3 class="font-semibold mb-2">Customer Satisfaction</h3>
-            <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
-              <div class="bg-green-500 h-full w-4/5"></div>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">Rating: 4.5/5</p>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>

@@ -58,6 +58,19 @@ onMounted(async () => {
   await fetch()
   console.log(order.value)
 })
+
+onBeforeMount(() => {
+  if (!authStore.token) {
+    authStore.loadUser()
+  }
+  if(!authStore.user) {
+    router.push('/auth/login')
+  }
+  if(authStore.role !== 'Gestor') {
+    router.push('/auth/login')
+  }
+  token.value = authStore.token
+})
 </script>
 <template>
   <div class="min-h-screen bg-gray-100 p-4">
