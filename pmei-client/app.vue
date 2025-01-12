@@ -1,11 +1,15 @@
 <template>
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <script setup>
-    import { useAuthStore } from "~/store/auth-store.js";
-    const authStore = useAuthStore();
-    authStore.loadUser();
+import { useAuthStore } from "~/store/auth-store.js";
+const authStore = useAuthStore();
+authStore.loadUser();
+
+useHead({
+  titleTemplate: (title) => `PMEI`
+})
 </script>

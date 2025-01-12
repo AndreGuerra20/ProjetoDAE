@@ -30,20 +30,20 @@ const deliveries = [
 <template>
     <div class="min-h-screen bg-gray-100 p-4">
         <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Logistics Dashboard</h1>
+            <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Logística</h1>
 
             <!-- Quick Actions -->
             <div class="grid md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white rounded-lg shadow-md p-4">
-                    <h3 class="font-semibold mb-2">Active Deliveries</h3>
+                    <h3 class="font-semibold mb-2">Entregas Ativas</h3>
                     <p class="text-3xl font-bold text-blue-600">24</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-md p-4">
-                    <h3 class="font-semibold mb-2">Available Drivers</h3>
+                    <h3 class="font-semibold mb-2">Entregadores Disponíveis</h3>
                     <p class="text-3xl font-bold text-green-600">12</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-md p-4">
-                    <h3 class="font-semibold mb-2">Pending Packages</h3>
+                    <h3 class="font-semibold mb-2">Encomendas Pendentes</h3>
                     <p class="text-3xl font-bold text-yellow-600">45</p>
                 </div>
             </div>
@@ -51,9 +51,9 @@ const deliveries = [
             <!-- Delivery Management -->
             <div class="bg-white rounded-lg shadow-md p-4 mb-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Current Deliveries</h2>
+                    <h2 class="text-xl font-semibold">Entregas Atuais</h2>
                     <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                        New Delivery
+                        Nova Encomenda
                     </button>
                 </div>
 
@@ -62,10 +62,10 @@ const deliveries = [
                         <thead>
                             <tr class="bg-gray-50">
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Packages</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rota</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entregador</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Encomendas</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
                             </tr>
                         </thead>
@@ -94,9 +94,9 @@ const deliveries = [
 
             <!-- Route Map Placeholder -->
             <div class="bg-white rounded-lg shadow-md p-4">
-                <h2 class="text-xl font-semibold mb-4">Route Map</h2>
+                <h2 class="text-xl font-semibold mb-4">Mapa das Rotas</h2>
                 <div class="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
-                    <span class="text-gray-500">Map View</span>
+                    <span class="text-gray-500">Inserir Mapa Aqui pls :D</span>
                 </div>
             </div>
         </div>

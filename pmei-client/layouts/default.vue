@@ -13,25 +13,25 @@
           <NuxtLink
               to="/SGO"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
-            Management
+            Gestão
           </NuxtLink>
           <NuxtLink
               to="/SDL"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
-            Logistics
+            Logística
           </NuxtLink>
           <NuxtLink
               to="/SAC"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
-            Customer
+            Cliente
           </NuxtLink>
           <NuxtLink
               v-if="!authStore.isAuthenticated()"
               to="/auth/login"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
-            Login
+            Entrar
           </NuxtLink>
-          <a href="#" v-if="authStore.isAuthenticated()" class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition" @click.prevent="logout">Logout</a>
+          <a href="#" v-if="authStore.isAuthenticated()" class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition" @click.prevent="logout">Sair</a>
         </div>
       </div>
     </div>

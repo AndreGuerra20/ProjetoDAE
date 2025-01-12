@@ -30,7 +30,7 @@ async function fetchEvents() {
     })
   } catch (err) {
     console.error('Error fetching events:', err)
-    error.value = 'Failed to load events.'
+    error.value = 'Não foi possível carregar os eventos, tente novamente mais tarde.'
   }
 }
 
@@ -40,7 +40,7 @@ onMounted(async () => {
 })
 
 const getSensorStatus = (status) => {
-  return status === true ? 'Active' : 'Inactive'
+  return status === true ? 'Ativo' : 'Inativo'
 }
 
 const styleStatusBadge = (status) => {
@@ -75,7 +75,7 @@ const formatDate = (timestamp) => {
 
       <div class="mb-6">
         <NuxtLink to="/SGO" class="text-blue-500 hover:text-blue-600 flex items-center">
-          <span class="mr-2">←</span> Back to Management Dashboard
+          <span class="mr-2">←</span> Voltar à área de gestão
         </NuxtLink>
       </div>
 
@@ -88,9 +88,9 @@ const formatDate = (timestamp) => {
       <!-- Sensor Details -->
       <div v-if="sensor" class="bg-white rounded-lg shadow-md p-4 mb-6">
           <div class="flex items-center justify-between">
-            <p class="text-l font-bold">Type</p>
+            <p class="text-l font-bold">Tipo</p>
             <span class="text-sm">{{ sensor.tipo }}</span>
-            <p class="text-l font-bold">Status</p>
+            <p class="text-l font-bold">Estado</p>
             <span :class="styleStatusBadge(sensor.status)">
                 {{ getSensorStatus(sensor.status) }}
             </span>
@@ -100,11 +100,11 @@ const formatDate = (timestamp) => {
       <!-- Events -->
       <div v-if="sensor" class="bg-white rounded-lg shadow-md p-6">
         <div class="border-b pb-4 mb-4">
-          <h1 class="text-2xl font-bold text-gray-800 pb-4">Events</h1>
+          <h1 class="text-2xl font-bold text-gray-800 pb-4">Eventos</h1>
           <table class="min-w-full">
             <thead>
             <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
             </tr>
             </thead>

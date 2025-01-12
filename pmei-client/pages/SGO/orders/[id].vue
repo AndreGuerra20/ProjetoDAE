@@ -29,17 +29,17 @@ async function fetch() {
       }
     })
   } catch (err) {
-    console.error('Error fetching events:', err)
-    error.value = 'Failed to load events.'
+    console.error('Error fetching encomenda:', err)
+    error.value = 'Não foi possível carregar a encomenda, tente novamente mais tarde.'
   }
 }
 
 const isDelivered = (volume) => {
-  return volume === true ? 'Yes' : 'No'
+  return volume === true ? 'Sim' : 'Não'
 }
 
 const getSensorStatus = (status) => {
-  return status === true ? 'Active' : 'Inative'
+  return status === true ? 'Ativo' : 'Inativo'
 }
 
 const styleStatusBadge = (status) => {
@@ -65,7 +65,7 @@ onMounted(async () => {
 
       <div class="mb-6">
         <NuxtLink to="/SGO" class="text-blue-500 hover:text-blue-600 flex items-center">
-          <span class="mr-2">←</span> Back to Management Dashboard
+          <span class="mr-2">←</span> Voltar para a área de gestão
         </NuxtLink>
       </div>
 
@@ -73,7 +73,7 @@ onMounted(async () => {
         {{ error }}
       </div>
 
-      <h1 v-if="order" class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Order #{{ order.encomendaId }}</h1>
+      <h1 v-if="order" class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Encomenda #{{ order.encomendaId }}</h1>
 
       <!-- Sensores -->
       <div v-if="order" class="bg-white rounded-lg shadow-md p-6">
@@ -84,16 +84,16 @@ onMounted(async () => {
               <div class="pb-6">
                 <div class="flex items-center justify-between py-2">
                   <p class="text-lg font-semibold text-gray-800">ID {{ volume.idVolume }}</p>
-                  <p class="text-sm text-gray-600 ml-2 font-medium">Type: {{ volume.tipoEmbalagem }}</p>
-                  <p class="text-sm text-gray-600 ml-2 font-medium">Delivered: {{ isDelivered(volume) }}</p>
+                  <p class="text-sm text-gray-600 ml-2 font-medium">Tipo da Embalagem: {{ volume.tipoEmbalagem }}</p>
+                  <p class="text-sm text-gray-600 ml-2 font-medium">Entregue: {{ isDelivered(volume) }}</p>
                 </div>
                 <table class="min-w-full">
                   <thead>
                   <tr class="bg-gray-100">
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Sensor</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See Sensors</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Sensores</th>
                   </tr>
                   </thead>
                   <tbody class="bg-gray-50 divide-y divide-gray-200">
@@ -106,7 +106,7 @@ onMounted(async () => {
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">View Sensor</NuxtLink>
+                      <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">+</NuxtLink>
                     </td>
                   </tr>
                   </tbody>

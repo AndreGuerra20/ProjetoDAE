@@ -43,7 +43,7 @@ async function fetch() {
 
   } catch (err) {
     console.error('Error fetching encomenda details:', err)
-    error.value = 'Failed to load encomenda details.'
+    error.value = 'Não foi possível carregar os detalhes da encomenda, tente novamente mais tarde.'
   }
 }
 
@@ -54,7 +54,7 @@ onMounted(async () => {
 })
 
 const getSensorStatus = (status) => {
-  return status === true ? 'Active' : 'Inative'
+  return status === true ? 'Ativo' : 'Inativo';
 }
 
 const styleStatusBadge = (status) => {
@@ -74,23 +74,23 @@ const styleStatusBadge = (status) => {
 <template>
   <div class="min-h-screen bg-gray-100 p-4">
     <div class="max-w-7xl mx-auto">
-      <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Management Dashboard</h1>
+      <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Gestão</h1>
 
       <!-- Order Management -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Recent Orders</h2>
+          <h2 class="text-xl font-semibold">Encomendas Recentes</h2>
         </div>
 
         <div class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
             <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer ID
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID da encomenda
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See order</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID do cliente</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Detalhes</th>
             </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -104,7 +104,7 @@ const styleStatusBadge = (status) => {
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <NuxtLink :to="`/SGO/orders/${order.encomendaId}`" class="text-blue-500 hover:text-blue-600">
-                  View Order
+                  +
                 </NuxtLink>
               </td>
             </tr>
@@ -116,7 +116,7 @@ const styleStatusBadge = (status) => {
       <!-- Sensors -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">All Active Sensors</h2>
+          <h2 class="text-xl font-semibold">Todos Sensores Ativos</h2>
         </div>
 
         <div class="overflow-x-auto">
@@ -124,9 +124,9 @@ const styleStatusBadge = (status) => {
             <thead>
             <tr class="bg-gray-50">
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">See events</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Eventos</th>
             </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -140,12 +140,12 @@ const styleStatusBadge = (status) => {
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <NuxtLink :to="`/SGO/sensors/${sensor.id}`" class="text-blue-500 hover:text-blue-600">
-                  View Events
+                  +
                 </NuxtLink>
               </td>
             </tr>
             <tr>
-              <td colspan="4" class="px-6 py-4 whitespace-nowrap"># of sensors: {{ sensorsSize }}</td>
+              <td colspan="4" class="px-6 py-4 whitespace-nowrap"># de sensores: {{ sensorsSize }}</td>
             </tr>
             </tbody>
           </table>
@@ -153,8 +153,8 @@ const styleStatusBadge = (status) => {
       </div>
 
 
-      <!-- Performance Metrics -->
-      <div class="bg-white rounded-lg shadow-md p-4">
+      <!-- TODO: Performance Metrics -->
+      <!-- <div class="bg-white rounded-lg shadow-md p-4">
         <h2 class="text-xl font-semibold mb-4">Performance Metrics</h2>
         <div class="grid md:grid-cols-2 gap-4">
           <div class="bg-gray-50 p-4 rounded-lg">
@@ -172,7 +172,7 @@ const styleStatusBadge = (status) => {
             <p class="text-sm text-gray-600 mt-2">Rating: 4.5/5</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

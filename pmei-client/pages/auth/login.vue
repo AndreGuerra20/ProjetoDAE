@@ -1,23 +1,3 @@
-<template>
-  <div class="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-100 overflow-hidden-y">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-      <h1 class="text-3xl font-bold mb-6 text-center">Login</h1>
-      <div class="mb-4">
-        <label class="block text-gray-700">Username:</label>
-        <input v-model="loginFormData.username" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="text">
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-700">Password:</label>
-        <input v-model="loginFormData.password" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="password">
-      </div>
-      <div class="flex justify-between items-center">
-        <button @click="login" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">LOGIN</button>
-        <button @click="reset" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">CLEAN</button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import {useAuthStore} from "~/store/auth-store.js"
 import { useRouter } from 'vue-router';
@@ -96,3 +76,22 @@ async function login() {
   }
 }
 </script>
+<template>
+  <div class="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-100 overflow-hidden-y">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <h1 class="text-3xl font-bold mb-6 text-center">Entrar</h1>
+      <div class="mb-4">
+        <label class="block text-gray-700" for="username">Username:</label>
+        <input id="username" name="username" v-model="loginFormData.username" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="text">
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700" for="password">Senha:</label>
+        <input id="password" name="password" v-model="loginFormData.password" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="password">
+      </div>
+      <div class="flex justify-between items-center">
+        <button @click="login" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Entrar</button>
+        <button @click="reset" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">Limpar</button>
+      </div>
+    </div>
+  </div>
+</template>
