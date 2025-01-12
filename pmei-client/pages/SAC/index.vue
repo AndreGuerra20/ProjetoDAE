@@ -16,7 +16,7 @@ const encomendas = ref([])
 
 async function fetchEncomendas() {
     try {
-        await $fetch(`${api}/encomenda`, {
+        await $fetch(`${api}/encomendas`, {
             headers: {
                 Authorization: `Bearer ${token.value}`
             },

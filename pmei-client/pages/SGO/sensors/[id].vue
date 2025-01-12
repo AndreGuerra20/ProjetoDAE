@@ -23,7 +23,7 @@ async function fetchEvents() {
     })
 
     // fetch the sensor
-    sensor.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensor/${route.params.id}`, {
+    sensor.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }

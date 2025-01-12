@@ -10,7 +10,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 
 import java.util.List;
 
-@Path("evento")
+@Path("eventos")
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 public class EventoService {

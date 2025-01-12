@@ -1,30 +1,69 @@
 <script setup>
-const deliveries = [
-    {
-        id: 'DEL001',
-        route: 'Route A',
-        driver: 'John Smith',
-        status: 'In Progress',
-        packages: 5,
-        eta: '2:30 PM'
-    },
-    {
-        id: 'DEL002',
-        route: 'Route B',
-        driver: 'Maria Garcia',
-        status: 'Completed',
-        packages: 8,
-        eta: '4:00 PM'
-    },
-    {
-        id: 'DEL003',
-        route: 'Route C',
-        driver: 'David Wilson',
-        status: 'Pending',
-        packages: 3,
-        eta: '5:15 PM'
-    }
+import { ref,onMounted } from 'vue'
+
+import {useAuthStore} from "~/store/auth-store.js"
+import { useRouter } from 'vue-router';
+const router = useRouter()
+
+const config = useRuntimeConfig()
+const api = config.public.API_URL
+const authStore = useAuthStore()
+
+const {token, user} = storeToRefs(authStore)
+const error = ref(null)
+
+const messages = ref([])
+const encomendas = ref([])
+
+encomendas.value = [
+  {
+    id: 'DEL001',
+    status: 'Pending',
+    volumes: 1
+  },
+  {
+    id: 'DEL002',
+    status: 'Pending',
+    volumes: 2
+  },
+  {
+    id: 'DEL003',
+    status: 'Pending',
+    volumes: 3
+  }
 ]
+
+async function fetchEncomendas() {
+  try {
+    await $fetch(`${api}/encomendas`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      onResponse({ request, response, options }) {
+        messages.value.push({
+          method: options.method,
+          request: request,
+          status: response.status,
+          statusText: response.statusText,
+          payload: response._data
+        })
+        if(response.status == 200) {
+          //encomendas.value = response._data
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching encomendas:', err);
+    error.value = 'Não foi possível carregar as encomendas, por favor tente novamente.';
+  }
+}
+
+onMounted(async () => {
+  authStore.loadUser()
+  token.value = authStore.token
+  await fetchEncomendas()
+})
+
 </script>
 
 <template>
@@ -62,18 +101,14 @@ const deliveries = [
                         <thead>
                             <tr class="bg-gray-50">
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rota</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entregador</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Encomendas</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumes</th>
+
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="delivery in deliveries" :key="delivery.id">
+                            <tr v-for="delivery in encomendas" :key="delivery.id">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ delivery.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.route }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.driver }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span :class="{
                                         'px-2 py-1 text-xs rounded-full': true,
@@ -84,8 +119,7 @@ const deliveries = [
                                         {{ delivery.status }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.packages }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.eta }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.volumes }}</td>
                             </tr>
                         </tbody>
                     </table>

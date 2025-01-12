@@ -17,7 +17,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("volume")
+@Path("volumes")
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 @Authenticated

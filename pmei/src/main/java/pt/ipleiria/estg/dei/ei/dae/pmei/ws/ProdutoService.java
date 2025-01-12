@@ -10,7 +10,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Produto;
 
 import java.util.List;
 
-@Path("produto")
+@Path("produtos")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ProdutoService {

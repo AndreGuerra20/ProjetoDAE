@@ -13,7 +13,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 
 import java.util.List;
 
-@Path("cliente")
+@Path("clientes")
 @Consumes({MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_JSON})
 @Authenticated

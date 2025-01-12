@@ -40,6 +40,8 @@ public class EncomendaBean {
             return encomenda;
         } catch (ConstraintViolationException e) {
             throw new MyConstraintViolationException(e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid estado");
         }
     }
 
@@ -55,37 +57,43 @@ public class EncomendaBean {
         if (encomenda != null) {
             throw new IllegalArgumentException("Encomenda with Id{" + encomendaId + "} already exists");
         }
-        encomenda = create(encomendaId,clienteId,estado,volumesRequest.stream().map(volDto -> {
-            Volume volume = em.find(Volume.class, volDto.getIdVolume());
-            if (volume != null) {
-                throw new IllegalArgumentException("Volume with Id{" + volDto.getIdVolume() + "} already exists");
-            }
-            Volume vol = new Volume(volDto.getIdVolume(),volDto.getTipoEmbalagem(),null);
-            //vol.setTipoEmbalagem(volDto.getTipoEmbalagem());
-            vol.setProdutos(volDto.getProdutos().stream().map(lpDto -> {
-                LinhaProduto produto = new LinhaProduto();
-                Produto p = produtoBean.find(lpDto.getId());
-                if (p == null) {
-                    throw new MyEntityNotFoundException("Produto with Id{" + lpDto.getId() + "} not found");
+        try {
+            encomenda = create(encomendaId,clienteId,estado,volumesRequest.stream().map(volDto -> {
+                Volume volume = em.find(Volume.class, volDto.getIdVolume());
+                if (volume != null) {
+                    throw new IllegalArgumentException("Volume with Id{" + volDto.getIdVolume() + "} already exists");
                 }
-                produto.setProduto(p);
-                produto.setQuantidade(lpDto.getQuantidade());
-                produto.setVolume(vol);
-                return produto;
+                Volume vol = new Volume(volDto.getIdVolume(),volDto.getTipoEmbalagem(),null);
+                //vol.setTipoEmbalagem(volDto.getTipoEmbalagem());
+                vol.setProdutos(volDto.getProdutos().stream().map(lpDto -> {
+                    LinhaProduto produto = new LinhaProduto();
+                    Produto p = produtoBean.find(lpDto.getId());
+                    if (p == null) {
+                        throw new MyEntityNotFoundException("Produto with Id{" + lpDto.getId() + "} not found");
+                    }
+                    produto.setProduto(p);
+                    produto.setQuantidade(lpDto.getQuantidade());
+                    produto.setVolume(vol);
+                    return produto;
+                }).collect(Collectors.toList()));
+                vol.setSensores(volDto.getSensores().stream().map(sensorDTO -> {
+                    Sensor s = em.find(Sensor.class, sensorDTO.getId());
+                    if (s != null) {
+                        throw new MyEntityExistsException("Sensor with Id{" + sensorDTO.getId() + "} already exists");
+                    }
+                    Sensor sensor = new Sensor(sensorDTO.getId(),sensorDTO.getTipo(),sensorDTO.getStatus(),vol);
+                    //sensor.setTipo(sensorDTO.getTipo());
+                    //sensor.setStatus(sensorDTO.getStatus());
+                    //sensor.setVolume(vol);
+                    return sensor;
+                }).collect(Collectors.toList()));
+                return vol;
             }).collect(Collectors.toList()));
-            vol.setSensores(volDto.getSensores().stream().map(sensorDTO -> {
-                Sensor s = em.find(Sensor.class, sensorDTO.getId());
-                if (s != null) {
-                    throw new MyEntityExistsException("Sensor with Id{" + sensorDTO.getId() + "} already exists");
-                }
-                Sensor sensor = new Sensor(sensorDTO.getId(),sensorDTO.getTipo(),sensorDTO.getStatus(),vol);
-                //sensor.setTipo(sensorDTO.getTipo());
-                //sensor.setStatus(sensorDTO.getStatus());
-                //sensor.setVolume(vol);
-                return sensor;
-            }).collect(Collectors.toList()));
-            return vol;
-        }).collect(Collectors.toList()));
+        } catch (ConstraintViolationException e) {
+            throw new MyConstraintViolationException(e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid estado should be one of {" + Encomenda.LISTA_ESTADOS + "}");
+        }
         em.persist(encomenda);
         for (Volume volume : encomenda.getVolumes()) {
             volume.setEncomenda(encomenda);

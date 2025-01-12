@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useAuthStore} from "~/store/auth-store.js";
 
 const route = useRoute()
 const error = ref(null)
+const authStore = useAuthStore()
 const encomenda = ref(null)
 const token = ref(null)
 const config = useRuntimeConfig()
@@ -13,21 +15,8 @@ const showMapText = ref('Show Map')
 async function fetchEncomendaDetails() {
   error.value = null;
   try {
-    // First get the authentication token
-    token.value = await $fetch(`${api}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        username: 'henri',
-        password: '123'
-      })
-    })
-
     // Then fetch the encomenda details
-    encomenda.value = await $fetch(`${api}/encomenda/${route.params.id}`, {
+    encomenda.value = await $fetch(`${api}/encomendas/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
@@ -42,7 +31,7 @@ async function fetchEncomendaDetails() {
         const json = JSON.parse(`{"volumeId": ${volume.idVolume}, "sensorid": ${sensor.id}}`)
         marcadores.value.push(json);
         try {
-          const response = await $fetch(`${api}/sensor/${sensor.id}/eventos`, {
+          const response = await $fetch(`${api}/sensores/${sensor.id}/eventos`, {
             headers: {
               Authorization: `Bearer ${token.value}`
             }
@@ -119,6 +108,8 @@ const btnMapText = (marcadores, volume) => {
 const map = ref(null);
 
 onMounted(async () => {
+  authStore.loadUser()
+  token.value = authStore.token
   await fetchEncomendaDetails()
 })
 </script>

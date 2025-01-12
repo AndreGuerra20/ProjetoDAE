@@ -23,7 +23,7 @@ async function fetch() {
     })
 
     // fetch the order
-    order.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomenda/${route.params.id}`, {
+    order.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }

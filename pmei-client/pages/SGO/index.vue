@@ -26,7 +26,7 @@ async function fetch() {
     token.value = authResponse
 
     // Then fetch the sensors
-    sensors.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensor`, {
+    sensors.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
@@ -35,7 +35,7 @@ async function fetch() {
     //filter sensors
     sensors.value = sensors.value.filter(sensor => sensor.status === true)
 
-    orders.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomenda`, {
+    orders.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }

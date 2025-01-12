@@ -14,6 +14,8 @@ public class Encomenda {
     @Id
     private long id;
 
+    public static final List<String> LISTA_ESTADOS = List.of("Pendente","Entregue","Despachada");
+
     @OneToMany(mappedBy = "encomenda", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Volume> volumes = new ArrayList<>();
 
@@ -29,7 +31,11 @@ public class Encomenda {
     public Encomenda(long id,Cliente cliente, String estado) {
         this.id = id;
         this.cliente = cliente;
-        this.estado = estado;
+        if (LISTA_ESTADOS.contains(estado)) {
+            this.estado = estado;
+        } else {
+            throw new IllegalArgumentException("Invalid estado");
+        }
     }
 
     public long getId() {
@@ -64,7 +70,11 @@ public class Encomenda {
     }
 
     public void setEstado(String estado) {
-        this.estado = estado;
+        if (LISTA_ESTADOS.contains(estado)) {
+            this.estado = estado;
+        } else {
+            throw new IllegalArgumentException("Invalid estado");
+        }
     }
 
     public void addVolume(Volume volume) {
