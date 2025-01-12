@@ -183,7 +183,7 @@ onMounted(async () => {
                     {{ volume.isEntregue ? 'Entregue' : 'Pendente' }}
                   </span>
                 </div>
-                <div v-if="marcadores">
+                <div v-if="volumeHasSensor(volume.idVolume)">
                   <!-- Map Section -->
                   <!-- TODO: Tornar o mapa responsivo -->
                   <div>
@@ -193,7 +193,7 @@ onMounted(async () => {
                   </div>
                   <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}"
                     class="mt-1"
-                    v-if="volumeHasSensor(volume.idVolume) && marcadores.find(marcador => marcador.volumeId === volume.idVolume).showMap">
+                    v-if="marcadores.find(marcador => marcador.volumeId === volume.idVolume).showMap">
                     <LMap ref="map"
                       :zoom="calculateZoom(marcadores.find(marcador => marcador.volumeId === volume.idVolume).eventos)"
                       :max-zoom="18"
