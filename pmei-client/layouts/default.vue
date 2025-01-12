@@ -10,17 +10,17 @@
           </div>
         </div>
         <div class="flex items-center space-x-4">
-          <NuxtLink
+          <NuxtLink v-show="authStore.role === 'Gestor' || !authStore.role"
               to="/SGO"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
             Gestão
           </NuxtLink>
-          <NuxtLink
+          <NuxtLink v-show="authStore.role === 'Logistica' || !authStore.role"
               to="/SDL"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
             Logística
           </NuxtLink>
-          <NuxtLink
+          <NuxtLink v-show="authStore.role === 'Cliente' || !authStore.role"
               to="/SAC"
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
             Cliente
@@ -43,6 +43,7 @@
 
 <script setup>
 import {useAuthStore} from "~/store/auth-store.js";
+import {onMounted} from "vue";
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -51,4 +52,27 @@ function logout() {
   router.push('/')
   location.reload()
 }
+
+const btnSGO = ref(false)
+const btnSDL = ref(false)
+const btnSAC = ref(false)
+
+onMounted(() => {
+  if (authStore.user) {
+    if (authStore.role === 'Gestor') {
+      btnSGO.value = false
+      btnSAC.value = true
+      btnSDL.value = true
+    } else if (authStore.role === 'Logistica') {
+      btnSGO.value = true
+      btnSDL.value = false
+      btnSAC.value = true
+    } else if (authStore.role === 'Cliente') {
+      btnSGO.value = true
+      btnSAC.value = false
+      btnSDL.value = true
+    }
+  }
+
+})
 </script>

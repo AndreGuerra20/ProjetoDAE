@@ -11,29 +11,6 @@ const logout = () => {
   router.push('/login');
 };
 
-const btnSGO = ref(false)
-const btnSDL = ref(false)
-const btnSAC = ref(false)
-
-onMounted(() => {
-  if (authStore.user) {
-    if (authStore.role === 'Gestor') {
-      btnSGO.value = false
-      btnSAC.value = true
-      btnSDL.value = true
-    } else if (authStore.role === 'Logistica') {
-      btnSGO.value = true
-      btnSDL.value = false
-      btnSAC.value = true
-    } else if (authStore.role === 'Cliente') {
-      btnSGO.value = true
-      btnSAC.value = false
-      btnSDL.value = true
-    }
-  }
-
-})
-
 </script>
 <template>
   <div class="min-h-screen bg-gray-100">
@@ -51,7 +28,7 @@ onMounted(() => {
           <img src="/working-area.png" alt="Management Icon" class="mx-auto mb-4 w-24 h-24"/>
           <p class="text-gray-600 mb-4 text-center">Visualize as encomendas existentes, aceda às informações dos
             sensores e observe estatísticas sobre a PMEI</p>
-          <NuxtLink :class="{ 'hidden' : btnSGO }"
+          <NuxtLink v-show="authStore.role === 'Gestor' || !authStore.role"
                     to="/SGO"
                     class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
             Aceder à Área de Gestão
@@ -64,7 +41,7 @@ onMounted(() => {
           <img src="/management.png" alt="Logistics Icon" class="mx-auto mb-4 w-24 h-24"/>
           <p class="text-gray-600 mb-4 text-center">Crie novas encomendas, ajuste rotas e visualize dados sobre o
             posicionamento global de entregadores</p>
-          <NuxtLink :class="{ 'hidden' : btnSDL }"
+          <NuxtLink v-show="authStore.role === 'Logistica' || !authStore.role"
               to="/SDL"
               class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
             Aceder à Área de Logística
@@ -77,7 +54,7 @@ onMounted(() => {
           <img src="/client.png" alt="Client Icon" class="mx-auto mb-4 w-24 h-24"/>
           <p class="text-gray-600 mb-4 text-center">Visualize, obtenha dados e verifique o estado das suas
             encomendas</p>
-          <NuxtLink :class="{ 'hidden' : btnSAC }"
+          <NuxtLink v-show="authStore.role === 'Cliente' || !authStore.role"
               to="/SAC"
               class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
             Aceder à Área de Cliente
