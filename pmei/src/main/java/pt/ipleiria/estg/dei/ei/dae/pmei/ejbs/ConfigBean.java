@@ -100,6 +100,7 @@ public class ConfigBean {
             sensorBean.create(2,"Temperatura", true, 2);
             sensorBean.create(3,"Pressao", true, 2);
             sensorBean.create(4,"Posicionamento Global", true, 1);
+            sensorBean.create(8,"Posicionamento Global", true, 1);
             sensorBean.create(5,"Aceleracao", true, 1);
             sensorBean.create(6,"Posicionamento Global", true, 2);
 
@@ -267,6 +268,10 @@ public class ConfigBean {
             evento = eventoBean.create("39.735989222463374,-8.821158646850703", 6);
             evento.setTimestamp(DateTimeFormatter.ISO_INSTANT.format(new Date(timestamp).toInstant()));
             timestamp += 60000;
+            eventoBean.create("39.74335365871343,-8.794312605631447", 8);
+            eventoBean.create("38.74335365871343,-8.794312605631447", 8);
+            eventoBean.create("37.74335365871343,-8.794312605631447", 8);
+            eventoBean.create("36.74335365871343,-8.794312605631447", 8);
 
             eventoBean.create("40", 5);
 

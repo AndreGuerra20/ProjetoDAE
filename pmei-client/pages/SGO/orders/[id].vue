@@ -1,6 +1,8 @@
 <script setup>
 import {onMounted, ref} from 'vue'
+import { useAuthStore} from "~/store/auth-store.js";
 
+const authStore = useAuthStore()
 const route = useRoute()
 const error = ref('')
 const token = ref(null)
