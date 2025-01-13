@@ -44,6 +44,8 @@ async function fetchEncomendaDetails() {
             switch (sensor.tipo){
               case 'Posicionamento Global':
                 marcadores.value.find(marcador => marcador.sensorid === sensor.id).showMap = false
+                marcadores.value.find(marcador => marcador.sensorid === sensor.id).mapCenter = calculateCenter(sensor.eventos)
+                marcadores.value.find(marcador => marcador.sensorid === sensor.id).mapZoom = calculateZoom(sensor.eventos)
                 break;
               case 'Temperatura':
                 marcadores.value.find(marcador => marcador.sensorid === sensor.id).showTemperatureChart = false
@@ -281,9 +283,9 @@ onBeforeMount(() => {
                            class="mt-1"
                            v-if="marcadores.find(marcador => marcador.sensorid == sensor.id && marcador.showMap !== undefined).showMap">
                         <LMap ref="map"
-                              :zoom="calculateZoom(marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).eventos)"
+                              :zoom="marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).mapZoom"
                               :max-zoom="18"
-                              :center="calculateCenter(marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).eventos)"
+                              :center="marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).mapCenter"
                               :use-global-leaflet="false">
                           <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                       attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
