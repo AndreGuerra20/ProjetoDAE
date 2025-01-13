@@ -50,7 +50,7 @@ const authStore = useAuthStore()
 function logout() {
   authStore.logout()
   router.push('/')
-  location.reload()
+  //location.reload()
 }
 
 </script>

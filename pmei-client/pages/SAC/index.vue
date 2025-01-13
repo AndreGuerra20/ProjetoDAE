@@ -10,7 +10,7 @@ const api = config.public.API_URL
 const authStore = useAuthStore()
 const { token, user } = storeToRefs(authStore)
 
-const error = ref(null)
+const error = ref('')
 const messages = ref([])
 const encomendas = ref([])
 
@@ -28,7 +28,7 @@ async function fetchEncomendas() {
                     statusText: response.statusText,
                     payload: response._data
                 })
-                if (response.status == 200) {
+                if (response.status === 200) {
                     encomendas.value = response._data
                 }
             }
@@ -39,9 +39,10 @@ async function fetchEncomendas() {
     }
 }
 
-onMounted(() => {
-    //authStore.loadUser()
-    fetchEncomendas()
+onMounted(async () => {
+    if (authStore.token) {
+        await fetchEncomendas()
+    }
 })
 
 onBeforeMount(() => {
@@ -61,16 +62,6 @@ onBeforeMount(() => {
     <div class="min-h-screen bg-gray-100 p-4">
         <div class="max-w-4xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Acompanhar Encomenda</h1>
-
-            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
-                <div class="mb-4">
-                    <input type="text" placeholder="Coloque o número da encomenda"
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                    Acompanhar
-                </button>
-            </div>
 
             <div class="bg-white rounded-lg shadow-md p-4">
                 <h2 class="text-xl font-semibold mb-4">Encomendas Recentes</h2>

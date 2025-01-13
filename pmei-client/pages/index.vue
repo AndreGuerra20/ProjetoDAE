@@ -1,15 +1,6 @@
 <script setup>
 import {useAuthStore} from '~/store/auth-store';
-import {useRouter} from 'vue-router';
-import {onMounted} from "vue";
-
 const authStore = useAuthStore();
-const router = useRouter();
-
-const logout = () => {
-  authStore.logout();
-  router.push('/login');
-};
 
 </script>
 <template>

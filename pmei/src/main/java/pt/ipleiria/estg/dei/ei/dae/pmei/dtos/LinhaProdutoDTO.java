@@ -10,14 +10,16 @@ public class LinhaProdutoDTO implements Serializable {
     private long id;
     private int quantidade;
     private long volumeId;
+    private String descricao;
 
     public LinhaProdutoDTO() {
     }
 
-    public LinhaProdutoDTO(long id, int quantidade, long volumeId) {
+    public LinhaProdutoDTO(long id, int quantidade, long volumeId, String descricao) {
         this.id = id;
         this.quantidade = quantidade;
         this.volumeId = volumeId;
+        this.descricao = descricao;
     }
 
     public long getId() {
@@ -44,8 +46,16 @@ public class LinhaProdutoDTO implements Serializable {
         this.volumeId = volumeId;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     public static LinhaProdutoDTO from(LinhaProduto linhaProduto) {
-        return new LinhaProdutoDTO(linhaProduto.getProduto().getId(), linhaProduto.getQuantidade(), linhaProduto.getVolume().getIdVolume());
+        return new LinhaProdutoDTO(linhaProduto.getProduto().getId(), linhaProduto.getQuantidade(), linhaProduto.getVolume().getIdVolume(), linhaProduto.getProduto().getDescricao());
     }
 
     public static List<LinhaProdutoDTO> from(List<LinhaProduto> linhaProdutos) {

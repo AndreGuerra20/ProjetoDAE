@@ -38,12 +38,6 @@ async function fetch() {
   }
 }
 
-onMounted(async () => {
-  await fetch()
-  console.log(orders.value)
-  sensorsSize.value = sensors.value.length
-})
-
 const getSensorStatus = (status) => {
   return status === true ? 'Ativo' : 'Inativo';
 }
@@ -60,6 +54,13 @@ const styleStatusBadge = (status) => {
   }
 };
 
+onMounted(async () => {
+  if (authStore.token) {
+    await fetch()
+    console.log(orders.value)
+    sensorsSize.value = sensors.value.length
+  }
+})
 
 onBeforeMount(() => {
   if (!authStore.token) {

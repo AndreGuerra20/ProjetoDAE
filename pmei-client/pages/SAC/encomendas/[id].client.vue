@@ -173,6 +173,7 @@ onMounted(async () => {
   // authStore.loadUser()
   // token.value = authStore.token
   await fetchEncomendaDetails()
+  console.log(encomenda.value)
 })
 
 onBeforeMount(() => {
@@ -187,6 +188,19 @@ onBeforeMount(() => {
   }
   token.value = authStore.token
 })
+
+const styleStatusBadge = (status) => {
+  if (status === true) {
+    return ['px-2 py-1 text-xs rounded-full bg-green-100 text-green-800'];
+  }
+  else if (status === false) {
+    return ['px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'];
+  }
+  else {
+    return ['px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800'];
+  }
+};
+
 </script>
 
 <template>
@@ -223,56 +237,61 @@ onBeforeMount(() => {
               <div v-for="(volume, index) in encomenda.volumes" :key="volume.idVolume"
                 class="bg-gray-50 p-4 rounded-lg">
                 <div class="flex justify-between items-start">
-                  <div>
-                    <p class="font-medium">Volume #{{ index + 1 }}</p>
-                    <div class="mt-2">
-                      <p class="font-medium text-sm">Produtos:</p>
-                      <ul class="list-disc list-inside text-sm text-gray-600 ml-2">
-                        <li v-for="produto in volume.produtos" :key="produto.id">
-                          ID: {{ produto.id }} - Quantidade: {{ produto.quantidade }}
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="mt-2">
-                      <p class="font-medium text-sm">Sensores:</p>
-                      <ul class="list-disc list-inside text-sm text-gray-600 ml-2">
-                        <li class="flex items-start gap-2" v-for="sensor in volume.sensores" :key="sensor.id">
-                          {{ sensor.tipo }} - {{ sensor.status ? 'Ativo' : 'Inativo' }}
-                          <div class="flex items-center gap-1.5">
-                            <div v-if="sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0">
-                              <button @click="toggleMapOrChart(sensor.id)"
-                                      class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">
-                                {{ btnMapOrChartText(marcadores,sensor) }}</button>
-                            </div>
-                            <div v-else-if="sensor.tipo === 'Temperatura' && sensor.eventos.length > 0">
-                              <button @click="toggleMapOrChart(sensor.id)"
-                                      class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">
-                                {{ btnMapOrChartText(marcadores,sensor) }}</button>
-                            </div>
-                            <div v-else-if="sensor.tipo === 'Aceleracao' && sensor.eventos.length > 0">
-                              <button @click="toggleMapOrChart(sensor.id)"
-                                      class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">
-                                {{ btnMapOrChartText(marcadores,sensor) }}</button>
-                            </div>
-                            <div v-else-if="sensor.tipo === 'Pressao' && sensor.eventos.length > 0">
-                              <button @click="toggleMapOrChart(sensor.id)"
-                                      class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">
-                                {{ btnMapOrChartText(marcadores,sensor) }}</button>
-                            </div>
-                            <div v-else>
-                              <p>Sem eventos para o sensor</p>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <span class="px-3 py-1 rounded-full text-sm" :class="{
+                    <p class="font-medium text-lg">Volume #{{ index + 1 }}</p>
+                    <span class="px-3 py-1 rounded-full text-sm" :class="{
                     'bg-green-100 text-green-800': volume.isEntregue,
                     'bg-yellow-100 text-yellow-800': !volume.isEntregue
                   }">
                     {{ volume.isEntregue ? 'Entregue' : 'Pendente' }}
                   </span>
+                </div>
+                <div class="flex justify-between items-start mb-4">
+                  <div class="mt-2">
+                    <p class="font-medium text-md mb-1">Produtos:</p>
+                    <ul class="list-disc list-inside text-sm text-gray-600 ml-2">
+                      <li v-for="produto in volume.produtos" :key="produto.id">
+                        <strong>Nome:</strong> {{ produto.descricao }} - <strong>Quantidade:</strong> {{ produto.quantidade }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="mt-2 flex">
+                    <p class="font-medium text-md">Sensores:</p>
+                  </div>
+                  <div>
+                    <ul class="list-disc list-inside text-sm text-gray-600 ml-2">
+                      <li class="flex items-center justify-between gap-2 mb-2" v-for="sensor in volume.sensores" :key="sensor.id">
+                        <div>
+                          <span class="font-medium pr-2">{{ sensor.tipo }}</span>
+                          <span :class="styleStatusBadge(sensor.status)"> {{ sensor.status ? 'Ativo' : 'Inativo' }}</span>
+                        </div>
+                        <div v-if="sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0">
+                          <button @click="toggleMapOrChart(sensor.id)"
+                                  class="bg-blue-500 text-white px-4 py-2 rounded-md">
+                            {{ btnMapOrChartText(marcadores,sensor) }}</button>
+                        </div>
+                        <div v-else-if="sensor.tipo === 'Temperatura' && sensor.eventos.length > 0">
+                          <button @click="toggleMapOrChart(sensor.id)"
+                                  class="bg-blue-500 text-white px-4 py-2 rounded-md">
+                            {{ btnMapOrChartText(marcadores,sensor) }}</button>
+                        </div>
+                        <div v-else-if="sensor.tipo === 'Aceleracao' && sensor.eventos.length > 0">
+                          <button @click="toggleMapOrChart(sensor.id)"
+                                  class="bg-blue-500 text-white px-4 py-2 rounded-md">
+                            {{ btnMapOrChartText(marcadores,sensor) }}</button>
+                        </div>
+                        <div v-else-if="sensor.tipo === 'Pressao' && sensor.eventos.length > 0">
+                          <button @click="toggleMapOrChart(sensor.id)"
+                                  class="bg-blue-500 text-white px-4 py-2 rounded-md">
+                            {{ btnMapOrChartText(marcadores,sensor) }}</button>
+                        </div>
+                        <div v-else>
+                          <p>Sem dados para mostrar</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
                 <div v-for="sensor in volume.sensores">
                   <div id="IMPORTANTE">

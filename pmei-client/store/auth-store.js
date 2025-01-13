@@ -51,6 +51,7 @@ export const useAuthStore = defineStore("authStore", () => {
         }
         token.value = null;
         user.value = null;
+        role.value = null;
         sessionStorage.removeItem("authToken");
         sessionStorage.removeItem("authUser");
         sessionStorage.removeItem("authRole");

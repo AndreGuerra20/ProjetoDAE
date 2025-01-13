@@ -61,7 +61,10 @@ async function fetchEncomendas() {
 onMounted(async () => {
   authStore.loadUser()
   token.value = authStore.token
-  await fetchEncomendas()
+  if (authStore.token) {
+    await fetchEncomendas()
+  }
+
 })
 
 onBeforeMount(() => {
