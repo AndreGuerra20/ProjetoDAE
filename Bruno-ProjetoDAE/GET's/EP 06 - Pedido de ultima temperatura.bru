@@ -1,0 +1,16 @@
+meta {
+  name: EP 06 - Get último temperatura registada da encomenda
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{uri}}sensores/cliente/1/sensor/Temperatura
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}

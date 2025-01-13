@@ -1,0 +1,16 @@
+meta {
+  name: EP 08 - Get ultimos valores de acelaracao
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{uri}}sensores/cliente/1/sensor/Acelaracao
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}
