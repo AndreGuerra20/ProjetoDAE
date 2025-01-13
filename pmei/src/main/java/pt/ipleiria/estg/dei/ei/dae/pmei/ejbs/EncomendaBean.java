@@ -134,21 +134,6 @@ public class EncomendaBean {
         return encomenda;
     }
 
-    public Encomenda areAllVolumesDelivered(long id) throws MyEntityNotFoundException {
-        Encomenda encomenda = findWithVolumes(id);
-        if(encomenda == null) {
-            throw new MyEntityNotFoundException("Encomenda {" + id + "} not found");
-        }
-        for (Volume volume : encomenda.getVolumes()) {
-            if (!volume.isEntregue()) {
-                throw new IllegalArgumentException("Encomenda {" + id + "} does not have all volumes delivered - {" + volume.getIdVolume() + "} not delivered");
-            }
-        }
-        encomenda.setEstado("Entregue");
-        em.merge(encomenda);
-        return encomenda;
-    }
-
     public void update(Encomenda encomenda) {
         em.merge(encomenda);
     }

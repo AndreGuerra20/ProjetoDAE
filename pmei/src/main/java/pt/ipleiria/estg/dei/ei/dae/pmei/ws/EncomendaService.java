@@ -109,26 +109,11 @@ public class EncomendaService {
         return Response.ok(sensores).build();
     }
 
-    /**
-     * EP 22 - A encomenda é finalizada
-     *
-     * @return Encomenda atualizada depois de finalizada
-     */
-    @PATCH
-    @Path("/")
-    @RolesAllowed({"Logistica"})
-    public Response finalizeEncomenda(EncomendaDTO encomendaRequest) throws MyEntityNotFoundException {
-        Encomenda encomenda = encomendaBean.areAllVolumesDelivered(encomendaRequest.getCustomerId());
-        if(encomenda == null){
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(EncomendaDTO.from(encomenda)).build();
-    }
-
     //TODO - Passsar maior parte do código para o EncomendaBean
     /**
      * EP 15 - Adicionar novos volumes a uma encomenda que já existe
      *
+     * @param id ID da encomenda
      * @return Encomenda atualizada
      */
     @POST
