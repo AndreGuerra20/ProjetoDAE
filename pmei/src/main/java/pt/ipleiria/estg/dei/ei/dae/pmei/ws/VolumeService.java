@@ -99,4 +99,20 @@ public class VolumeService {
         }
         return Response.ok(produtoDTOS).build();
     }
+
+    /**
+     * EP 21 - O volume é entregue ao cliente
+     *
+     * @param volumeId ID do volume
+     * @return DTO que precisa de ser criado
+     */
+    @PATCH
+    @Path("{volumeId}")
+    @RolesAllowed({"Cliente","Gestor"})
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUltimosValoresSensor(@PathParam("volumeId") Long volumeId) {
+        //TODO Implementar
+        //É preciso criar um novo DTO
+        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+    }
 }

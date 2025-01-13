@@ -209,4 +209,27 @@ public class SensorService {
         sensorBean.createEvento(sensor, eventoDTO.getValor());
         return Response.ok(SensorDTO.from(sensor)).build();
     }
+
+    /**
+     * EP 06,07,08,09 - O cliente pede a última temperatura registada pelos sensores de temperatura ativos nas suas encomendas
+     *
+     * @param username do cliente
+     * @param tipoSensor Tipo de sensor
+     * @return DTO que precisa de ser criado
+     */
+    @GET
+    @Path("/cliente/{username}/sensores/{tipoSensor}")
+    @RolesAllowed({"Cliente"})
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUltimosValoresSensor(@PathParam("username") String username, @PathParam("tipoSensor") String tipoSensor) {
+        if(securityContext.isUserInRole("Cliente")){
+            if (!username.equals(securityContext.getUserPrincipal().getName())) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+        }
+        //TODO Implementar
+        //Vai ser preciso criar um novo DTO
+        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+    }
+
 }
