@@ -48,7 +48,7 @@ public class VolumeService {
     public Response getVolume(@PathParam("id") long id) {
         Volume withBoth = volumeBean.findWithBoth(id);
         if (withBoth == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
         if(securityContext.isUserInRole("Cliente")){
             if (!withBoth.getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {

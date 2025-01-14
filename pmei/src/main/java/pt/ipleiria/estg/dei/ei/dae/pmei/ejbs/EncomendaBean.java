@@ -123,6 +123,9 @@ public class EncomendaBean {
 
     public Encomenda findWithVolumes(long id) {
         Encomenda encomenda = em.find(Encomenda.class, id);
+        if(encomenda == null) {
+            return null;
+        }
         Hibernate.initialize(encomenda.getVolumes());
         for (Volume volume : encomenda.getVolumes()) {
             Hibernate.initialize(volume.getProdutos());

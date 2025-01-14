@@ -66,15 +66,13 @@ public class EncomendaService {
     public Response getEncomenda(@PathParam("id") long id) {
         var encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
         if(securityContext.isUserInRole("Cliente")){
             var cliente = clienteBean.find(encomenda.getCliente().getId());
             if (cliente == null || !cliente.getUsername().equals(securityContext.getUserPrincipal().getName())) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-        } else if(securityContext.isUserInRole("Logistica")){
-            return Response.status(Response.Status.FORBIDDEN).build();
         }
         return Response.ok(EncomendaDTO.from(encomenda)).build();
     }
@@ -89,9 +87,8 @@ public class EncomendaService {
     @Path("/")
     @RolesAllowed({"Logistica"})
     public Response createEncomenda(EncomendaDTO encomendaRequest) throws MyConstraintViolationException, MyEntityNotFoundException {
-        Encomenda encomenda = encomendaBean.createWeb(encomendaRequest.getEncomendaId(),encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
-        var encomendaCriada = encomendaBean.findWithVolumes(encomenda.getId());
-        return Response.ok(EncomendaDTO.from(encomendaCriada)).build();
+        encomendaBean.createWeb(encomendaRequest.getEncomendaId(),encomendaRequest.getCustomerId(), encomendaRequest.getEstado(), encomendaRequest.getVolumes());
+        return Response.status(Response.Status.CREATED).build();
     }
 
     /**

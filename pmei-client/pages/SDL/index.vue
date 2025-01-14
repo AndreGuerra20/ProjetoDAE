@@ -14,6 +14,7 @@ const error = ref(null)
 
 const messages = ref([])
 const encomendas = ref([])
+const eventos = ref([])
 
 async function fetchEncomendas() {
   try {
@@ -30,9 +31,19 @@ async function fetchEncomendas() {
           payload: response._data
         })
         if(response.status == 200) {
-          console.log(response._data)
           encomendas.value = response._data
+          for (let encomenda of encomendas.value) {
+            for (let volume of encomenda.volumes) {
+              for (let sensor of volume.sensores) {
+                if (sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0) {
+                  sensor.color = getRandomHex()
+                  eventos.value = eventos.value.concat(sensor.eventos)
+                }
+              }
+            }
+          }
         }
+        console.log('Encomendas:', encomendas.value)
       }
     });
   } catch (err) {
@@ -47,7 +58,6 @@ onMounted(async () => {
   if (authStore.token) {
     await fetchEncomendas()
   }
-
 })
 
 onBeforeMount(() => {
@@ -62,6 +72,36 @@ onBeforeMount(() => {
   }
   token.value = authStore.token
 })
+
+function getRandomHex() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for (var i = 0; i < 6; i++ ) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function calculateCenter(eventos) {
+  const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
+  const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
+  const lat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2
+  const lng = (Math.min(...longitudes) + Math.max(...longitudes)) / 2
+  if (isNaN(lat) || isNaN(lng)) {
+    return [38.7223, -9.1393]
+  }
+  return [lat, lng]
+}
+
+function calculateZoom(eventos) {
+  const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
+  const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
+  const latDiff = Math.max(...latitudes) - Math.min(...latitudes)
+  const lngDiff = Math.max(...longitudes) - Math.min(...longitudes)
+  const latZoom = Math.floor(Math.log2(360 / latDiff)) - 1
+  const lngZoom = Math.floor(Math.log2(360 / lngDiff)) - 1
+  return Math.min(latZoom, lngZoom)
+}
 </script>
 
 <template>
@@ -94,8 +134,8 @@ onBeforeMount(() => {
             <!-- Delivery Management -->
             <div class="bg-white rounded-lg shadow-md p-4 mb-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Entregas Atuais</h2>
-                    <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Entrega</NuxtLink>
+                    <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
+                    <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Encomenda</NuxtLink>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -104,12 +144,12 @@ onBeforeMount(() => {
                             <tr class="bg-gray-50">
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumes</th>
-
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumes</th>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Legenda Rotas no Mapa</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="encomenda in encomendas" :key="encomenda.encomendaId">
+                            <tr v-for="encomenda in encomendas.filter(encomenda => encomenda.estado !== 'Entregue')" :key="encomenda.encomendaId">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.encomendaId }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span :class="{
@@ -122,6 +162,16 @@ onBeforeMount(() => {
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.volumes.length }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div v-for="volume in encomenda.volumes">
+                                            <p>{{volume.idVolume}}</p>
+                                            <div v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)">
+                                                <div class="mt-1 w-4 h-4 rounded-full mr-2" :style="{ backgroundColor: sensor.color }"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -131,9 +181,28 @@ onBeforeMount(() => {
             <!-- Route Map Placeholder -->
             <div class="bg-white rounded-lg shadow-md p-4">
                 <h2 class="text-xl font-semibold mb-4">Mapa das Rotas</h2>
-                <div class="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
-                    <span class="text-gray-500">Inserir Mapa Aqui pls :D</span>
-                </div>
+              <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}"
+                   class="mt-1">
+                <LMap ref="map"
+                      :zoom="calculateZoom(eventos)"
+                      :max-zoom="18"
+                      :center="calculateCenter(eventos)"
+                      :use-global-leaflet="false">
+                  <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                              attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
+                              layer-type="base" name="OpenStreetMap" />
+                  <div v-for="encomenda in encomendas">
+                    <div v-for="volume in encomenda.volumes">
+                      <div v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)">
+                        <LPolyline
+                            :lat-lngs="sensor.eventos.map(evento => ({ lat: parseFloat(evento.valor.split(',')[0]), lng: parseFloat(evento.valor.split(',')[1]) }))"
+                            :color="sensor.color"
+                        ></LPolyline>
+                      </div>
+                    </div>
+                  </div>
+                </LMap>
+              </div>
             </div>
         </div>
     </div>

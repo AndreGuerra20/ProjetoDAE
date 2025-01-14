@@ -59,6 +59,9 @@ public class SensorBean {
 
     public Sensor findWithEventos(long id) {
         Sensor sensor = em.find(Sensor.class, id);
+        if(sensor == null) {
+            return null;
+        }
         Hibernate.initialize(sensor.getEventos());
         return sensor;
     }

@@ -12,11 +12,32 @@ const sensors = ref(null)
 const orders = ref(null)
 const token = ref(null)
 const sensorsSize = ref(null)
+const idAProcurar = ref(null)
+
+const lastReading = reactive({
+  id: null,
+  tipo: null,
+  estado: null,
+  ultimaLeitura: null,
+  timestamp: null
+})
+
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp)
+  let month = date.getMonth() + 1
+
+  // dd-mm-yyyy hh:mm:ss
+  const dateString = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}/${month + 1 < 10 ? '0' + month : month}/${date.getFullYear()}`
+  const timeString = `${date.getHours() < 10 ? '0' + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`
+
+  return `${dateString} ${timeString}`
+
+}
 
 const getCorrectSensorName = (tipo) => {
-  if(tipo === 'Pressao') {
+  if (tipo === 'Pressao') {
     return 'Pressão';
-  } else if(tipo === 'Aceleracao') {
+  } else if (tipo === 'Aceleracao') {
     return 'Aceleração';
   }
   return tipo;
@@ -66,10 +87,52 @@ const styleStatusBadge = (status) => {
   }
 };
 
+const getLastReading = async () => {
+  if (!idAProcurar.value) {
+    return
+  }
+  try {
+    await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${idAProcurar.value}/eventoRecente`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      onResponse({ response }) {
+        if (response.status == 200) {
+          error.value = null
+          lastReading.id = response._data.sensorId
+          lastReading.ultimaLeitura = response._data.valor
+          lastReading.timestamp = response._data.timestamp
+          $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${idAProcurar.value}`, {
+            headers: {
+              Authorization: `Bearer ${token.value}`
+            },
+            onResponse({ response }) {
+              if (response.status == 200) {
+                lastReading.tipo = response._data.tipo
+                lastReading.estado = response._data.status
+              }
+            }
+          })
+        } else if (response.status == 204) {
+          error.value = "Sensor não tem leituras"
+          lastReading.id = null
+          lastReading.ultimaLeitura = null
+          lastReading.timestamp = null
+          lastReading.tipo = null
+          lastReading.estado = null
+        } else if(response.status == 404) {
+          error.value = "Sensor não encontrado"
+        }
+      }
+    })
+  } catch (err) {
+    console.error('Error fetching sensor details:', err)
+  }
+}
+
 onMounted(async () => {
   if (authStore.token) {
     await fetch()
-    console.log(orders.value)
     sensorsSize.value = sensors.value.length
   }
 })
@@ -78,10 +141,10 @@ onBeforeMount(() => {
   if (!authStore.token) {
     authStore.loadUser()
   }
-  if(!authStore.user) {
+  if (!authStore.user) {
     router.push('/auth/login')
   }
-  if(authStore.role !== 'Gestor') {
+  if (authStore.role !== 'Gestor') {
     router.push('/auth/login')
   }
   token.value = authStore.token
@@ -94,10 +157,47 @@ onBeforeMount(() => {
     <div class="max-w-7xl mx-auto">
       <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Gestão</h1>
 
+      <!-- Search by Sensor ID -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Obter última leitura</h2>
+        </div>
+        <input v-model="idAProcurar" type="text" class="w-full border border-gray-200 p-2 rounded-lg"
+          placeholder="ID do sensor" />
+        <button @click.prevent="getLastReading" class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2">Obter</button>
+        <div>
+          <div v-if="lastReading.ultimaLeitura" class="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="font-medium text-gray-600">Sensor ID:</div>
+              <div>{{ lastReading.id }}</div>
+
+              <div class="font-medium text-gray-600">Tipo:</div>
+              <div>{{ lastReading.tipo }}</div>
+
+              <div class="font-medium text-gray-600">Estado:</div>
+              <div>
+                <span :class="styleStatusBadge(lastReading.estado)">
+                  {{ getSensorStatus(lastReading.estado) }}
+                </span>
+              </div>
+
+              <div class="font-medium text-gray-600">Última Leitura:</div>
+              <div>{{ lastReading.ultimaLeitura }}</div>
+
+              <div class="font-medium text-gray-600">Timestamp:</div>
+              <div>{{ formatDate(lastReading.timestamp) }}</div>
+            </div>
+          </div>
+          <div v-else>
+            <p class="text-red-500">{{ error }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Order Management -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Encomendas Recentes</h2>
+          <h2 class="text-xl font-semibold">Encomendas</h2>
         </div>
 
         <div class="overflow-x-auto">
@@ -137,7 +237,7 @@ onBeforeMount(() => {
       <!-- Sensors -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Todos Sensores</h2>
+          <h2 class="text-xl font-semibold">Sensores</h2>
         </div>
 
         <div class="overflow-x-auto">
