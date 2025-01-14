@@ -30,8 +30,7 @@ const authStore = useAuthStore();
         <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col items-center">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Logística</h2>
           <img src="/management.png" alt="Logistics Icon" class="mx-auto mb-4 w-24 h-24"/>
-          <p class="text-gray-600 mb-4 text-center">Crie novas encomendas, ajuste rotas e visualize dados sobre o
-            posicionamento global de entregadores</p>
+          <p class="text-gray-600 mb-4 text-center">Crie e/ou altere encomendas e visualize rotas</p>
           <NuxtLink v-show="authStore.role === 'Logistica' || !authStore.role"
               to="/SDL"
               class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
