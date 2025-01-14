@@ -14,6 +14,14 @@ const marcadores = ref([])
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js'
 import { Line } from 'vue-chartjs'
 
+// Register
+ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
+
+const chartOptions = ref({
+  responsive: true,
+  maintainAspectRatio: false,
+})
+
 const getCorrectSensorName = (tipo) => {
   if(tipo === 'Pressao') {
     return 'Pressão';
@@ -22,14 +30,6 @@ const getCorrectSensorName = (tipo) => {
   }
   return tipo;
 }
-
-// Register
-ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
-
-const chartOptions = ref({
-  responsive: true,
-  maintainAspectRatio: false,
-})
 
 async function fetchEncomendaDetails() {
   error.value = null;
@@ -304,12 +304,11 @@ const styleStatusBadge = (status) => {
                 </div>
                 <div v-for="sensor in volume.sensores">
                   <div id="IMPORTANTE">
-                    <div v-if="sensor.tipo === 'Posicionamento Global'">
+                    <div v-if="sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0 && marcadores.find(marcador => marcador.sensorid == sensor.id && marcador.showMap !== undefined).showMap">
                       <!-- Map Section -->
                       <!-- TODO: Tornar o mapa responsivo -->
                       <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}"
-                           class="mt-1"
-                           v-if="marcadores.find(marcador => marcador.sensorid == sensor.id && marcador.showMap !== undefined).showMap">
+                           class="mt-1">
                         <LMap ref="map"
                               :zoom="marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).mapZoom"
                               :max-zoom="18"
