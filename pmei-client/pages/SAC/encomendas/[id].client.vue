@@ -333,13 +333,13 @@ const styleStatusBadge = (status) => {
                         </LMap>
                       </div>
                     </div>
-                    <div v-else-if="sensor.tipo === 'Temperatura' && marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showTemperatureChart !== undefined).showTemperatureChart">
+                    <div v-else-if="sensor.tipo === 'Temperatura'  && sensor.eventos.length > 0 && marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showTemperatureChart !== undefined).showTemperatureChart">
                       <Line
                           :data="marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showTemperatureChart !== undefined).chartData"
                           :options="chartOptions"
                       />
                     </div>
-                    <div v-else-if="sensor.tipo === 'Aceleracao' && marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showAccelerationChart !== undefined).showAccelerationChart">
+                    <div v-else-if="sensor.tipo === 'Aceleracao' && sensor.eventos.length > 0 && marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showAccelerationChart !== undefined).showAccelerationChart">
                       <Line
                           :data="marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showAccelerationChart !== undefined).chartData"
                           :options="chartOptions"
