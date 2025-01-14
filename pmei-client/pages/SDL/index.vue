@@ -134,8 +134,8 @@ function calculateZoom(eventos) {
             <!-- Delivery Management -->
             <div class="bg-white rounded-lg shadow-md p-4 mb-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Entregas Atuais</h2>
-                    <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Entrega</NuxtLink>
+                    <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
+                    <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Encomenda</NuxtLink>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -149,7 +149,7 @@ function calculateZoom(eventos) {
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="encomenda in encomendas" :key="encomenda.encomendaId">
+                            <tr v-for="encomenda in encomendas.filter(encomenda => encomenda.estado !== 'Entregue')" :key="encomenda.encomendaId">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.encomendaId }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span :class="{

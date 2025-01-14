@@ -59,7 +59,7 @@ public class EncomendaDTO implements Serializable {
         return new EncomendaDTO(
                 encomenda.getId(),
                 encomenda.getEstado(),
-                encomenda.getCliente().getId(),
+                encomenda.getCliente() == null ? -1 : encomenda.getCliente().getId(),
                 encomenda.getVolumes().stream().map(VolumeDTO::from).collect(Collectors.toList())
         );
     }

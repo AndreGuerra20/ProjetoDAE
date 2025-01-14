@@ -53,7 +53,7 @@ public class SensorService {
     public Response getSensor(@PathParam("id") long id) {
         Sensor withEventos = sensorBean.findWithEventos(id);
         if (withEventos == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
         if(securityContext.isUserInRole("Cliente")){
             if (!withEventos.getVolume().getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
