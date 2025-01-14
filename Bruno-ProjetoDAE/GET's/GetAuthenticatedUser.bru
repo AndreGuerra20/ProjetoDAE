@@ -1,0 +1,16 @@
+meta {
+  name: GetAuthenticatedUser
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{uri}}auth/user
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}

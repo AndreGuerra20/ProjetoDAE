@@ -96,7 +96,7 @@ async function login() {
       </div>
       <div class="mb-6">
         <label class="block text-gray-700" for="password">Senha:</label>
-        <input id="password" name="password" v-model="loginFormData.password" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="password">
+        <input @keyup.enter="login" id="password" name="password" v-model="loginFormData.password" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="password">
       </div>
       <div class="flex justify-between items-center">
         <button @click="login" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Entrar</button>

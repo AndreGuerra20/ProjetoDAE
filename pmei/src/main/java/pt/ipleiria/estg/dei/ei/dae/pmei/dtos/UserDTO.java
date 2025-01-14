@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
 
 public class UserDTO {
+    private long id;
     private String username;
     private String role;
 
@@ -13,15 +14,17 @@ public class UserDTO {
 
     }
 
-    public UserDTO(String username, String role) {
+    public UserDTO(String username, String role, long id) {
         this.username = username;
         this.role = role;
+        this.id = id;
     }
 
     public static UserDTO from(User user) {
         return new UserDTO(
                 user.getUsername(),
-                Hibernate.getClass(user).getSimpleName()
+                Hibernate.getClass(user).getSimpleName(),
+                user.getId()
         );
     }
 
@@ -43,6 +46,14 @@ public class UserDTO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
 

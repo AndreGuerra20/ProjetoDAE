@@ -15,24 +15,6 @@ const error = ref(null)
 const messages = ref([])
 const encomendas = ref([])
 
-encomendas.value = [
-  {
-    id: 'DEL001',
-    status: 'Pending',
-    volumes: 1
-  },
-  {
-    id: 'DEL002',
-    status: 'Pending',
-    volumes: 2
-  },
-  {
-    id: 'DEL003',
-    status: 'Pending',
-    volumes: 3
-  }
-]
-
 async function fetchEncomendas() {
   try {
     await $fetch(`${api}/encomendas`, {
@@ -48,7 +30,8 @@ async function fetchEncomendas() {
           payload: response._data
         })
         if(response.status == 200) {
-          //encomendas.value = response._data
+          console.log(response._data)
+          encomendas.value = response._data
         }
       }
     });
@@ -89,16 +72,22 @@ onBeforeMount(() => {
             <!-- Quick Actions -->
             <div class="grid md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white rounded-lg shadow-md p-4">
-                    <h3 class="font-semibold mb-2">Entregas Ativas</h3>
-                    <p class="text-3xl font-bold text-blue-600">24</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <h3 class="font-semibold mb-2">Entregadores Disponíveis</h3>
-                    <p class="text-3xl font-bold text-green-600">12</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-4">
                     <h3 class="font-semibold mb-2">Encomendas Pendentes</h3>
-                    <p class="text-3xl font-bold text-yellow-600">45</p>
+                    <p class="text-3xl font-bold text-yellow-600">{{ encomendas.filter((encomenda) => {
+                        return encomenda.estado === 'Pendente'
+                    }).length }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-semibold mb-2">Encomendas Despachadas</h3>
+                    <p class="text-3xl font-bold text-blue-600">{{ encomendas.filter((encomenda) => {
+                        return encomenda.estado === 'Despachada'
+                    }).length }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h3 class="font-semibold mb-2">Encomendas Entregues</h3>
+                    <p class="text-3xl font-bold text-green-600">{{ encomendas.filter((encomenda) => {
+                        return encomenda.estado === 'Entregue'
+                    }).length }}</p>
                 </div>
             </div>
 
@@ -106,9 +95,7 @@ onBeforeMount(() => {
             <div class="bg-white rounded-lg shadow-md p-4 mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">Entregas Atuais</h2>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                        Nova Encomenda
-                    </button>
+                    <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Entrega</NuxtLink>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -122,19 +109,19 @@ onBeforeMount(() => {
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="delivery in encomendas" :key="delivery.id">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.id }}</td>
+                            <tr v-for="encomenda in encomendas" :key="encomenda.encomendaId">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.encomendaId }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span :class="{
                                         'px-2 py-1 text-xs rounded-full': true,
-                                        'bg-green-100 text-green-800': delivery.status === 'Completed',
-                                        'bg-blue-100 text-blue-800': delivery.status === 'In Progress',
-                                        'bg-yellow-100 text-yellow-800': delivery.status === 'Pending'
+                                        'bg-green-100 text-green-800': encomenda.estado === 'Entregue',
+                                        'bg-blue-100 text-blue-800': encomenda.estado === 'Despachada',
+                                        'bg-yellow-100 text-yellow-800': encomenda.estado === 'Pendente'
                                     }">
-                                        {{ delivery.status }}
+                                        {{ encomenda.estado }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ delivery.volumes }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.volumes.length }}</td>
                             </tr>
                         </tbody>
                     </table>

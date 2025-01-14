@@ -13,6 +13,15 @@ const orders = ref(null)
 const token = ref(null)
 const sensorsSize = ref(null)
 
+const getCorrectSensorName = (tipo) => {
+  if(tipo === 'Pressao') {
+    return 'Pressão';
+  } else if(tipo === 'Aceleracao') {
+    return 'Aceleração';
+  }
+  return tipo;
+}
+
 async function fetch() {
   error.value = null;
   try {
@@ -24,7 +33,7 @@ async function fetch() {
     })
 
     //filter sensors
-    sensors.value = sensors.value.filter(sensor => sensor.status === true)
+    // sensors.value = sensors.value.filter(sensor => sensor.status === true)
 
     orders.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas`, {
       headers: {
@@ -46,7 +55,10 @@ const styleStatusBadge = (status) => {
   if (status === true || status === 'Entregue') {
     return ['px-2 py-1 text-xs rounded-full bg-green-100 text-green-800'];
   }
-  else if (status === false || status === 'Pendente') {
+  else if (status === false) {
+    return ['px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'];
+  }
+  else if (status === 'Pendente') {
     return ['px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800'];
   }
   else {
@@ -125,7 +137,7 @@ onBeforeMount(() => {
       <!-- Sensors -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Todos Sensores Ativos</h2>
+          <h2 class="text-xl font-semibold">Todos Sensores</h2>
         </div>
 
         <div class="overflow-x-auto">
@@ -142,7 +154,7 @@ onBeforeMount(() => {
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="sensor in sensors" :key="sensor.id">
                 <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ getCorrectSensorName(sensor.tipo) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="styleStatusBadge(sensor.status)">
                     {{ getSensorStatus(sensor.status) }}

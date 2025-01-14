@@ -14,6 +14,15 @@ const marcadores = ref([])
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js'
 import { Line } from 'vue-chartjs'
 
+const getCorrectSensorName = (tipo) => {
+  if(tipo === 'Pressao') {
+    return 'Pressão';
+  } else if(tipo === 'Aceleracao') {
+    return 'Aceleração';
+  }
+  return tipo;
+}
+
 // Register
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
@@ -263,7 +272,7 @@ const styleStatusBadge = (status) => {
                     <ul class="list-disc list-inside text-sm text-gray-600 ml-2">
                       <li class="flex items-center justify-between gap-2 mb-2" v-for="sensor in volume.sensores" :key="sensor.id">
                         <div>
-                          <span class="font-medium pr-2">{{ sensor.tipo }}</span>
+                          <span class="font-medium pr-2">{{ getCorrectSensorName(sensor.tipo) }}</span>
                           <span :class="styleStatusBadge(sensor.status)"> {{ sensor.status ? 'Ativo' : 'Inativo' }}</span>
                         </div>
                         <div v-if="sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0">

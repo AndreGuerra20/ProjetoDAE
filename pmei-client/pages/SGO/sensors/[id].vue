@@ -8,6 +8,15 @@ const error = ref('')
 const token = ref(null)
 const sensor = ref(null)
 
+const getCorrectSensorName = (tipo) => {
+  if(tipo === 'Pressao') {
+    return 'Pressão';
+  } else if(tipo === 'Aceleracao') {
+    return 'Aceleração';
+  }
+  return tipo;
+}
+
 async function fetchEvents() {
 
   try {
@@ -50,7 +59,7 @@ const styleStatusBadge = (status) => {
     return ['px-2 py-1 text-xs rounded-full bg-green-100 text-green-800'];
   }
   else if (status === false) {
-    return ['px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800'];
+    return ['px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'];
   }
   else {
     return ['px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800'];
@@ -103,7 +112,7 @@ onBeforeMount(() => {
       <div v-if="sensor" class="bg-white rounded-lg shadow-md p-4 mb-6">
           <div class="flex items-center justify-between">
             <p class="text-l font-bold">Tipo</p>
-            <span class="text-sm">{{ sensor.tipo }}</span>
+            <span class="text-sm">{{ getCorrectSensorName(sensor.tipo) }}</span>
             <p class="text-l font-bold">Estado</p>
             <span :class="styleStatusBadge(sensor.status)">
                 {{ getSensorStatus(sensor.status) }}

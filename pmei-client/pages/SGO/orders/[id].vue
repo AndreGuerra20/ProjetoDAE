@@ -5,25 +5,12 @@ import { useAuthStore} from "~/store/auth-store.js";
 const authStore = useAuthStore()
 const route = useRoute()
 const error = ref('')
-const token = ref(null)
+const {token, user} = storeToRefs(authStore)
 const order = ref(null)
 
 async function fetch() {
 
   try {
-    // First get the authentication token
-    token.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        username: 'henri',
-        password: '123'
-      })
-    })
-
     // fetch the order
     order.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas/${route.params.id}`, {
       headers: {
@@ -34,6 +21,15 @@ async function fetch() {
     console.error('Error fetching encomenda:', err)
     error.value = 'Não foi possível carregar a encomenda, tente novamente mais tarde.'
   }
+}
+
+const getCorrectSensorName = (tipo) => {
+  if(tipo === 'Pressao') {
+    return 'Pressão';
+  } else if(tipo === 'Aceleracao') {
+    return 'Aceleração';
+  }
+  return tipo;
 }
 
 const isDelivered = (volume) => {
@@ -114,7 +110,7 @@ onBeforeMount(() => {
                   <tbody class="bg-gray-50 divide-y divide-gray-200">
                   <tr v-for="sensor in volume.sensores" :key="sensor.id">
                     <td class="px-6 py-4 whitespace-nowrap">{{ sensor.id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ sensor.tipo }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ getCorrectSensorName(sensor.tipo) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span :class="styleStatusBadge(sensor.status)">
                       {{ getSensorStatus(sensor.status) }}

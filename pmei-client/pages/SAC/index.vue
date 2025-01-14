@@ -10,13 +10,15 @@ const api = config.public.API_URL
 const authStore = useAuthStore()
 const { token, user } = storeToRefs(authStore)
 
+const userFetched = ref(null)
+
 const error = ref('')
 const messages = ref([])
 const encomendas = ref([])
 
 async function fetchEncomendas() {
     try {
-        await $fetch(`${api}/encomendas`, {
+        await $fetch(`${api}/encomendas/cliente`, {
             headers: {
                 Authorization: `Bearer ${token.value}`
             },

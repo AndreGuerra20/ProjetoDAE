@@ -16,11 +16,12 @@ auth:bearer {
 
 body:json {
   {
-    "encomendaId": 1,
-    "customerId": 1,
+    "encomendaId": 2,
+    "customerId": 2,
     "estado": "Despachada",
     "volumes": [
       {
+        "idVolume": 1000,
         "produtos": [
           {
             "id": 1,
@@ -30,12 +31,14 @@ body:json {
         "tipoEmbalagem": "Caixa cartão",
         "sensores": [
           {
+            "id": 100,
             "tipo": "Temperatura",
             "status": true
           }
         ]
       },
       {
+        "idVolume": 1002,
         "produtos": [
           {
             "id": 2,
@@ -49,10 +52,12 @@ body:json {
         "tipoEmbalagem": "Caixa cartão com plástico bolha",
         "sensores": [
           {
+            "id": 101,
             "tipo": "Aceleracao",
             "status": true
           },
           {
+            "id": 102,
             "tipo": "Posicionamento Global",
             "status": true
           }
@@ -60,4 +65,9 @@ body:json {
       }
     ]
   }
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }

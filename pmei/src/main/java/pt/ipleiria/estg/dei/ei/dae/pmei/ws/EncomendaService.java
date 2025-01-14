@@ -48,6 +48,20 @@ public class EncomendaService {
     }
 
     @GET
+    @Path("/cliente")
+    @RolesAllowed({"Cliente"})
+    public List<EncomendaDTO> getEncomendasCliente() {
+        List<EncomendaDTO> listaEncomendas = EncomendaDTO.from(encomendaBean.findAll());
+        if(listaEncomendas.isEmpty()){
+            return null;
+        }
+        return listaEncomendas.stream().filter(encomendaDTO -> {
+            Encomenda encomenda = encomendaBean.find(encomendaDTO.getEncomendaId());
+            return encomenda.getCliente().getUsername().equals(securityContext.getUserPrincipal().getName());
+        }).collect(Collectors.toList());
+    }
+
+    @GET
     @Path("{id}")
     public Response getEncomenda(@PathParam("id") long id) {
         var encomenda = encomendaBean.findWithVolumes(id);
