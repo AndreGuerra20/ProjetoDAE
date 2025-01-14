@@ -110,9 +110,14 @@ public class VolumeService {
     @Path("{volumeId}")
     @RolesAllowed({"Cliente","Gestor"})
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getUltimosValoresSensor(@PathParam("volumeId") Long volumeId) {
-        //TODO Implementar
-        //É preciso criar um novo DTO
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+    public Response getVolumeEstado(@PathParam("volumeId") long volumeId, VolumeEstadoDTO volumeEstadoDTO) {
+
+        VolumeEstadoBean.update(
+                code,
+                VolumeEstadoDTO.getEstado());
+        VolumeEstado updatedVolumeEstado = VolumeEstadoBean.find(code);
+        return Response.status(Response.Status.OK)
+                .entity(VolumeEstadoDTO.from(updatedEstado))
+                .build();
     }
 }

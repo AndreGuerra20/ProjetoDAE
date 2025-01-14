@@ -13,7 +13,7 @@ public class VolumeEstadoDTO implements Serializable {
     public VolumeEstadoDTO() {
     }
 
-    public VolumeEstadoDTO(long idVolume, String estado) {
+    public VolumeEstadoDTO(String estado) {
 
         this.estado = estado;
     }
