@@ -102,6 +102,10 @@ function calculateZoom(eventos) {
   const lngZoom = Math.floor(Math.log2(360 / lngDiff)) - 1
   return Math.min(latZoom, lngZoom)
 }
+
+function volumeHasGPS(volume) {
+  return volume.sensores.find(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)
+}
 </script>
 
 <template>
@@ -131,7 +135,6 @@ function calculateZoom(eventos) {
         </div>
       </div>
 
-      <!-- Delivery Management -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
@@ -148,8 +151,7 @@ function calculateZoom(eventos) {
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumes</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Legenda Rotas
-                  no Mapa</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Legenda Rotas no Mapa</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -167,16 +169,25 @@ function calculateZoom(eventos) {
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.volumes.length }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div v-for="volume in encomenda.volumes">
-                      <p>{{ volume.idVolume }}</p>
-                      <div
-                        v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)">
-                        <div class="mt-1 w-4 h-4 rounded-full mr-2" :style="{ backgroundColor: sensor.color }"></div>
-                      </div>
-                    </div>
-                  </div>
+                <td>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th class="text-right px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                        <th class="text-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cores</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-gray-50 divide-y divide-gray-200 ">
+                      <tr v-for="volume in encomenda.volumes.filter(volume => volumeHasGPS(volume))">
+                        <td class="text-left pl-1">{{ volume.idVolume }}</td>
+                        <td class="text-center">
+                          <div v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)" class="inline-flex">
+                            <div class="mt-1 w-4 h-4 rounded-full mr-2" :style="{ backgroundColor: sensor.color }"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
             </tbody>
@@ -184,7 +195,6 @@ function calculateZoom(eventos) {
         </div>
       </div>
 
-      <!-- Route Map Placeholder -->
       <div class="bg-white rounded-lg shadow-md p-4">
         <h2 class="text-xl font-semibold mb-4">Mapa das Rotas</h2>
         <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}" class="mt-1">
