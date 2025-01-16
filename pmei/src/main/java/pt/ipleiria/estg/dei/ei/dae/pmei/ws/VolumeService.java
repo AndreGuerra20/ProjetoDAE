@@ -106,18 +106,18 @@ public class VolumeService {
      * @param volumeId ID do volume
      * @return DTO que precisa de ser criado
      */
-    @PATCH
-    @Path("{volumeId}")
-    @RolesAllowed({"Cliente","Gestor"})
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response getVolumeEstado(@PathParam("volumeId") long volumeId, VolumeEstadoDTO volumeEstadoDTO) {
-
-        VolumeEstadoBean.update(
-                code,
-                VolumeEstadoDTO.getEstado());
-        VolumeEstado updatedVolumeEstado = VolumeEstadoBean.find(code);
-        return Response.status(Response.Status.OK)
-                .entity(VolumeEstadoDTO.from(updatedEstado))
-                .build();
-    }
+//    @PATCH
+//    @Path("{volumeId}")
+//    @RolesAllowed({"Cliente","Gestor"})
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response getVolumeEstado(@PathParam("volumeId") long volumeId, VolumeEstadoDTO volumeEstadoDTO) {
+//
+//        VolumeEstadoBean.update(
+//                code,
+//                VolumeEstadoDTO.getEstado());
+//        VolumeEstado updatedVolumeEstado = VolumeEstadoBean.find(code);
+//        return Response.status(Response.Status.OK)
+//                .entity(VolumeEstadoDTO.from(updatedEstado))
+//                .build();
+//    }
 }
