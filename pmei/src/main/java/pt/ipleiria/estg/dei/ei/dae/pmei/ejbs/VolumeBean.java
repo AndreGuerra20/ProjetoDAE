@@ -96,9 +96,9 @@ public class VolumeBean {
         }
         return sensoresByVolumeId;
     }
-    public void update(long volumeId, String estado){
-        var volumeEstado = find(volumeId);
-        volumeEstado.setEstado(estado);
-        entityManager.merge(volumeEstado);
-    }
+//    public void update(long volumeId, String estado){
+//        var volumeEstado = find(volumeId);
+//        volumeEstado.setEstado(estado);
+//        entityManager.merge(volumeEstado);
+//    }
 }
