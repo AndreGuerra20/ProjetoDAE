@@ -1,6 +1,6 @@
 <script setup>
-import {onMounted, ref} from 'vue'
-import { useAuthStore} from "~/store/auth-store.js";
+import { onMounted, ref } from 'vue'
+import { useAuthStore } from "~/store/auth-store.js";
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -8,31 +8,46 @@ const error = ref('')
 const token = ref(null)
 const sensor = ref(null)
 
+const min = ref(null)
+const max = ref(null)
+const avg = ref(null)
+
 const getCorrectSensorName = (tipo) => {
-  if(tipo === 'Pressao') {
+  if (tipo === 'Pressao') {
     return 'Pressão';
-  } else if(tipo === 'Aceleracao') {
+  } else if (tipo === 'Aceleracao') {
     return 'Aceleração';
   }
   return tipo;
 }
 
-async function fetchEvents() {
-
+async function getSensorStats() {
   try {
-    // First get the authentication token
-    token.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        username: 'henri',
-        password: '123'
+    if (sensor.value && sensor.value.tipo !== 'Posicionamento Global') {
+      min.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${sensor.value.id}/min`, {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
       })
-    })
+      max.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${sensor.value.id}/max`, {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      })
+      avg.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${sensor.value.id}/avg`, {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      })
+    }
+  } catch (err) {
+    console.error('Error fetching events:', err)
+    error.value = 'Não foi possível carregar os eventos, tente novamente mais tarde.'
+  }
+}
 
+async function fetchEvents() {
+  try {
     // fetch the sensor
     sensor.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${route.params.id}`, {
       headers: {
@@ -48,6 +63,7 @@ async function fetchEvents() {
 onMounted(async () => {
   await fetchEvents()
   console.log(sensor.value)
+  await getSensorStats()
 })
 
 const getSensorStatus = (status) => {
@@ -83,10 +99,10 @@ onBeforeMount(() => {
   if (!authStore.token) {
     authStore.loadUser()
   }
-  if(!authStore.user) {
+  if (!authStore.user) {
     router.push('/auth/login')
   }
-  if(authStore.role !== 'Gestor') {
+  if (authStore.role !== 'Gestor') {
     router.push('/auth/login')
   }
   token.value = authStore.token
@@ -110,14 +126,14 @@ onBeforeMount(() => {
 
       <!-- Sensor Details -->
       <div v-if="sensor" class="bg-white rounded-lg shadow-md p-4 mb-6">
-          <div class="flex items-center justify-between">
-            <p class="text-l font-bold">Tipo</p>
-            <span class="text-sm">{{ getCorrectSensorName(sensor.tipo) }}</span>
-            <p class="text-l font-bold">Estado</p>
-            <span :class="styleStatusBadge(sensor.status)">
-                {{ getSensorStatus(sensor.status) }}
-            </span>
-          </div>
+        <div class="flex items-center justify-between">
+          <p class="text-l font-bold">Tipo</p>
+          <span class="text-sm">{{ getCorrectSensorName(sensor.tipo) }}</span>
+          <p class="text-l font-bold">Estado</p>
+          <span :class="styleStatusBadge(sensor.status)">
+            {{ getSensorStatus(sensor.status) }}
+          </span>
+        </div>
       </div>
 
       <!-- Events -->
@@ -126,21 +142,44 @@ onBeforeMount(() => {
           <h1 class="text-2xl font-bold text-gray-800 pb-4">Eventos</h1>
           <table class="min-w-full">
             <thead>
-            <tr class="bg-gray-50">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-            </tr>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp
+                </th>
+              </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="event in sensor.eventos" :key="event.id">
-              <td class="px-6 py-4 whitespace-nowrap">{{ event.valor }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(event.timestamp) }}</td>
-            </tr>
+              <tr v-for="event in sensor.eventos" :key="event.id">
+                <td class="px-6 py-4 whitespace-nowrap">{{ event.valor }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(event.timestamp) }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <!-- Statistics like Average, Min and Max -->
+      <div v-if="sensor" class="bg-white rounded-lg shadow-md p-6 mt-6">
+        <div class="border-b pb-4 mb-4">
+          <h1 class="text-2xl font-bold text-gray-800 pb-4">Estatísticas</h1>
+          <div v-if="min" class="grid grid-cols-3 gap-4">
+            <div>
+              <p class="text-lg font-bold">Mínimo</p>
+              <p class="text-sm">{{ min }}</p>
+            </div>
+            <div>
+              <p class="text-lg font-bold">Média</p>
+              <p class="text-sm">{{ avg }}</p>
+            </div>
+            <div>
+              <p class="text-lg font-bold">Máximo</p>
+              <p class="text-sm">{{ max }}</p>
+            </div>
+          </div>
+          <div v-else>
+            <p>Não existem estatísticas disponíveis para este sensor.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
 </template>

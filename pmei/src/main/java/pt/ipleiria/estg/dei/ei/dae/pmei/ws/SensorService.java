@@ -73,6 +73,12 @@ public class SensorService {
     @GET
     @Path("{id}/min")
     public Response getSensorMin(@PathParam("id") long id) {
+        Sensor sensor = sensorBean.findWithEventos(id);
+        if(sensor == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else if(sensor.getTipo().equals("Posicionamento Global")){
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         double lowestValue = sensorBean.getLowestValue(id);
         if (lowestValue == Double.MAX_VALUE) {
             return Response.status(Response.Status.NOT_FOUND).build();

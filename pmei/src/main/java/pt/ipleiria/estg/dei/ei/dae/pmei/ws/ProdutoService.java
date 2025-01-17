@@ -29,13 +29,13 @@ public class ProdutoService {
         return listaProdutos;
     }
 
-    @GET
-    @Path("{id}")
-    public Response getProduto(@PathParam("id") long id) {
-        Produto produto = produtoBean.find(id);
-        if (produto == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(ProdutoDTO.from(produto)).build();
-    }
+//    @GET
+//    @Path("{id}")
+//    public Response getProduto(@PathParam("id") long id) {
+//        Produto produto = produtoBean.find(id);
+//        if (produto == null) {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        }
+//        return Response.ok(ProdutoDTO.from(produto)).build();
+//    }
 }

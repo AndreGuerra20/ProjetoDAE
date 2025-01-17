@@ -166,7 +166,7 @@ const addSensor = (volumeIndex) => {
 
 const addVolumes = async () => {
     try {
-        await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas/${encomendaId.value}/volumes`, {
+        await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas/${encomendaId.value}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
