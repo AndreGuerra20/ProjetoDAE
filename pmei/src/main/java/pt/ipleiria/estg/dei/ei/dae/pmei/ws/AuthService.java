@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.AuthDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.GestorAuthDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.PasswordChangeDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.UserDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.GestorBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
@@ -78,5 +79,31 @@ public class AuthService {
         var username = securityContext.getUserPrincipal().getName();
         var user = userBean.findOrFail(username);
         return Response.ok(UserDTO.from(user)).build();
+    }
+
+    @PUT
+    @Path("/setPassword")
+    @Authenticated
+    public Response setPassword(@Valid PasswordChangeDTO passwordChangeDTO) {
+        var principal = securityContext.getUserPrincipal();
+        if(securityContext.isUserInRole("Gestor") &&
+                (passwordChangeDTO.getUsername() == null || passwordChangeDTO.getUsername().isEmpty())) {
+            //O gestor quer mudar a password de um utilizador
+            userBean.setPasswordGestor(
+                    passwordChangeDTO.getUsername(),
+                    passwordChangeDTO.getPassword(),
+                    passwordChangeDTO.getConfirmPassword()
+            );
+        }
+        else {
+            //Um utilizador de Logistica ou Cliente quer mudar a sua password
+            userBean.setPassword(
+                    principal.getName(),
+                    passwordChangeDTO.getPassword(),
+                    passwordChangeDTO.getOldPassword(),
+                    passwordChangeDTO.getConfirmPassword()
+            );
+        }
+        return Response.ok().build();
     }
 }
