@@ -64,7 +64,7 @@ public class AuthService {
     @Authenticated
     @RolesAllowed({"Gestor"})
     public Response register(@Valid GestorAuthDTO gestorDTO) throws MyConstraintViolationException, MyEntityExistsException {
-        Gestor gestor = gestorBean.create(gestorDTO.getNome(),gestorDTO.getCodFuncionario(), gestorDTO.getUsername(), gestorDTO.getPassword());
+        Gestor gestor = gestorBean.create(gestorDTO.getNome(),gestorDTO.getCodFuncionario(), gestorDTO.getUsername(), gestorDTO.getPassword(), gestorDTO.getEmail());
         if(gestor == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }

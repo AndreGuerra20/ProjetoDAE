@@ -20,7 +20,7 @@ public class LogisticaBean {
     @Inject
     private Hasher hasher;
 
-    public Logistica create(String name, String codFuncionario, String username, String password) throws MyEntityExistsException {
+    public Logistica create(String name, String codFuncionario, String username, String password, String email) throws MyEntityExistsException {
         var logistica = find(username);
         if (logistica != null) {
             throw new MyEntityExistsException("Logistica already exists: " + username);
@@ -33,7 +33,7 @@ public class LogisticaBean {
                 }
             }
         }
-        logistica = new Logistica(username, hasher.hash(password),name,codFuncionario);
+        logistica = new Logistica(username, hasher.hash(password),name,codFuncionario,email);
         em.persist(logistica);
         return logistica;
     }

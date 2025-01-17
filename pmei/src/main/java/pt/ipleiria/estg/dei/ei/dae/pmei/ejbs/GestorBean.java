@@ -21,7 +21,7 @@ public class GestorBean {
     @Inject
     private Hasher hasher;
 
-    public Gestor create(String name, String codFuncionario, String username, String password) throws MyEntityExistsException, MyConstraintViolationException {
+    public Gestor create(String name, String codFuncionario, String username, String password, String email) throws MyEntityExistsException, MyConstraintViolationException {
         var gestor = find(username);
         if (gestor != null) {
             throw new MyEntityExistsException("Gestor already exists: " + username);
@@ -35,7 +35,7 @@ public class GestorBean {
             }
         }
         try {
-            gestor = new Gestor(username, hasher.hash(password),name,codFuncionario);
+            gestor = new Gestor(username, hasher.hash(password),name,codFuncionario,email);
             em.persist(gestor);
             em.flush();
             return gestor;

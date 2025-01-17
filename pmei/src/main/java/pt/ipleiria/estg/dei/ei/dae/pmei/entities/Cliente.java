@@ -16,8 +16,8 @@ public class Cliente extends User {
     public Cliente() {
     }
 
-    public Cliente(String name, long NIF, String username, String password) {
-        super(username, password, name);
+    public Cliente(String name, long NIF, String username, String password, String email) {
+        super(username, password, name, email);
         this.NIF = NIF;
     }
 

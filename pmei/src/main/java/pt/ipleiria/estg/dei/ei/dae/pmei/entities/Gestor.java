@@ -10,8 +10,8 @@ public class Gestor extends User {
     public Gestor() {
     }
 
-    public Gestor(String username, String password,String nome, String codFuncionario) {
-        super(username, password,nome);
+    public Gestor(String username, String password,String nome, String codFuncionario, String email) {
+        super(username, password, nome, email);
         this.codFuncionario = codFuncionario;
     }
 

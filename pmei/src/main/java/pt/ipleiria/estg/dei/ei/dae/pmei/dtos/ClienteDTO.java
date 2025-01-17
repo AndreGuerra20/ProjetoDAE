@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.dtos;
 
-import jakarta.persistence.Id;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Cliente;
 
 import java.io.Serializable;
@@ -9,20 +8,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClienteDTO implements Serializable {
-    @Id
+    private long id;
     private String username;
     private String name;
     private long NIF;
-    private List<EncomendaDTO> encomendas = new ArrayList<>();
-
+    private String email;
     public ClienteDTO() {
     }
 
-    public ClienteDTO(String username, String name, long NIF, List<EncomendaDTO> encomendas) {
+    public ClienteDTO(long id,String username, String name, long NIF, String email) {
+        this.id = id;
         this.username = username;
         this.name = name;
         this.NIF = NIF;
-        this.encomendas = encomendas;
+        this.email = email;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -49,16 +56,16 @@ public class ClienteDTO implements Serializable {
         this.NIF = NIF;
     }
 
-    public List<EncomendaDTO> getEncomendas() {
-        return encomendas;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEncomendas(List<EncomendaDTO> encomendas) {
-        this.encomendas = encomendas;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public static ClienteDTO from(Cliente cliente) {
-        return new ClienteDTO(cliente.getUsername(), cliente.getNome(), cliente.getNIF(), cliente.getEncomendas().stream().map(EncomendaDTO::from).collect(Collectors.toList()));
+        return new ClienteDTO(cliente.getId(), cliente.getUsername(), cliente.getNome(), cliente.getNIF(), cliente.getEmail());
     }
 
     public static List<ClienteDTO> from(List<Cliente> clientes) {
