@@ -8,6 +8,9 @@ const authStore = useAuthStore()
 
 const {token, user, role} = storeToRefs(authStore)
 
+const config = useRuntimeConfig()
+const api = config.public.API_URL
+
 const produtos = ref([])
 const errorList = reactive({
   encomendas: null,
@@ -23,6 +26,8 @@ const encomenda = ref({
   estado: null,
   volumes: []
 })
+
+const clientes = ref([])
 
 const addVolume = () => {
   encomenda.value.volumes.push({
@@ -118,6 +123,31 @@ const fetchProdutos = async () => {
   }
 }
 
+const fetchClientes = async () => {
+  try {
+    await $fetch(`${api}/clientes`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      onResponse({request, response, options}) {
+        // messages.value.push({
+        //     method: options.method,
+        //     request: request,
+        //     status: response.status,
+        //     statusText: response.statusText,
+        //     payload: response._data
+        // })
+        if (response.status == 200) {
+          const data = response._data
+          clientes.value = data
+        }
+      }
+    })
+  } catch (err) {
+    console.error('Error fetching clientes:', err);
+  }
+}
+
 const isIDbeingUsed = async (classe, id) => {
   if (id == null) {
     return
@@ -176,6 +206,7 @@ onMounted(async () => {
     router.push('/')
   }
   await fetchProdutos();
+  await fetchClientes();
 })
 </script>
 <template>
@@ -195,13 +226,13 @@ onMounted(async () => {
         </div>
         <!-- Customer ID -->
         <div>
-          <label for="customerId" class="block text-sm font-medium text-gray-700">Cliente ID</label>
-          <input placeholder="Ex: 1" name="customerId" id="customerId" v-model="encomenda.customerId"
-                 type="number"
-                 class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                 required
-                 @focusout="() => { if (encomenda.customerId < 0) errorList.clientes = 'ID tem de ser maior que 0'; else errorList.clientes = '' }">
-          <p v-if="errorList.clientes" class="text-red-500 text-sm mt-1">{{ errorList.clientes }}</p>
+          <label for="customerId" class="block text-sm font-medium text-gray-700">Cliente</label>
+          <select name="customerId" id="customerId" v-model="encomenda.customerId"
+                  class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required>
+            <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{cliente.username + " - " + cliente.email}}
+            </option>
+          </select>
         </div>
 
         <!-- Estado -->

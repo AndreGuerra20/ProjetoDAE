@@ -1,0 +1,16 @@
+meta {
+  name: Get All Clientes
+  type: http
+  seq: 20
+}
+
+get {
+  url: {{uri}}clientes
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
+}

@@ -58,11 +58,14 @@ public class ConfigBean {
     @PostConstruct
     public void populateDB() {
         try {
-            clienteBean.create("João", 123456789, "joao", "123");
-            clienteBean.create("Manel", 123456787, "manel", "123");
-            logisticaBean.create("Henrique", "FUNC1", "henri", "123");
-            gestorBean.create("Andre", "FUNC2", "andre", "123");
-            gestorBean.create("Ricardo", "FUNC3", "ricardo", "123");
+
+            //Criar utilizadores
+            clienteBean.create("João", 123456789, "joao", "123", "joao@mail.pt");
+            clienteBean.create("Manel", 123456787, "manel", "123", "manel@mail.pt");
+
+            logisticaBean.create("Henrique", "FUNC1", "henri", "123","henrique@mail.pt");
+            gestorBean.create("Andre", "FUNC2", "andre", "123","andre@mail.pt");
+            gestorBean.create("Daniela", "FUNC3", "daniela", "123","daniela@mail.pt");
 
             encomendaBean.create(1,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
             encomendaBean.create(2,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());

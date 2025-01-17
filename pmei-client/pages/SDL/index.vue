@@ -106,6 +106,9 @@ function calculateZoom(eventos) {
 function volumeHasGPS(volume) {
   return volume.sensores.find(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)
 }
+function encomendaHasGPS(encomenda) {
+  return encomenda.volumes.find(volume => volumeHasGPS(volume))
+}
 </script>
 
 <template>
@@ -170,7 +173,7 @@ function volumeHasGPS(volume) {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.volumes.length }}</td>
                 <td>
-                  <table>
+                  <table v-if="encomendaHasGPS(encomenda)">
                     <thead>
                       <tr>
                         <th class="text-right px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>

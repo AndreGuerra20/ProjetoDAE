@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GestorDTO implements Serializable {
-    @Id
     private String username;
     private String codFuncionario;
 

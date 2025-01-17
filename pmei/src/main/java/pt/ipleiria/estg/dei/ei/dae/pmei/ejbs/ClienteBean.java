@@ -25,13 +25,13 @@ public class ClienteBean {
     @Inject
     private Hasher hasher;
 
-    public void create(String name, long NIF, String username, String password) throws MyEntityExistsException, MyConstraintViolationException {
+    public void create(String name, long NIF, String username, String password, String email) throws MyEntityExistsException, MyConstraintViolationException {
         var cliente = find(username);
         if (cliente != null) {
             throw new MyEntityExistsException("Cliente already exists: " + username);
         }
         try {
-            cliente = new Cliente(name, NIF, username, hasher.hash(password));
+            cliente = new Cliente(name, NIF, username, hasher.hash(password), email);
             em.persist(cliente);
             em.flush();
         } catch (ConstraintViolationException e) {

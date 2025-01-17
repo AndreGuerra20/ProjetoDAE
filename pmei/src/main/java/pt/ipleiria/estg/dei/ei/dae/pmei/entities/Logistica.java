@@ -10,8 +10,8 @@ public class Logistica extends User {
     public Logistica() {
     }
 
-    public Logistica(String username, String password,String nome, String codFuncionario) {
-        super(username, password,nome);
+    public Logistica(String username, String password,String nome, String codFuncionario, String email) {
+        super(username, password, nome, email);
         this.codFuncionario = codFuncionario;
     }
 
