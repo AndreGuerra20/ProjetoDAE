@@ -7,7 +7,7 @@
                 <!-- Encomenda ID -->
                 <div>
                     <label for="encomendaId" class="block text-sm font-medium text-gray-700">Encomenda ID</label>
-                    <input placeholder="Ex: 1" name="encomendaId" id="encomendaId" v-model="encomendaId" type="number"
+                    <input placeholder="Ex: 1" name="encomendaId" id="encomendaId" v-model="encomendaId" type="number" min="1"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required>
                 </div>
@@ -22,7 +22,7 @@
                             <div>
                                 <label for="idVolume" class="block text-sm font-medium text-gray-700">ID Volume</label>
                                 <input placeholder="Ex: 1" name="idVolume" id="idVolume" v-model="volume.idVolume"
-                                    type="number"
+                                    type="number" min="1"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div>
@@ -126,6 +126,9 @@ import { useAuthStore } from '~/store/auth-store';
 const router = useRouter()
 const authStore = useAuthStore()
 
+const config = useRuntimeConfig()
+const api = config.public.API_URL
+
 const { token } = storeToRefs(authStore)
 
 const encomendaId = ref(null)
@@ -166,13 +169,13 @@ const addSensor = (volumeIndex) => {
 
 const addVolumes = async () => {
     try {
-        await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas/${encomendaId.value}`, {
+        await $fetch(`${api}/encomendas/${encomendaId.value}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token.value}`
             },
-            body: JSON.stringify({ volumes: volumes.value }),
+            body: JSON.stringify( volumes.value ),
             onResponse({ request, response, options }) {
                 if (response.status == 201) {
                     router.push('/SDL')

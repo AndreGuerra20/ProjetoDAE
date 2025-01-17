@@ -38,4 +38,8 @@ public class EventoBean {
     public List<Evento> findAll() {
         return em.createNamedQuery("getAllEventos", Evento.class).getResultList();
     }
+
+    public void update(Evento evento) {
+        em.merge(evento);
+    }
 }

@@ -136,6 +136,6 @@ public class EncomendaService {
             throw new MyEntityNotFoundException("Encomenda with Id{" + id + "} not found");
         }
         encomendaBean.addVolumes(encomenda,volumes);
-        return Response.ok(EncomendaDTO.from(encomendaBean.findWithVolumes(id))).build();
+        return Response.status(Response.Status.CREATED).build();
     }
 }

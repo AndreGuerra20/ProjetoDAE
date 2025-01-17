@@ -167,7 +167,7 @@ const entregarVolume = async (id) => {
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
           <div class="flex gap-2">
-            <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Add Volume</NuxtLink>
+            <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Volume Volume</NuxtLink>
             <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Encomenda</NuxtLink>
           </div>
         </div>
@@ -232,7 +232,7 @@ const entregarVolume = async (id) => {
       <div class="bg-white rounded-lg shadow-md p-4">
         <h2 class="text-xl font-semibold mb-4">Mapa das Rotas</h2>
         <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}" class="mt-1">
-          <LMap ref="map" :zoom="calculateZoom(eventos)" :max-zoom="18" :center="calculateCenter(eventos)"
+          <LMap ref="map" :zoom="calculateZoom(eventos)" :max-zoom="18" :min-zoom="3" :center="calculateCenter(eventos)"
             :use-global-leaflet="false">
             <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
@@ -241,6 +241,26 @@ const entregarVolume = async (id) => {
               <div v-for="volume in encomenda.volumes">
                 <div
                   v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)">
+                  <LMarker :lat-lng="[
+                    parseFloat(sensor.eventos[0].valor.split(',')[0]),
+                    parseFloat(sensor.eventos[0].valor.split(',')[1])
+                  ]" :key="sensor.eventos[0].timestamp">
+                    <LPopup>Primeiro evento registado pelo sensor de GPS {{sensor.id}} do volume {{volume.idVolume}}
+                      da encomenda {{encomenda.encomendaId}} na data {{ new Date(sensor.eventos[0].timestamp).toLocaleString('pt-PT', {
+                        day: '2-digit', month: '2-digit',
+                        year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+                    </LPopup>
+                  </LMarker>
+                  <LMarker :lat-lng="[
+                    parseFloat(sensor.eventos[sensor.eventos.length - 1].valor.split(',')[0]),
+                    parseFloat(sensor.eventos[sensor.eventos.length - 1].valor.split(',')[1])
+                  ]" :key="sensor.eventos[0].valor.timestamp">
+                    <LPopup>Último evento registado pelo sensor de GPS {{sensor.id}} do volume {{volume.idVolume}}
+                      da encomenda {{encomenda.encomendaId}} na data {{ new Date(sensor.eventos[sensor.eventos.length - 1].timestamp).toLocaleString('pt-PT', {
+                        day: '2-digit', month: '2-digit',
+                        year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+                    </LPopup>
+                  </LMarker>
                   <LPolyline
                     :lat-lngs="sensor.eventos.map(evento => ({ lat: parseFloat(evento.valor.split(',')[0]), lng: parseFloat(evento.valor.split(',')[1]) }))"
                     :color="sensor.color"></LPolyline>
