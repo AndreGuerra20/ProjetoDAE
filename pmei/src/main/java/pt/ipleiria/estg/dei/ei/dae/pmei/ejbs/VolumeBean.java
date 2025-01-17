@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.ejbs;
 
+import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,6 +17,9 @@ import java.util.List;
 public class VolumeBean {
     @PersistenceContext
     private EntityManager em;
+
+    @EJB
+    private EncomendaBean encomendaBean;
 
     public void update(Volume volume) {
         em.merge(volume);
@@ -96,9 +100,28 @@ public class VolumeBean {
         }
         return sensoresByVolumeId;
     }
-//    public void update(long volumeId, String estado){
-//        var volumeEstado = find(volumeId);
-//        volumeEstado.setEstado(estado);
-//        entityManager.merge(volumeEstado);
-//    }
+
+    public void update(long volumeId, String estado){
+        var volume = find(volumeId);
+        if (volume == null) {
+            throw new IllegalArgumentException("Volume {" + volumeId + "} not found");
+        }
+        if(volume.isEntregue()){
+            throw new IllegalArgumentException("Volume {" + volumeId + "} already delivered");
+        }
+        volume.setEntregue(estado.equals("Entregue"));
+        Hibernate.initialize(volume.getEncomenda());
+        Encomenda encomenda = encomendaBean.findWithVolumes(volume.getEncomenda().getId());
+        boolean allDelivered = true;
+        for (Volume v : encomenda.getVolumes()) {
+            if (!v.isEntregue()) {
+                allDelivered = false;
+                break;
+            }
+        }
+        if (allDelivered) {
+            encomenda.setEstado("Entregue");
+        }
+        em.merge(volume);
+    }
 }

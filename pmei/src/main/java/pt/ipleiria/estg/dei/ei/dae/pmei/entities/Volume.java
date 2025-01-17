@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class Volume {
     }
 
     public Encomenda getEncomenda() {
+        Hibernate.initialize(encomenda);
         return encomenda;
     }
 
