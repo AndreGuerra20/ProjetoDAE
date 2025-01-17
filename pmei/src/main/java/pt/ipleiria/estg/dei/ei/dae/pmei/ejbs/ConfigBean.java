@@ -52,8 +52,12 @@ public class ConfigBean {
     @EJB
     private EventoBean eventoBean;
 
+    public static boolean development = false;
+
     private static final Logger logger = Logger.getLogger("ConfigBean.logger");
     private static final String CSV_FILE = "/products.csv";
+    private static final String CSV_FILE_DIRECOES = "/direcoes.csv";
+    private static final String CSV_FILE_DIRECOES2 = "/direcoes2.csv";
 
     @PostConstruct
     public void populateDB() {
@@ -62,20 +66,36 @@ public class ConfigBean {
             //Criar utilizadores
             clienteBean.create("João", 123456789, "joao", "123", "joao@mail.pt");
             clienteBean.create("Manel", 123456787, "manel", "123", "manel@mail.pt");
+            clienteBean.create("Joana Vasconcelos", 250624499, "joana", "123", "joana@mail.pt");
+            clienteBean.create("Maria", 123456788, "maria", "123", "maria@mail.pt");
+            clienteBean.create("Carlos Ferreira",8764321,"carlos","123","carlos.j.ferreira@ipleiria.pt");
 
             logisticaBean.create("Henrique", "FUNC1", "henri", "123","henrique@mail.pt");
+
             gestorBean.create("Andre", "FUNC2", "andre", "123","andre@mail.pt");
             gestorBean.create("Daniela", "FUNC3", "daniela", "123","daniela@mail.pt");
 
+            //Criar encomendas
             encomendaBean.create(1,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
             encomendaBean.create(2,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
+            encomendaBean.create(3,clienteBean.find("carlos").getId(), "Pendente", new ArrayList<>());
+            encomendaBean.create(4,clienteBean.find("carlos").getId(), "Pendente", new ArrayList<>());
+            encomendaBean.create(5,clienteBean.find("carlos").getId(), "Pendente", new ArrayList<>());
+            encomendaBean.create(6,clienteBean.find("carlos").getId(), "Pendente", new ArrayList<>());
 
+            //Criar volumes
             volumeBean.create(1,"Caixa Isotérmica", 1);
             volumeBean.create(2,"Caixa", 1);
             volumeBean.create(3,"Caixa Isotérmica", 1);
-
             volumeBean.create(4,"Caixa", 2);
+            volumeBean.create(5,"Caixa Isotérmica", 3);
+            volumeBean.create(6,"Caixa Cartão", 3);
+            volumeBean.create(7,"Contentor", 3);
+            volumeBean.create(8,"", 4);
+            volumeBean.create(9,"Caixa Cartão", 5);
+            volumeBean.create(10,"Caixa Cartão", 6);
 
+            //Criar produtos
             produtoBean.create(1,"Peixe", true);
             produtoBean.create(2,"Comando Remoto", true);
 
@@ -100,13 +120,24 @@ public class ConfigBean {
                 System.out.println("Ficheiro não encontrado");
             }
 
-
+            //Criar linhas de produtos
             linhaProdutoBean.create(1, 2, 1);
             linhaProdutoBean.create(2, 1, 2);
-
-            linhaProdutoBean.create(111, 3, 4);
-            linhaProdutoBean.create(152, 12, 4);
-            linhaProdutoBean.create(153, 2, 4);
+            linhaProdutoBean.create(32, 2, 3);
+            linhaProdutoBean.create(34, 3, 3);
+            linhaProdutoBean.create(116, 3, 4);
+            linhaProdutoBean.create(157, 12, 4);
+            linhaProdutoBean.create(158, 2, 4);
+            linhaProdutoBean.create(146, 1, 5);
+            linhaProdutoBean.create(145, 2, 5);
+            linhaProdutoBean.create(150, 4, 5);
+            linhaProdutoBean.create(173, 3, 5);
+            linhaProdutoBean.create(94, 2, 5);
+            linhaProdutoBean.create(100, 2, 6);
+            linhaProdutoBean.create(4, 1, 7);
+            linhaProdutoBean.create(61, 2, 8);
+            linhaProdutoBean.create(74, 12, 9);
+            linhaProdutoBean.create(26, 3, 10);
 
             sensorBean.create(1,"Temperatura", true, 1);
             sensorBean.create(2,"Temperatura", true, 2);
@@ -117,62 +148,70 @@ public class ConfigBean {
             sensorBean.create(7,"Posicionamento Global", true, 2);
             sensorBean.create(222,"Posicionamento Global", true, 4);
             sensorBean.create(223,"Temperatura", true, 4);
+            sensorBean.create(8,"Temperatura", true, 5);
+            sensorBean.create(9,"Posicionamento Global", true, 5);
+            sensorBean.create(10,"Posicionamento Global", true, 7);
+            sensorBean.create(11,"Posicionamento Global", true, 7);
+
+            //Eventos
 
             // Eliminar dps só pra testar frontend
-            sensorBean.create(8,"Posicionamento Global", true, 1);
-            sensorBean.create(9,"Posicionamento Global", true, 1);
-            sensorBean.create(10,"Posicionamento Global", true, 1);
-            sensorBean.create(11,"Posicionamento Global", true, 1);
-            sensorBean.create(12,"Posicionamento Global", true, 1);
-            sensorBean.create(13,"Posicionamento Global", true, 1);
-            sensorBean.create(14,"Posicionamento Global", true, 1);
-            sensorBean.create(15,"Posicionamento Global", true, 1);
-            sensorBean.create(16,"Posicionamento Global", true, 1);
+            if (development) {
+                sensorBean.create(100000,"Posicionamento Global", true, 1);
+                sensorBean.create(100001,"Posicionamento Global", true, 1);
+                sensorBean.create(100002,"Posicionamento Global", true, 1);
+                sensorBean.create(100003,"Posicionamento Global", true, 1);
+                sensorBean.create(100004,"Posicionamento Global", true, 1);
+                sensorBean.create(100005,"Posicionamento Global", true, 1);
+                sensorBean.create(100006,"Posicionamento Global", true, 1);
+                sensorBean.create(100007,"Posicionamento Global", true, 1);
+                sensorBean.create(100008,"Posicionamento Global", true, 1);
 
-            eventoBean.create("39.74335365871343,-8.794312605631447", 8);
-            eventoBean.create("38.74335365871343,-8.794312605631447", 8);
-            eventoBean.create("37.74335365871343,-8.794312605631447", 8);
-            eventoBean.create("36.74335365871343,-8.794312605631447", 8);
+                eventoBean.create("39.74335365871343,-8.794312605631447", 100000);
+                eventoBean.create("38.74335365871343,-8.794312605631447", 100000);
+                eventoBean.create("37.74335365871343,-8.794312605631447", 100000);
+                eventoBean.create("36.74335365871343,-8.794312605631447", 100000);
 
-            eventoBean.create("39.74335365871343,-7.794312605631447", 9);
-            eventoBean.create("38.74335365871343,-7.794312605631447", 9);
-            eventoBean.create("37.74335365871343,-7.794312605631447", 9);
-            eventoBean.create("36.74335365871343,-7.794312605631447", 9);
+                eventoBean.create("39.74335365871343,-7.794312605631447", 100001);
+                eventoBean.create("38.74335365871343,-7.794312605631447", 100001);
+                eventoBean.create("37.74335365871343,-7.794312605631447", 100001);
+                eventoBean.create("36.74335365871343,-7.794312605631447", 100001);
 
-            eventoBean.create("39.74335365871343,-6.794312605631447", 10);
-            eventoBean.create("38.74335365871343,-6.794312605631447", 10);
-            eventoBean.create("37.74335365871343,-6.794312605631447", 10);
-            eventoBean.create("36.74335365871343,-6.794312605631447", 10);
+                eventoBean.create("39.74335365871343,-6.794312605631447", 100002);
+                eventoBean.create("38.74335365871343,-6.794312605631447", 100002);
+                eventoBean.create("37.74335365871343,-6.794312605631447", 100002);
+                eventoBean.create("36.74335365871343,-6.794312605631447", 100002);
 
-            eventoBean.create("39.74335365871343,-5.794312605631447", 11);
-            eventoBean.create("38.74335365871343,-5.794312605631447", 11);
-            eventoBean.create("37.74335365871343,-5.794312605631447", 11);
-            eventoBean.create("36.74335365871343,-5.794312605631447", 11);
-            
-            eventoBean.create("39.74335365871343,-4.794312605631447", 12);
-            eventoBean.create("38.74335365871343,-4.794312605631447", 12);
-            eventoBean.create("37.74335365871343,-4.794312605631447", 12);
-            eventoBean.create("36.74335365871343,-4.794312605631447", 12);
-            
-            eventoBean.create("39.74335365871343,-3.794312605631447", 13);
-            eventoBean.create("38.74335365871343,-3.794312605631447", 13);
-            eventoBean.create("37.74335365871343,-3.794312605631447", 13);
-            eventoBean.create("36.74335365871343,-3.794312605631447", 13);
+                eventoBean.create("39.74335365871343,-5.794312605631447", 100003);
+                eventoBean.create("38.74335365871343,-5.794312605631447", 100003);
+                eventoBean.create("37.74335365871343,-5.794312605631447", 100003);
+                eventoBean.create("36.74335365871343,-5.794312605631447", 100003);
 
-            eventoBean.create("39.74335365871343,-2.794312605631447", 14);
-            eventoBean.create("38.74335365871343,-2.794312605631447", 14);
-            eventoBean.create("37.74335365871343,-2.794312605631447", 14);
-            eventoBean.create("36.74335365871343,-2.794312605631447", 14);
+                eventoBean.create("39.74335365871343,-4.794312605631447", 100004);
+                eventoBean.create("38.74335365871343,-4.794312605631447", 100004);
+                eventoBean.create("37.74335365871343,-4.794312605631447", 100004);
+                eventoBean.create("36.74335365871343,-4.794312605631447", 100004);
 
-            eventoBean.create("39.74335365871343,-1.794312605631447", 15);
-            eventoBean.create("38.74335365871343,-1.794312605631447", 15);
-            eventoBean.create("37.74335365871343,-1.794312605631447", 15);
-            eventoBean.create("36.74335365871343,-1.794312605631447", 15);
+                eventoBean.create("39.74335365871343,-3.794312605631447", 100005);
+                eventoBean.create("38.74335365871343,-3.794312605631447", 100005);
+                eventoBean.create("37.74335365871343,-3.794312605631447", 100005);
+                eventoBean.create("36.74335365871343,-3.794312605631447", 100005);
 
-            eventoBean.create("39.74335365871343,-0.794312605631447", 16);
-            eventoBean.create("38.74335365871343,-0.794312605631447", 16);
-            eventoBean.create("37.74335365871343,-0.794312605631447", 16);
-            eventoBean.create("36.74335365871343,-0.794312605631447", 16);
+                eventoBean.create("39.74335365871343,-2.794312605631447", 100006);
+                eventoBean.create("38.74335365871343,-2.794312605631447", 100006);
+                eventoBean.create("37.74335365871343,-2.794312605631447", 100006);
+                eventoBean.create("36.74335365871343,-2.794312605631447", 100006);
+
+                eventoBean.create("39.74335365871343,-1.794312605631447", 100007);
+                eventoBean.create("38.74335365871343,-1.794312605631447", 100007);
+                eventoBean.create("37.74335365871343,-1.794312605631447", 100007);
+                eventoBean.create("36.74335365871343,-1.794312605631447", 100007);
+
+                eventoBean.create("39.74335365871343,-0.794312605631447", 100007);
+                eventoBean.create("38.74335365871343,-0.794312605631447", 100007);
+                eventoBean.create("37.74335365871343,-0.794312605631447", 100007);
+                eventoBean.create("36.74335365871343,-0.794312605631447", 100007);
+            }
 
             //Até aqui
 
@@ -406,6 +445,120 @@ public class ConfigBean {
             eventoBean.create("30.5", 223);
             eventoBean.create("29.8", 223);
 
+            eventoBean.create("41.878113,-87.629799", 9);
+            eventoBean.create("41.729652,-88.232964", 9);
+            eventoBean.create("41.343054,-88.842175", 9);
+            eventoBean.create("40.633124,-89.398528", 9);
+            eventoBean.create("39.781721,-89.650148", 9);
+
+            eventoBean.create("38.627003,-90.199404", 9);
+            eventoBean.create("38.220360,-91.173703", 9);
+            eventoBean.create("37.149649,-93.324610", 9);
+            eventoBean.create("37.085792,-94.513281", 9);
+
+            eventoBean.create("37.075902,-94.704167", 9);
+            eventoBean.create("37.005070,-94.616534", 9);
+
+            eventoBean.create("36.153982,-95.992775", 9);
+            eventoBean.create("35.467560,-97.516428", 9);
+            eventoBean.create("35.533241,-97.962981", 9);
+            eventoBean.create("35.212243,-99.784013", 9);
+
+            eventoBean.create("35.222001,-101.831297", 9);
+            eventoBean.create("35.178137,-101.903661", 9);
+            eventoBean.create("35.064239,-102.418197", 9);
+
+            eventoBean.create("35.084386,-106.650422", 9);
+            eventoBean.create("35.185852,-107.887808", 9);
+            eventoBean.create("35.528078,-108.742587", 9);
+
+            eventoBean.create("35.198284,-111.651302", 9);
+            eventoBean.create("35.248478,-112.185988", 9);
+            eventoBean.create("35.333485,-113.668238", 9);
+            eventoBean.create("35.189443,-114.053006", 9);
+            eventoBean.create("35.027381,-114.592986", 9);
+
+            eventoBean.create("34.909263,-117.023448", 9);
+            eventoBean.create("34.135560,-117.923462", 9);
+            eventoBean.create("34.107855,-118.125468", 9);
+            eventoBean.create("34.019470,-118.491227", 9);
+
+            eventoBean.create("10.5", 8);
+            eventoBean.create("12.0", 8);
+            eventoBean.create("14.2", 8);
+            eventoBean.create("16.0", 8);
+            eventoBean.create("19.5", 8);
+
+            eventoBean.create("16.7", 8);
+            eventoBean.create("20.1", 8);
+            eventoBean.create("18.4", 8);
+            eventoBean.create("21.2", 8);
+
+            eventoBean.create("18.0", 8);
+            eventoBean.create("22.3", 8);
+
+            eventoBean.create("22.7", 8);
+            eventoBean.create("27.5", 8);
+            eventoBean.create("29.1", 8);
+            eventoBean.create("24.4", 8);
+
+            eventoBean.create("28.9", 8);
+            eventoBean.create("30.2", 8);
+            eventoBean.create("32.4", 8);
+
+            eventoBean.create("23.0", 8);
+            eventoBean.create("24.5", 8);
+            eventoBean.create("22.8", 8);
+
+            eventoBean.create("30.0", 8);
+            eventoBean.create("32.2", 8);
+            eventoBean.create("33.8", 8);
+            eventoBean.create("36.5", 8);
+            eventoBean.create("38.3", 8);
+
+            eventoBean.create("35.5", 8);
+            eventoBean.create("37.2", 8);
+            eventoBean.create("37.8", 8);
+            eventoBean.create("39.0", 8);
+
+
+            try (CSVReader csvReader = new CSVReader(new FileReader(CSV_FILE_DIRECOES))) {
+                String[] linha;
+                int i = 0;
+                while ((linha = csvReader.readNext()) != null) {
+                    i++;
+                    String longitude = linha[0];
+                    String latitude = linha[1];
+                    if (eventoBean.findAll().size()%100 == 0){
+                        System.out.println("Foram inseridos +100 eventos");
+                    }
+                    //Ler de 10 em 10 linhas porque o ficheiro é muito grande
+                    if (i % 10 == 0){
+                        eventoBean.create(longitude + "," + latitude, 10);
+                    }
+                }
+            } catch (IOException | CsvValidationException e) {
+                System.out.println("Ficheiro não encontrado");
+            }
+
+            try (CSVReader csvReader = new CSVReader(new FileReader(CSV_FILE_DIRECOES2))) {
+                String[] linha;
+                int i = 0;
+                while ((linha = csvReader.readNext()) != null) {
+                    i++;
+                    String longitude = linha[0];
+                    String latitude = linha[1];
+                    if (eventoBean.findAll().size()%100 == 0){
+                        System.out.println("Foram inseridos +100 eventos");
+                    }
+                    //Ler de 10 em 10 linhas porque o ficheiro é muito grande
+                    if (i % 50 == 0){
+                        eventoBean.create(longitude + "," + latitude, 11);
+                    }
+                }
+            } catch (IOException | CsvValidationException e) {
+                System.out.println("Ficheiro não encontrado");
+            }
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());

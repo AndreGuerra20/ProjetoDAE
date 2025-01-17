@@ -201,17 +201,13 @@ const entregarVolume = async (id) => {
                   <table v-if="encomendaHasGPS(encomenda)">
                     <thead>
                       <tr>
-                        <th
-                          class="text-right px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Volume</th>
-                        <th
-                          class="text-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Cores</th>
+                        <th class="text-right px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                        <th class="text-center px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">Cores</th>
                       </tr>
                     </thead>
                     <tbody class="bg-gray-50 divide-y divide-gray-200 ">
                       <tr v-for="volume in encomenda.volumes.filter(volume => volumeHasGPS(volume))">
-                        <td class="text-left pl-1">{{ volume.idVolume }}</td>
+                        <td class="text-center pl-1">{{ volume.idVolume }}</td>
                         <td class="text-center">
                           <div
                             v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)"
