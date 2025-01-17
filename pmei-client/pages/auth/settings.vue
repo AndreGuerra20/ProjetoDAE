@@ -13,8 +13,6 @@ const isGestor = authStore.role === 'Gestor'
 const sucessPassword = ref(false)
 const sucessUserPassword = ref(false)
 
-console.log('User:', authStore.role)
-
 const passwordFormData = reactive({
   oldPassword: "",
   password: "",
@@ -38,7 +36,6 @@ async function fetchUsers() {
         Authorization: `Bearer ${authStore.token}`
       },
       onResponse({ request, response, options }) {
-        console.log('Users:', response._data)
         users.value = response._data
         //remove gestor from users list
         users.value = users.value.filter(user => user.role !== 'Gestor')
@@ -81,9 +78,9 @@ const changeUserPassword = async () => {
         },
         body: passwordUserFormData
       })
-      console.log('Changing user password:', passwordUserFormData.password + ' ' + passwordUserFormData.confirmPassword + ' ' + passwordUserFormData.username)
     }
   } catch (err) {
+    errorUserPassword.value = 'Não foi possível alterar a password.'
     console.error('Error changing password:', err);
   }
 }
@@ -125,7 +122,7 @@ onMounted(async () => {
       <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Definições</h1>
 
       <div v-if="isGestor" class="flex gap-2 justify-end mb-4">
-        <NuxtLink to="/" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Novo Gestor</NuxtLink>
+        <NuxtLink to="/auth/add" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Novo Gestor</NuxtLink>
       </div>
       <div v-if="isGestor" class="bg-white rounded-lg shadow-md p-4 mb-5">
         <h2 class="text-xl font-semibold mb-4">Mudar password de utilizador</h2>

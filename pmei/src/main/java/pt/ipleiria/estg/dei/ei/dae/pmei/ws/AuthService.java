@@ -9,13 +9,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.AuthDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.GestorAuthDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.PasswordChangeDTO;
-import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.UserDTO;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.GestorBean;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.LogisticaBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.UserBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Logistica;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
@@ -37,6 +36,9 @@ public class AuthService {
     @EJB
     private GestorBean gestorBean;
 
+    @EJB
+    private LogisticaBean logisticaBean;
+
     /**
      * EP 10 - Um utilizador faz login
      *
@@ -57,20 +59,38 @@ public class AuthService {
      * EP 14 - Criar um gestor novo
      *
      * @param gestorDTO Dados para a criação como nome, codFuncionario, etc
-     * @return Token para efeitos de autenticação e autorização
+     * @return Gestor criado
      */
     @POST
-    @Path("/user")
+    @Path("/gestor")
     @Authenticated
     @RolesAllowed({"Gestor"})
-    public Response register(@Valid GestorAuthDTO gestorDTO) throws MyConstraintViolationException, MyEntityExistsException {
+    public Response registerGestor(@Valid GestorAuthDTO gestorDTO) throws MyConstraintViolationException, MyEntityExistsException {
         Gestor gestor = gestorBean.create(gestorDTO.getNome(),gestorDTO.getCodFuncionario(), gestorDTO.getUsername(), gestorDTO.getPassword(), gestorDTO.getEmail());
         if(gestor == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        String token = tokenIssuer.issue(gestor.getUsername());
-        return Response.ok(token).build();
+        return Response.ok(GestorDTO.from(gestor)).build();
     }
+
+    /**
+     * EP 14 - Criar um gestor novo
+     *
+     * @param logisticaDTO Dados para a criação como nome, codFuncionario, etc
+     * @return User Logistica criado
+     */
+    @POST
+    @Path("/logistica")
+    @Authenticated
+    @RolesAllowed({"Gestor"})
+    public Response registerLogistica(@Valid LogisticaAuthDTO logisticaDTO) throws MyConstraintViolationException, MyEntityExistsException {
+        Logistica logistica = logisticaBean.create(logisticaDTO.getNome(), logisticaDTO.getCodFuncionario(), logisticaDTO.getUsername(), logisticaDTO.getPassword(), logisticaDTO.getEmail());
+        if(logistica == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.ok(UserDTO.from(logistica)).build();
+    }
+
 
     @GET
     @Authenticated
