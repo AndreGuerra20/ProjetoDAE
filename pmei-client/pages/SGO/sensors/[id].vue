@@ -1,9 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useAuthStore } from "~/store/auth-store.js";
+import { useRoute, useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 const error = ref('')
 const token = ref(null)
 const sensor = ref(null)
@@ -19,6 +21,10 @@ const getCorrectSensorName = (tipo) => {
     return 'Aceleração';
   }
   return tipo;
+}
+
+const getEvento = () => {
+  router.push(`/SGO/sensors/addEvento/${sensor.value.id}`)
 }
 
 async function getSensorStats() {
@@ -95,7 +101,7 @@ const formatDate = (timestamp) => {
 
 }
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   if (!authStore.token) {
     authStore.loadUser()
   }
@@ -122,7 +128,15 @@ onBeforeMount(() => {
         {{ error }}
       </div>
 
-      <h1 v-if="sensor" class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Sensor #{{ sensor.id }}</h1>
+      <div class="flex justify-between items-center mb-6">
+        <h1 v-if="sensor" class="text-2xl md:text-3xl font-bold text-gray-800">Sensor #{{ sensor.id }}</h1>
+        <button @click="getEvento" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Adicionar Evento
+        </button>
+      </div>
 
       <!-- Sensor Details -->
       <div v-if="sensor" class="bg-white rounded-lg shadow-md p-4 mb-6">
