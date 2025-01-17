@@ -7,11 +7,15 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EncomendaBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.EventoBean;
 import pt.ipleiria.estg.dei.ei.dae.pmei.ejbs.SensorBean;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Encomenda;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Authenticated;
 import pt.ipleiria.estg.dei.ei.dae.pmei.util.EventoComparator;
 
@@ -28,6 +32,9 @@ public class SensorService {
 
     @EJB
     private EventoBean eventoBean;
+
+    @EJB
+    private EncomendaBean encomendaBean;
 
     @Context
     private SecurityContext securityContext;
@@ -233,9 +240,27 @@ public class SensorService {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
         }
-        //TODO Implementar
-        //Vai ser preciso criar um novo DTO
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+
+        List<Encomenda> encomendasDoCliente = encomendaBean.findAll().stream().filter(e -> e.getCliente().getUsername().equals(username)).toList();
+        List<UltimaLeituraDTO> ultimasLeituras = new ArrayList<>();
+        for (Encomenda encomenda : encomendasDoCliente) {
+            Hibernate.initialize(encomenda.getVolumes());
+            for (Volume volume : encomenda.getVolumes()) {
+                Hibernate.initialize(volume.getProdutos());
+                Hibernate.initialize(volume.getSensores());
+                for (Sensor sensor : volume.getSensores()) {
+                    Hibernate.initialize(sensor.getEventos());
+                }
+            }
+            for(Volume volume : encomenda.getVolumes()) {
+                for(Sensor sensor : volume.getSensores()) {
+                    if(sensor.getTipo().equals(tipoSensor)) {
+                        ultimasLeituras.add(UltimaLeituraDTO.from(sensor));
+                    }
+                }
+            }
+        }
+        return Response.ok(UltimosValoresDTO.from(ultimasLeituras)).build();
     }
 
 }
