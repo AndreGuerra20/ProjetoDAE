@@ -1,3 +1,96 @@
+<script setup>
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '~/store/auth-store';
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const config = useRuntimeConfig()
+const api = config.public.API_URL
+
+const { token } = storeToRefs(authStore)
+
+const encomendaId = ref(null)
+const volumes = ref([])
+const produtos = ref([])
+
+onMounted(async () => {
+    await getAllProducts()
+    console.log(produtos.value)
+})
+
+const addVolume = () => {
+    volumes.value.push({
+        idVolume: null,
+        tipoEmbalagem: null,
+        produtos: [
+            {
+                id: null,
+                quantidade: null
+            }
+        ],
+        sensores: [
+            {
+                id: null,
+                tipo: null
+            }
+        ]
+    })
+}
+
+const addProduto = (volumeIndex) => {
+    volumes.value[volumeIndex].produtos.push({
+        id: null,
+        quantidade: null
+    })
+}
+
+const addSensor = (volumeIndex) => {
+    volumes.value[volumeIndex].sensores.push({
+        id: null,
+        tipo: null
+    })
+}
+
+const addVolumes = async () => {
+    try {
+        await $fetch(`${api}/encomendas/${encomendaId.value}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token.value}`
+            },
+            body: JSON.stringify(volumes.value),
+            onResponse({ request, response, options }) {
+                if (response.status == 201) {
+                    router.push('/SDL')
+                }
+            }
+        })
+    } catch (err) {
+        console.error('Error adding volumes:', err);
+    }
+}
+
+async function getAllProducts() {
+    try {
+        await $fetch(`${api}/produtos`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token.value}`
+            },
+            onResponse({ request, response, options }) {
+                if (response.status === 200) {
+                    produtos.value = response._data
+                }
+            }
+        })
+    } catch (err) {
+        console.error('Error getting produtos:', err);
+    }
+}
+</script>
 <template>
     <div class="min-h-screen bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
@@ -7,7 +100,8 @@
                 <!-- Encomenda ID -->
                 <div>
                     <label for="encomendaId" class="block text-sm font-medium text-gray-700">Encomenda ID</label>
-                    <input placeholder="Ex: 1" name="encomendaId" id="encomendaId" v-model="encomendaId" type="number" min="1"
+                    <input placeholder="Ex: 1" name="encomendaId" id="encomendaId" v-model="encomendaId" type="number"
+                        min="1"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required>
                 </div>
@@ -40,16 +134,10 @@
                             <div v-for="(produto, prodIndex) in volume.produtos" :key="prodIndex"
                                 class="mt-2 grid grid-cols-3 gap-4">
                                 <div>
-                                  <USelectMenu
-                                      searchable
-                                      searchable-placeholder="Procurar produto"
-                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                      placeholder="Selecione um produto"
-                                      :options="produtos"
-                                      value-attribute="id"
-                                      option-attribute="descricao"
-                                      v-model="produto.id"
-                                  />
+                                    <USelectMenu searchable searchable-placeholder="Procurar produto"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        placeholder="Selecione um produto" :options="produtos" value-attribute="id"
+                                        option-attribute="descricao" v-model="produto.id" />
                                 </div>
                                 <div>
                                     <label for="quantidade"
@@ -123,96 +211,3 @@
         </div>
     </div>
 </template>
-<script setup>
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '~/store/auth-store';
-
-const router = useRouter()
-const authStore = useAuthStore()
-
-const config = useRuntimeConfig()
-const api = config.public.API_URL
-
-const { token } = storeToRefs(authStore)
-
-const encomendaId = ref(null)
-const volumes = ref([])
-const produtos = ref([])
-
-onMounted(async () => {
-  await getAllProducts()
-  console.log(produtos.value)
-})
-
-const addVolume = () => {
-    volumes.value.push({
-        idVolume: null,
-        tipoEmbalagem: null,
-        produtos: [
-            {
-                id: null,
-                quantidade: null
-            }
-        ],
-        sensores: [
-            {
-                id: null,
-                tipo: null
-            }
-        ]
-    })
-}
-
-const addProduto = (volumeIndex) => {
-    volumes.value[volumeIndex].produtos.push({
-        id: null,
-        quantidade: null
-    })
-}
-
-const addSensor = (volumeIndex) => {
-    volumes.value[volumeIndex].sensores.push({
-        id: null,
-        tipo: null
-    })
-}
-
-const addVolumes = async () => {
-    try {
-        await $fetch(`${api}/encomendas/${encomendaId.value}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token.value}`
-            },
-            body: JSON.stringify( volumes.value ),
-            onResponse({ request, response, options }) {
-                if (response.status == 201) {
-                    router.push('/SDL')
-                }
-            }
-        })
-    } catch (err) {
-        console.error('Error adding volumes:', err);
-    }
-}
-
-async function getAllProducts() {
-  try {
-    await $fetch(`${api}/produtos`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.value}`
-      },
-      onResponse({ request, response, options }) {
-        if (response.status === 200) {
-          produtos.value = response._data
-        }
-      }
-    })
-  } catch (err) {
-    console.error('Error getting produtos:', err);
-  }
-}
-</script>
