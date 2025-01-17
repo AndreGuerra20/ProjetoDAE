@@ -3,12 +3,16 @@ import { onMounted, ref } from 'vue'
 import { useAuthStore } from "~/store/auth-store.js";
 import { useRoute, useRouter } from 'vue-router'
 
+const config = useRuntimeConfig()
+const api = config.public.API_URL
+
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const error = ref('')
 const token = ref(null)
 const sensor = ref(null)
+const events = ref(null)
 
 const min = ref(null)
 const max = ref(null)
@@ -30,17 +34,17 @@ const getEvento = () => {
 async function getSensorStats() {
   try {
     if (sensor.value && sensor.value.tipo !== 'Posicionamento Global') {
-      min.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${sensor.value.id}/min`, {
+      min.value = await $fetch(`${api}/sensores/${sensor.value.id}/min`, {
         headers: {
           Authorization: `Bearer ${token.value}`
         }
       })
-      max.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${sensor.value.id}/max`, {
+      max.value = await $fetch(`${api}/sensores/${sensor.value.id}/max`, {
         headers: {
           Authorization: `Bearer ${token.value}`
         }
       })
-      avg.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${sensor.value.id}/avg`, {
+      avg.value = await $fetch(`${api}/sensores/${sensor.value.id}/avg`, {
         headers: {
           Authorization: `Bearer ${token.value}`
         }
@@ -52,10 +56,24 @@ async function getSensorStats() {
   }
 }
 
+async function fetchSensor() {
+  try {
+    // fetch the sensor
+    sensor.value = await $fetch(`${api}/sensores/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+  } catch (err) {
+    console.error('Error fetching events:', err)
+    error.value = 'Não foi possível carregar os eventos, tente novamente mais tarde.'
+  }
+}
+
 async function fetchEvents() {
   try {
     // fetch the sensor
-    sensor.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${route.params.id}`, {
+    events.value = await $fetch(`${api}/sensores/${route.params.id}/eventos`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
@@ -67,6 +85,7 @@ async function fetchEvents() {
 }
 
 onMounted(async () => {
+  await fetchSensor()
   await fetchEvents()
   console.log(sensor.value)
   await getSensorStats()
@@ -99,6 +118,20 @@ const formatDate = (timestamp) => {
 
   return `${dateString} ${timeString}`
 
+}
+
+const getMeasureText = () => {
+  const tipo = sensor.value.tipo;
+  if (tipo === 'Pressao') {
+    return 'KPa';
+  } else if (tipo === 'Aceleracao') {
+    return 'm/s²';
+  } else if (tipo === 'Temperatura') {
+    return '°C';
+  } else if (tipo === 'Humidade') {
+    return '%';
+  }
+  return '';
 }
 
 onBeforeMount(async () => {
@@ -163,8 +196,8 @@ onBeforeMount(async () => {
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="event in sensor.eventos" :key="event.id">
-                <td class="px-6 py-4 whitespace-nowrap">{{ event.valor }}</td>
+              <tr v-for="event in events" :key="event.id">
+                <td class="px-6 py-4 whitespace-nowrap">{{ event.valor }} {{ getMeasureText() }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(event.timestamp) }}</td>
               </tr>
             </tbody>
@@ -178,15 +211,15 @@ onBeforeMount(async () => {
           <div v-if="min" class="grid grid-cols-3 gap-4">
             <div>
               <p class="text-lg font-bold">Mínimo</p>
-              <p class="text-sm">{{ min }}</p>
+              <p class="text-sm">{{ min }} {{getMeasureText()}}</p>
             </div>
             <div>
               <p class="text-lg font-bold">Média</p>
-              <p class="text-sm">{{ avg }}</p>
+              <p class="text-sm">{{ avg }} {{getMeasureText()}}</p>
             </div>
             <div>
               <p class="text-lg font-bold">Máximo</p>
-              <p class="text-sm">{{ max }}</p>
+              <p class="text-sm">{{ max }} {{getMeasureText()}}</p>
             </div>
           </div>
           <div v-else>
