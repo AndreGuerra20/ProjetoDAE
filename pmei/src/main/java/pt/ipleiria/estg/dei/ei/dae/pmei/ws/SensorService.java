@@ -232,7 +232,7 @@ public class SensorService {
      * @return DTO que precisa de ser criado
      */
     @GET
-    @Path("/cliente/{username}/sensores/{tipoSensor}")
+    @Path("/cliente/{username}/{tipoSensor}")
     @RolesAllowed({"Cliente"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getUltimosValoresSensor(@PathParam("username") String username, @PathParam("tipoSensor") String tipoSensor) {
@@ -263,5 +263,38 @@ public class SensorService {
         }
         return Response.ok(UltimosValoresDTO.from(ultimasLeituras)).build();
     }
+
+    @GET
+    @Path("/cliente/{username}/tipossensores")
+    @RolesAllowed({"Cliente"})
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<String> getTiposSensores(@PathParam("username") String username) {
+        if(securityContext.isUserInRole("Cliente")){
+            if (!username.equals(securityContext.getUserPrincipal().getName())) {
+                return null;
+            }
+        }
+
+        List<Encomenda> encomendasDoCliente = encomendaBean.findAll().stream().filter(e -> e.getCliente().getUsername().equals(username)).toList();
+        List<String> tiposSensores = new ArrayList<>();
+        for (Encomenda encomenda : encomendasDoCliente) {
+            Hibernate.initialize(encomenda.getVolumes());
+            for (Volume volume : encomenda.getVolumes()) {
+                Hibernate.initialize(volume.getProdutos());
+                Hibernate.initialize(volume.getSensores());
+                for (Sensor sensor : volume.getSensores()) {
+                    Hibernate.initialize(sensor.getEventos());
+                    if (sensor.getEventos().isEmpty()) {
+                        continue;
+                    }
+                    if(!tiposSensores.contains(sensor.getTipo())){
+                        tiposSensores.add(sensor.getTipo());
+                    }
+                }
+            }
+        }
+        return tiposSensores;
+    }
+
 
 }
