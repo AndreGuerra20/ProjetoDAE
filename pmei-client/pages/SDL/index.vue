@@ -14,6 +14,7 @@ const error = ref(null)
 
 const messages = ref([])
 const encomendas = ref([])
+const volumesPorEntregar = ref([])
 const eventos = ref([])
 
 async function fetchEncomendas() {
@@ -57,6 +58,14 @@ onMounted(async () => {
   token.value = authStore.token
   if (authStore.token) {
     await fetchEncomendas()
+    encomendas.value.forEach(encomenda => {
+      encomenda.volumes.forEach(volume => {
+        if (!volume.entregue) {
+          volumesPorEntregar.value.push(volume)
+        }
+      });
+    });
+    console.log('Volumes por entregar:', volumesPorEntregar.value)
   }
 })
 
@@ -82,33 +91,49 @@ function getRandomHex() {
   return color;
 }
 
-function calculateCenter(eventos) {
-  const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
-  const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
-  const lat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2
-  const lng = (Math.min(...longitudes) + Math.max(...longitudes)) / 2
-  if (isNaN(lat) || isNaN(lng)) {
-    return [38.7223, -9.1393]
+const entregarVolume = async (id) => {
+  try {
+    await $fetch(`${api}/volumes/${id}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      body: JSON.stringify({ estado: "Entregue" }),
+    });
+    fetchEncomendas()
+  } catch (err) {
+    console.error('Error delivering volume:', err);
+    error.value = 'Não foi possível entregar o volume, por favor tente novamente.';
   }
-  return [lat, lng]
 }
 
-function calculateZoom(eventos) {
-  const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
-  const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
-  const latDiff = Math.max(...latitudes) - Math.min(...latitudes)
-  const lngDiff = Math.max(...longitudes) - Math.min(...longitudes)
-  const latZoom = Math.floor(Math.log2(360 / latDiff)) - 1
-  const lngZoom = Math.floor(Math.log2(360 / lngDiff)) - 1
-  return Math.min(latZoom, lngZoom)
-}
+  function calculateCenter(eventos) {
+    const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
+    const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
+    const lat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2
+    const lng = (Math.min(...longitudes) + Math.max(...longitudes)) / 2
+    if (isNaN(lat) || isNaN(lng)) {
+      return [38.7223, -9.1393]
+    }
+    return [lat, lng]
+  }
 
-function volumeHasGPS(volume) {
-  return volume.sensores.find(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)
-}
-function encomendaHasGPS(encomenda) {
-  return encomenda.volumes.find(volume => volumeHasGPS(volume))
-}
+  function calculateZoom(eventos) {
+    const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
+    const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
+    const latDiff = Math.max(...latitudes) - Math.min(...latitudes)
+    const lngDiff = Math.max(...longitudes) - Math.min(...longitudes)
+    const latZoom = Math.floor(Math.log2(360 / latDiff)) - 1
+    const lngZoom = Math.floor(Math.log2(360 / lngDiff)) - 1
+    return Math.min(latZoom, lngZoom)
+  }
+
+  function volumeHasGPS(volume) {
+    return volume.sensores.find(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)
+  }
+  function encomendaHasGPS(encomenda) {
+    return encomenda.volumes.find(volume => volumeHasGPS(volume))
+  }
 </script>
 
 <template>
@@ -148,7 +173,7 @@ function encomendaHasGPS(encomenda) {
         </div>
 
         <div class="overflow-x-auto">
-          <table class="min-w-full">
+          <table v-if="encomendas && encomendas.filter(encomenda => encomenda.estado !== 'Entregue').length > 0" class="min-w-full">
             <thead>
               <tr class="bg-gray-50">
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
@@ -176,16 +201,23 @@ function encomendaHasGPS(encomenda) {
                   <table v-if="encomendaHasGPS(encomenda)">
                     <thead>
                       <tr>
-                        <th class="text-right px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
-                        <th class="text-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cores</th>
+                        <th
+                          class="text-right px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Volume</th>
+                        <th
+                          class="text-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Cores</th>
                       </tr>
                     </thead>
                     <tbody class="bg-gray-50 divide-y divide-gray-200 ">
                       <tr v-for="volume in encomenda.volumes.filter(volume => volumeHasGPS(volume))">
                         <td class="text-left pl-1">{{ volume.idVolume }}</td>
                         <td class="text-center">
-                          <div v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)" class="inline-flex">
-                            <div class="mt-1 w-4 h-4 rounded-full mr-2" :style="{ backgroundColor: sensor.color }"></div>
+                          <div
+                            v-for="sensor in volume.sensores.filter(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)"
+                            class="inline-flex">
+                            <div class="mt-1 w-4 h-4 rounded-full mr-2" :style="{ backgroundColor: sensor.color }">
+                            </div>
                           </div>
                         </td>
                       </tr>
@@ -195,6 +227,9 @@ function encomendaHasGPS(encomenda) {
               </tr>
             </tbody>
           </table>
+          <div v-else>
+            <p>Não existem encomendas para mostrar.</p>
+          </div>
         </div>
       </div>
 
@@ -217,6 +252,45 @@ function encomendaHasGPS(encomenda) {
               </div>
             </div>
           </LMap>
+        </div>
+      </div>
+      <!-- Volumes por entregar -->
+      <div class="bg-white rounded-lg shadow-md p-4 mt-6">
+        <h2 class="text-xl font-semibold mb-4">Volumes por Entregar</h2>
+        <div v-if="volumesPorEntregar && volumesPorEntregar.length > 0" class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="volume in volumesPorEntregar">
+                <td class="px-6 py-4 whitespace-nowrap">{{ volume.idVolume }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="{
+                    'px-2 py-1 text-xs rounded-full': true,
+                    'bg-green-100 text-green-800': volume.isEntregue,
+                    'bg-yellow-100 text-yellow-800': !volume.isEntregue
+                  }">
+                    {{ volume.entregue ? 'Entregue' : 'Por Entregar' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <!-- Button to deliver volume -->
+                  <form>
+                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg"
+                      @click="entregarVolume(volume.idVolume)">Entregar</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-else>
+          <p>Não existem volumes por entregar.</p>
         </div>
       </div>
     </div>
