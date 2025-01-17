@@ -11,11 +11,15 @@ export default defineNuxtConfig({
     },
   },
 
+  colorMode: {
+    preference: 'light'
+  },
+
   runtimeConfig: {
     public: {
       API_URL: process.env.API_URL || 'http://localhost:8080/PMEI/monitorizacao/api'
     }
   },
 
-  modules: ["@pinia/nuxt",'@nuxtjs/leaflet']
+  modules: ["@pinia/nuxt",'@nuxtjs/leaflet','@nuxt/ui']
 });

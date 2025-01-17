@@ -162,7 +162,7 @@ onBeforeMount(() => {
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Obter última leitura</h2>
         </div>
-        <input v-model="idAProcurar" type="text" class="w-full border border-gray-200 p-2 rounded-lg"
+        <input v-model="idAProcurar" type="text" class="w-full border p-2 rounded-lg px-3 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="ID do sensor" />
         <button @click.prevent="getLastReading" class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2">Obter</button>
         <div>

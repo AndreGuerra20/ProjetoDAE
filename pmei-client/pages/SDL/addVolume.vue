@@ -40,17 +40,22 @@
                             <div v-for="(produto, prodIndex) in volume.produtos" :key="prodIndex"
                                 class="mt-2 grid grid-cols-3 gap-4">
                                 <div>
-                                    <label for="idProduto"
-                                        class="block text-sm font-medium text-gray-700">Produto</label>
-                                    <input id="idProduto" placeholder="Ex: 1" name="idProduto" v-model="produto.id"
-                                        type="number"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                  <USelectMenu
+                                      searchable
+                                      searchable-placeholder="Procurar produto"
+                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                      placeholder="Selecione um produto"
+                                      :options="produtos"
+                                      value-attribute="id"
+                                      option-attribute="descricao"
+                                      v-model="produto.id"
+                                  />
                                 </div>
                                 <div>
                                     <label for="quantidade"
                                         class="block text-sm font-medium text-gray-700">Quantidade</label>
                                     <input id="quantidade" placeholder="Ex: 1" name="quantidade"
-                                        v-model="produto.quantidade" type="number"
+                                        v-model="produto.quantidade" type="number" min="1"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
                                 <div>
@@ -75,7 +80,7 @@
                                     <label for="idSensor" class="block text-sm font-medium text-gray-700">ID
                                         Sensor</label>
                                     <input id="idSensor" placeholder="Ex: 1" name="idSensor" v-model="sensor.id"
-                                        type="number"
+                                        type="number" min="1"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
                                 <div>
@@ -119,7 +124,6 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '~/store/auth-store';
 
@@ -133,6 +137,12 @@ const { token } = storeToRefs(authStore)
 
 const encomendaId = ref(null)
 const volumes = ref([])
+const produtos = ref([])
+
+onMounted(async () => {
+  await getAllProducts()
+  console.log(produtos.value)
+})
 
 const addVolume = () => {
     volumes.value.push({
@@ -185,5 +195,24 @@ const addVolumes = async () => {
     } catch (err) {
         console.error('Error adding volumes:', err);
     }
+}
+
+async function getAllProducts() {
+  try {
+    await $fetch(`${api}/produtos`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token.value}`
+      },
+      onResponse({ request, response, options }) {
+        if (response.status === 200) {
+          produtos.value = response._data
+        }
+      }
+    })
+  } catch (err) {
+    console.error('Error getting produtos:', err);
+  }
 }
 </script>

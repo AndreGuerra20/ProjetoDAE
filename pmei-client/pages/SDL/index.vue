@@ -167,7 +167,7 @@ const entregarVolume = async (id) => {
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
           <div class="flex gap-2">
-            <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Volume Volume</NuxtLink>
+            <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Volume</NuxtLink>
             <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Encomenda</NuxtLink>
           </div>
         </div>
