@@ -31,6 +31,11 @@
               class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
             Entrar
           </NuxtLink>
+          <NuxtLink v-if="authStore.isAuthenticated() && authStore.role === 'Gestor'"
+              to="/auth/settings"
+              class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition">
+            Definições
+          </NuxtLink>
           <a href="#" v-if="authStore.isAuthenticated()" class="px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-md transition" @click.prevent="logout">Sair</a>
         </div>
       </div>

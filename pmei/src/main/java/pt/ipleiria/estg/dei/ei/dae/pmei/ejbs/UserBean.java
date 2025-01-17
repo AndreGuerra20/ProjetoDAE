@@ -69,4 +69,9 @@ public class UserBean {
         user.setPassword(hasher.hash(password));
         em.merge(user);
     }
+
+    //método para buscar todos os utilizadores
+    public List<User> findAll() {
+        return em.createNamedQuery("getAllUsers", User.class).getResultList();
+    }
 }
