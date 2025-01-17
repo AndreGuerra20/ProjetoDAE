@@ -10,6 +10,8 @@ const loginFormData = reactive({
   password: ""
 })
 
+const error = ref('')
+
 const authStore = useAuthStore()
 const {token, user} = storeToRefs(authStore)
 
@@ -45,6 +47,9 @@ async function login() {
         })
         if (response.status === 200) {
           token.value = response._data
+        }
+        if (response.status === 401) {
+          error.value = 'Credenciais inválidas'
         }
       }
     })
@@ -101,6 +106,9 @@ async function login() {
       <div class="flex justify-between items-center">
         <button @click="login" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Entrar</button>
         <button @click="reset" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">Limpar</button>
+      </div>
+      <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4">
+        {{ error }}
       </div>
     </div>
   </div>
