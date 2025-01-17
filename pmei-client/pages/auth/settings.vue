@@ -10,6 +10,9 @@ const api = config.public.API_URL
 const authStore = useAuthStore()
 const isGestor = authStore.role === 'Gestor'
 
+const sucessPassword = ref(false)
+const sucessUserPassword = ref(false)
+
 console.log('User:', authStore.role)
 
 const passwordFormData = reactive({
@@ -63,6 +66,8 @@ async function fetchUsers() {
 }
 
 const changeUserPassword = async () => {
+  sucessUserPassword.value = false
+  errorUserPassword.value = ''
   try {
     if (passwordUserFormData.password !== passwordUserFormData.confirmPassword) {
       errorUserPassword.value = 'As passwords não coincidem.'
@@ -84,6 +89,8 @@ const changeUserPassword = async () => {
 }
 
 const changePassword = async () => {
+  sucessPassword.value = false
+  errorPassword.value = ''
   try {
     if (passwordFormData.password !== passwordFormData.confirmPassword) {
       errorPassword.value = 'As passwords não coincidem.'
@@ -97,9 +104,10 @@ const changePassword = async () => {
         },
         body: passwordFormData
       })
-      console.log('Changing password:', passwordFormData.oldPassword + ' ' + passwordFormData.password + ' ' + passwordFormData.confirmPassword)
+      sucessPassword.value = true
     }
   } catch (err) {
+    errorPassword.value = 'Não foi possível alterar a password.'
     console.error('Error changing password:', err);
   }
 }
@@ -141,6 +149,9 @@ onMounted(async () => {
         <div v-if="errorUserPassword" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4">
           {{ errorUserPassword }}
         </div>
+        <div v-if="sucessUserPassword" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mt-4">
+          Password alterada com sucesso.
+        </div>
       </div>
       <div class="bg-white rounded-lg shadow-md p-4">
         <h2 class="text-xl font-semibold mb-4">Mudar password</h2>
@@ -161,6 +172,9 @@ onMounted(async () => {
         </div>
         <div v-if="errorPassword" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4">
           {{ errorPassword }}
+        </div>
+        <div v-if="sucessPassword" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mt-4">
+          Password alterada com sucesso.
         </div>
       </div>
     </div>
