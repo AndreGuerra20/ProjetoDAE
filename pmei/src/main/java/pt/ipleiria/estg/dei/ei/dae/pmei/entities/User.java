@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-@NamedQueries(@NamedQuery(name = "getAllUsers", query = "SELECT u FROM User u ORDER BY u.username"))
+@NamedQueries({@NamedQuery(name = "getAllUsers", query = "SELECT u FROM User u ORDER BY u.username")})
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

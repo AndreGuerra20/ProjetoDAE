@@ -4,6 +4,7 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Gestor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.User;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 import pt.ipleiria.estg.dei.ei.dae.pmei.security.Hasher;
@@ -61,6 +62,9 @@ public class UserBean {
         User user = findOrFail(username);
         if(user == null) {
             throw new MyEntityNotFoundException("User with username " + username + " not found.");
+        }
+        if (user instanceof Gestor) {
+            throw new IllegalArgumentException("Cannot change password of another Gestor.");
         }
         if (password == null || password.isEmpty() || confirmPassword == null
                 || confirmPassword.isEmpty() || !confirmPassword.equals(password)) {

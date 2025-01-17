@@ -87,7 +87,7 @@ public class AuthService {
     public Response setPassword(@Valid PasswordChangeDTO passwordChangeDTO) {
         var principal = securityContext.getUserPrincipal();
         if(securityContext.isUserInRole("Gestor") &&
-                (passwordChangeDTO.getUsername() == null || passwordChangeDTO.getUsername().isEmpty())) {
+                passwordChangeDTO.getUsername() != null && !passwordChangeDTO.getUsername().isEmpty()) {
             //O gestor quer mudar a password de um utilizador
             userBean.setPasswordGestor(
                     passwordChangeDTO.getUsername(),

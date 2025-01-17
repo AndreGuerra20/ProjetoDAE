@@ -62,6 +62,7 @@ public class ConfigBean {
             clienteBean.create("Manel", 123456787, "manel", "123");
             logisticaBean.create("Henrique", "FUNC1", "henri", "123");
             gestorBean.create("Andre", "FUNC2", "andre", "123");
+            gestorBean.create("Ricardo", "FUNC3", "ricardo", "123");
 
             encomendaBean.create(1,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
             encomendaBean.create(2,clienteBean.find("joao").getId(), "Pendente", new ArrayList<>());
