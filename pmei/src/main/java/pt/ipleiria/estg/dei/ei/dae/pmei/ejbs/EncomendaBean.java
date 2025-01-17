@@ -5,6 +5,8 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.hibernate.Hibernate;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
@@ -26,6 +28,12 @@ public class EncomendaBean {
 
     @EJB
     private ProdutoBean produtoBean;
+
+    @EJB
+    private SensorBean sensorBean;
+
+    @EJB
+    private VolumeBean volumeBean;
 
     public Encomenda create(long encomendaId,long clienteId, String estado, List<Volume> volumes) throws MyEntityNotFoundException, MyConstraintViolationException {
         var cliente = em.find(Cliente.class, clienteId);
@@ -139,5 +147,51 @@ public class EncomendaBean {
 
     public void update(Encomenda encomenda) {
         em.merge(encomenda);
+    }
+
+    public void addVolumes(Encomenda encomenda, List<VolumeDTO> volumes) {
+        for (VolumeDTO volumeDTO : volumes) {
+            Volume volume = volumeBean.find(volumeDTO.getIdVolume());
+            if (volume != null){
+                throw new MyEntityExistsException("Volume with id {" + volumeDTO.getIdVolume() +"} already exists");
+            }
+            volume = new Volume();
+            volume.setIdVolume(volumeDTO.getIdVolume());
+            volume.setTipoEmbalagem(volumeDTO.getTipoEmbalagem());
+            volume.setEncomenda(encomenda);
+
+            Volume finalVolume = volume;
+            List<LinhaProduto> produtos = volumeDTO.getProdutos().stream().map(produtoDTO -> {
+                Produto produto = produtoBean.find(produtoDTO.getId());
+                if (produto == null) {
+                    throw new MyEntityNotFoundException("Produto with id {" + produtoDTO.getId() +"} not found");
+                }
+                LinhaProduto linhaProduto = new LinhaProduto();
+                linhaProduto.setProduto(produto);
+                linhaProduto.setQuantidade(produtoDTO.getQuantidade());
+                linhaProduto.setVolume(finalVolume);
+                return linhaProduto;
+            }).collect(Collectors.toList());
+
+            Volume finalVolume1 = volume;
+            List<Sensor> sensores = volumeDTO.getSensores().stream().map(sensorDTO -> {
+                Sensor sensor = sensorBean.find(sensorDTO.getId());
+                if (sensor != null) {
+                    throw new MyEntityExistsException("Sensor with id {" + sensorDTO.getId() +"} already exists");
+                }
+                sensor = new Sensor();
+                sensor.setId(sensorDTO.getId());
+                sensor.setTipo(sensorDTO.getTipo());
+                sensor.setStatus(true);
+                sensor.setVolume(finalVolume1);
+                return sensor;
+            }).collect(Collectors.toList());
+
+            volume.setProdutos(produtos);
+            volume.setSensores(sensores);
+            em.merge(volume);
+            encomenda.addVolume(volume);
+        }
+        update(encomenda);
     }
 }

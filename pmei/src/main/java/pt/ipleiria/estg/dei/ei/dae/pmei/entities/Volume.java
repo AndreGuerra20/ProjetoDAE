@@ -36,6 +36,10 @@ public class Volume {
         this.isEntregue = false;
     }
 
+    public void setIdVolume(long idVolume) {
+        this.idVolume = idVolume;
+    }
+
     public long getIdVolume() {
         return idVolume;
     }

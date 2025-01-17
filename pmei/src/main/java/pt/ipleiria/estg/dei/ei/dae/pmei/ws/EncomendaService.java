@@ -130,44 +130,12 @@ public class EncomendaService {
     @POST
     @Path("{id}")
     @RolesAllowed({"Logistica"})
-    public Response addVolumesToEncomenda(@PathParam("id") long id, List<VolumeDTO> volumesRequest) throws MyEntityNotFoundException {
-        System.out.println("Adding volumes to encomenda " + id);
+    public Response addVolumesToEncomenda(@PathParam("id") long id, List<VolumeDTO> volumes) throws MyEntityNotFoundException {
         Encomenda encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {
-            System.out.println("Encomenda not found");
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new MyEntityNotFoundException("Encomenda with Id{" + id + "} not found");
         }
-
-        for (VolumeDTO volumeDTO : volumesRequest) {
-            Volume volume = new Volume();
-            volume.setTipoEmbalagem(volumeDTO.getTipoEmbalagem());
-            volume.setEncomenda(encomenda);
-
-            List<LinhaProduto> produtos = volumeDTO.getProdutos().stream().map(produtoDTO -> {
-                Produto produto = produtoBean.find(produtoDTO.getId());
-                if (produto == null) {
-                    throw new WebApplicationException("Produto not found", Response.Status.NOT_FOUND);
-                }
-                LinhaProduto linhaProduto = new LinhaProduto();
-                linhaProduto.setProduto(produto);
-                linhaProduto.setQuantidade(produtoDTO.getQuantidade());
-                linhaProduto.setVolume(volume);
-                return linhaProduto;
-            }).collect(Collectors.toList());
-
-            List<Sensor> sensores = volumeDTO.getSensores().stream().map(sensorDTO -> {
-                Sensor sensor = new Sensor();
-                sensor.setTipo(sensorDTO.getTipo());
-                sensor.setStatus(true);
-                sensor.setVolume(volume);
-                return sensor;
-            }).collect(Collectors.toList());
-
-            volume.setProdutos(produtos);
-            volume.setSensores(sensores);
-            encomenda.addVolume(volume);
-            encomendaBean.update(encomenda);
-        }
+        encomendaBean.addVolumes(encomenda,volumes);
         return Response.ok(EncomendaDTO.from(encomendaBean.findWithVolumes(id))).build();
     }
 }
