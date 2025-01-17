@@ -58,16 +58,17 @@ public class SensorService {
     @GET
     @Path("{id}")
     public Response getSensor(@PathParam("id") long id) {
-        Sensor withEventos = sensorBean.findWithEventos(id);
-        if (withEventos == null) {
-            return Response.status(Response.Status.NO_CONTENT).build();
+        Sensor sensor = sensorBean.find(id);
+        if (sensor == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
         if(securityContext.isUserInRole("Cliente")){
-            if (!withEventos.getVolume().getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
+            if (!sensor.getVolume().getEncomenda().getCliente().getUsername().equals(securityContext.getUserPrincipal().getName())) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
         }
-        return Response.ok(SensorDTO.from(withEventos)).build();
+        return Response.ok(SensorSemEventosDTO.from(sensor)).build();
     }
 
     /**
