@@ -5,7 +5,18 @@ meta {
 }
 
 patch {
-  url: {{uri}}volumes/1
-  body: none
+  url: {{uri}}volumes/2
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "estado": "Entregue"
+  }
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }
