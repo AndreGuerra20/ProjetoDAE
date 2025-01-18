@@ -264,7 +264,7 @@ onBeforeMount(() => {
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase
                   tracking-wider">Entregue</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Sensores</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Encomenda</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Produtos</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -278,6 +278,11 @@ onBeforeMount(() => {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <NuxtLink :to="`/SGO/volumes/${volume.idVolume}`" class="text-blue-500 hover:text-blue-600">
+                    +
+                  </NuxtLink>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <NuxtLink :to="`/SGO/volumes/${volume.idVolume}/produtos`" class="text-blue-500 hover:text-blue-600">
                     +
                   </NuxtLink>
                 </td>
