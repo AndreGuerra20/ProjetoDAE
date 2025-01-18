@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/store/auth-store';
 const config = useRuntimeConfig()
 const api = config.public.API_URL
+const googleMapsApiKey = config.public.GOOGLE_MAPS_API_KEY
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -16,6 +17,8 @@ const token = ref(null)
 const sensorsSize = ref(null)
 const idAProcurar = ref(null)
 const volumes = ref(null)
+const tipos = ref(null)
+const leituras = ref()
 
 const lastReading = reactive({
   id: null,
@@ -43,6 +46,8 @@ async function fetch() {
         Authorization: `Bearer ${token.value}`
       }
     })
+    tipos.value = sensors.value.map(sensor => sensor.tipo)
+    tipos.value = [...new Set(tipos.value)]
 
     //filter sensors
     // sensors.value = sensors.value.filter(sensor => sensor.status === true)
@@ -141,12 +146,41 @@ const getColor = (length) => {
   return length === 0 ? 'px-6 py-4 whitespace-nowrap text-yellow-500' : 'px-6 py-4 whitespace-nowrap'
 }
 
+const getLeituras = async () => {
+  leituras.value = null;
+  if (!formData.selectedTipo) {
+    return;
+  }
+  try {
+    await $fetch(`${api}/sensores/tipo/${formData.selectedTipo}`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      async onResponse({ response }) {
+        if (response.status === 200) {
+          leituras.value = response._data;
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching readings:', err);
+    error.encomendas = 'Não foi possível carregar as leituras, por favor tente novamente.';
+  }
+};
+
+const formData = reactive({
+  selectedTipo: ''
+})
+
 onMounted(async () => {
   if (authStore.token) {
     await fetch()
     sensorsSize.value = sensors.value.length
   }
   await getVolumes()
+  if (sensors) {
+    console.log(tipos.value)
+  }
 })
 
 onBeforeMount(() => {
@@ -332,6 +366,58 @@ onBeforeMount(() => {
           </table>
         </div>
       </div>
+
+      <div class="bg-white rounded-lg shadow-md p-4 mt-5">
+        <div class="space-y-4">
+          <form>
+            <div class="flex justify-between items-center mb-2">
+              <p class="font-medium text-lg">Visualizar últimas leituras</p>
+            </div>
+            <select v-model="formData.selectedTipo" @change="getLeituras"
+                    class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+              <option value="" selected>Selecione um tipo</option>
+              <option v-for="tipo in tipos" :value="tipo">{{ tipo }}</option>
+            </select>
+          </form>
+        </div>
+        <div>
+          <div v-if="leituras" class="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div class="text-sm mb-3">
+              <table class="min-w-full">
+                <thead>
+                <tr class="bg-gray-50">
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Sensor
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Encomenda</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Volume
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Última
+                    Leitura</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp
+                  </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="eachleitura in leituras" :key="eachleitura.idSensor">
+                  <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.sensorId }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idEncomenda }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idVolume }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.valor }}
+                    {{ getMeasureText(formData.selectedTipo) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(eachleitura.timestamp) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
+
+
+
+
   </div>
 </template>
