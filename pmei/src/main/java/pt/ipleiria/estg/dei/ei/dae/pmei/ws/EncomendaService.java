@@ -45,7 +45,7 @@ public class EncomendaService {
      */
     @GET
     @Path("/")
-    @RolesAllowed({"Gestor"})
+    @RolesAllowed({"Gestor","Logistica"})
     public List<EncomendaDTO> getAllEncomendas() {
         List<EncomendaDTO> listaEncomendas = EncomendaDTO.from(encomendaBean.findAll());
         if(listaEncomendas.isEmpty()){
