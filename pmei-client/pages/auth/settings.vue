@@ -29,6 +29,7 @@ const errorUserPassword = ref('')
 const errorPassword = ref('')
 
 const users = ref([])
+const usersOptions = ref([])
 async function fetchUsers() {
   try {
     await $fetch(`${api}/users`, {
@@ -55,6 +56,12 @@ async function fetchUsers() {
           }
           return 0
         })
+        for (let user of users.value) {
+          usersOptions.value.push({
+            id: user.username,
+            descricao: `${user.username} (${user.role})`
+          })
+        }
       }
     });
   } catch (err) {
@@ -129,9 +136,9 @@ onMounted(async () => {
         <div class="space-y-4">
           <div>
             <label for="user" class="block text-sm font-medium text-gray-700">Utilizador</label>
-            <select v-model="passwordUserFormData.username" id="user" name="user" class="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option v-for="user in users" :value="`${user.username}`">{{user.username}} ({{user.role}})</option>
-            </select>
+            <USelectMenu searchable searchable-placeholder="Procurar utilizador" name="user"
+                         placeholder="Selecione um utilizador" :options="usersOptions" value-attribute="id"
+                         option-attribute="descricao" v-model="passwordUserFormData.username" size="lg"/>
           </div>
           <div>
             <label for="new-password" class="block text-sm font-medium text-gray-700">Nova password</label>

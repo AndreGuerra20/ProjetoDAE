@@ -19,6 +19,18 @@ onMounted(async () => {
     console.log(produtos.value)
 })
 
+const algo = {
+  color: {
+    white: {
+      outline: 'mt-0.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500' //alterar aqui daniela
+    },
+    gray: {
+      outline: 'shadow-sm bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400'
+    }
+  }
+}
+
+
 const addVolume = () => {
     volumes.value.push({
         idVolume: null,
@@ -134,10 +146,11 @@ async function getAllProducts() {
                             <div v-for="(produto, prodIndex) in volume.produtos" :key="prodIndex"
                                 class="mt-2 grid grid-cols-3 gap-4">
                                 <div>
-                                    <USelectMenu searchable searchable-placeholder="Procurar produto"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    <label for="idProduto" class="block text-sm font-medium text-gray-700">ID
+                                        Produto</label>
+                                    <USelectMenu searchable searchable-placeholder="Procurar produto" name="idProduto"
                                         placeholder="Selecione um produto" :options="produtos" value-attribute="id"
-                                        option-attribute="descricao" v-model="produto.id" />
+                                        option-attribute="descricao" v-model="produto.id" :ui="algo" size="xs"/>
                                 </div>
                                 <div>
                                     <label for="quantidade"

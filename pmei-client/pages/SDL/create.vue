@@ -28,6 +28,7 @@ const encomenda = ref({
 })
 
 const clientes = ref([])
+const clientesOptions = ref([])
 
 const addVolume = () => {
   encomenda.value.volumes.push({
@@ -140,6 +141,12 @@ const fetchClientes = async () => {
         if (response.status == 200) {
           const data = response._data
           clientes.value = data
+          clientesOptions.value = data.map(cliente => {
+            return {
+              id: cliente.id,
+              descricao: `${cliente.username} - ${cliente.email}`
+            }
+          })
         }
       }
     })
@@ -208,6 +215,14 @@ onMounted(async () => {
   await fetchProdutos();
   await fetchClientes();
 })
+
+const algo = {
+  color: {
+    white: {
+      outline: 'mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+    }
+  }
+}
 </script>
 <template>
   <div class="min-h-screen bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
@@ -227,12 +242,9 @@ onMounted(async () => {
         <!-- Customer ID -->
         <div>
           <label for="customerId" class="block text-sm font-medium text-gray-700">Cliente</label>
-          <select name="customerId" id="customerId" v-model="encomenda.customerId"
-                  class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required>
-            <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{cliente.username + " - " + cliente.email}}
-            </option>
-          </select>
+          <USelectMenu searchable searchable-placeholder="Procurar cliente por username ou email" name="customerId"
+                       placeholder="Selecione um cliente" :options="clientesOptions" value-attribute="id"
+                       option-attribute="descricao" v-model="encomenda.customerId" size="xl" :ui="algo"/>
         </div>
 
         <!-- Estado -->
@@ -278,13 +290,9 @@ onMounted(async () => {
                 <div>
                   <label for="idProduto"
                          class="block text-sm font-medium text-gray-700">Produto</label>
-                  <select id="idProduto" placeholder="Ex: 1" name="idProduto" v-model="produto.id" required
-                          class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option v-for="produto in produtos" :key="produto.id" :value="produto.id">{{
-                        produto.descricao
-                      }}
-                    </option>
-                  </select>
+                  <USelectMenu searchable searchable-placeholder="Procurar produto" name="idProduto"
+                               placeholder="Selecione um produto" :options="produtos" value-attribute="id"
+                               option-attribute="descricao" v-model="produto.id" size="xl" :ui="algo"/>
                 </div>
                 <div>
                   <label for="quantidade"
