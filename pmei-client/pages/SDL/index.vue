@@ -15,6 +15,7 @@ const error = ref(null)
 const messages = ref([])
 const encomendas = ref([])
 const volumesPorEntregar = ref([])
+const encomendasComVolumesPorEntregar = ref(new Set)
 const eventos = ref([])
 
 async function fetchEncomendas() {
@@ -62,10 +63,12 @@ onMounted(async () => {
       encomenda.volumes.forEach(volume => {
         if (!volume.entregue) {
           volumesPorEntregar.value.push(volume)
+          encomendasComVolumesPorEntregar.value.add(encomenda)
         }
       });
     });
     console.log('Volumes por entregar:', volumesPorEntregar.value)
+    console.log('Encomendas com volumes por entregar:', encomendasComVolumesPorEntregar.value)
   }
 })
 
@@ -91,6 +94,19 @@ function getRandomHex() {
   return color;
 }
 
+watch(encomendas, async (newValue) => {
+  volumesPorEntregar.value = []
+  encomendasComVolumesPorEntregar.value.clear()
+  newValue.forEach(encomenda => {
+    encomenda.volumes.forEach(volume => {
+      if (!volume.entregue) {
+        volumesPorEntregar.value.push(volume)
+        encomendasComVolumesPorEntregar.value.add(encomenda)
+      }
+    });
+  });
+})
+
 const entregarVolume = async (id) => {
   try {
     await $fetch(`${api}/volumes/${id}`, {
@@ -107,33 +123,33 @@ const entregarVolume = async (id) => {
   }
 }
 
-  function calculateCenter(eventos) {
-    const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
-    const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
-    const lat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2
-    const lng = (Math.min(...longitudes) + Math.max(...longitudes)) / 2
-    if (isNaN(lat) || isNaN(lng)) {
-      return [38.7223, -9.1393]
-    }
-    return [lat, lng]
+function calculateCenter(eventos) {
+  const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
+  const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
+  const lat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2
+  const lng = (Math.min(...longitudes) + Math.max(...longitudes)) / 2
+  if (isNaN(lat) || isNaN(lng)) {
+    return [38.7223, -9.1393]
   }
+  return [lat, lng]
+}
 
-  function calculateZoom(eventos) {
-    const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
-    const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
-    const latDiff = Math.max(...latitudes) - Math.min(...latitudes)
-    const lngDiff = Math.max(...longitudes) - Math.min(...longitudes)
-    const latZoom = Math.floor(Math.log2(360 / latDiff)) - 1
-    const lngZoom = Math.floor(Math.log2(360 / lngDiff)) - 1
-    return Math.min(latZoom, lngZoom)
-  }
+function calculateZoom(eventos) {
+  const latitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[0]))
+  const longitudes = eventos.map(evento => parseFloat(evento.valor.split(',')[1]))
+  const latDiff = Math.max(...latitudes) - Math.min(...latitudes)
+  const lngDiff = Math.max(...longitudes) - Math.min(...longitudes)
+  const latZoom = Math.floor(Math.log2(360 / latDiff)) - 1
+  const lngZoom = Math.floor(Math.log2(360 / lngDiff)) - 1
+  return Math.min(latZoom, lngZoom)
+}
 
-  function volumeHasGPS(volume) {
-    return volume.sensores.find(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)
-  }
-  function encomendaHasGPS(encomenda) {
-    return encomenda.volumes.find(volume => volumeHasGPS(volume))
-  }
+function volumeHasGPS(volume) {
+  return volume.sensores.find(sensor => sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0)
+}
+function encomendaHasGPS(encomenda) {
+  return encomenda.volumes.find(volume => volumeHasGPS(volume))
+}
 </script>
 
 <template>
@@ -167,19 +183,22 @@ const entregarVolume = async (id) => {
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
           <div class="flex gap-2">
-            <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Volume</NuxtLink>
+            <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Volume
+            </NuxtLink>
             <NuxtLink to="/SDL/create" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Nova Encomenda</NuxtLink>
           </div>
         </div>
 
         <div class="overflow-x-auto">
-          <table v-if="encomendas && encomendas.filter(encomenda => encomenda.estado !== 'Entregue').length > 0" class="min-w-full">
+          <table v-if="encomendas && encomendas.filter(encomenda => encomenda.estado !== 'Entregue').length > 0"
+            class="min-w-full">
             <thead>
               <tr class="bg-gray-50">
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumes</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Legenda Rotas no Mapa</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Legenda Rotas
+                  no Mapa</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -201,8 +220,10 @@ const entregarVolume = async (id) => {
                   <table v-if="encomendaHasGPS(encomenda)">
                     <thead>
                       <tr>
-                        <th class="text-right px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
-                        <th class="text-center px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">Cores</th>
+                        <th class="text-right px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Volume</th>
+                        <th class="text-center px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Cores</th>
                       </tr>
                     </thead>
                     <tbody class="bg-gray-50 divide-y divide-gray-200 ">
@@ -224,7 +245,7 @@ const entregarVolume = async (id) => {
             </tbody>
           </table>
           <div v-else>
-            <p>Não existem encomendas para mostrar.</p>
+            <p>Não existem encomendas pendentes para mostrar.</p>
           </div>
         </div>
       </div>
@@ -245,20 +266,22 @@ const entregarVolume = async (id) => {
                     parseFloat(sensor.eventos[0].valor.split(',')[0]),
                     parseFloat(sensor.eventos[0].valor.split(',')[1])
                   ]" :key="sensor.eventos[0].timestamp">
-                    <LPopup>Primeiro evento registado pelo sensor de GPS {{sensor.id}} do volume {{volume.idVolume}}
-                      da encomenda {{encomenda.encomendaId}} na data {{ new Date(sensor.eventos[0].timestamp).toLocaleString('pt-PT', {
-                        day: '2-digit', month: '2-digit',
-                        year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+                    <LPopup>Primeiro evento registado pelo sensor de GPS {{ sensor.id }} do volume {{ volume.idVolume }}
+                      da encomenda {{ encomenda.encomendaId }} na data {{ new
+                        Date(sensor.eventos[0].timestamp).toLocaleString('pt-PT', {
+                          day: '2-digit', month: '2-digit',
+                          year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
                     </LPopup>
                   </LMarker>
                   <LMarker :lat-lng="[
                     parseFloat(sensor.eventos[sensor.eventos.length - 1].valor.split(',')[0]),
                     parseFloat(sensor.eventos[sensor.eventos.length - 1].valor.split(',')[1])
                   ]" :key="sensor.eventos[0].valor.timestamp">
-                    <LPopup>Último evento registado pelo sensor de GPS {{sensor.id}} do volume {{volume.idVolume}}
-                      da encomenda {{encomenda.encomendaId}} na data {{ new Date(sensor.eventos[sensor.eventos.length - 1].timestamp).toLocaleString('pt-PT', {
-                        day: '2-digit', month: '2-digit',
-                        year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+                    <LPopup>Último evento registado pelo sensor de GPS {{ sensor.id }} do volume {{ volume.idVolume }}
+                      da encomenda {{ encomenda.encomendaId }} na data {{ new Date(sensor.eventos[sensor.eventos.length -
+                        1].timestamp).toLocaleString('pt-PT', {
+                          day: '2-digit', month: '2-digit',
+                          year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
                     </LPopup>
                   </LMarker>
                   <LPolyline
@@ -272,34 +295,40 @@ const entregarVolume = async (id) => {
       </div>
       <!-- Volumes por entregar -->
       <div class="bg-white rounded-lg shadow-md p-4 mt-6">
-        <h2 class="text-xl font-semibold mb-4">Volumes por Entregar</h2>
-        <div v-if="volumesPorEntregar && volumesPorEntregar.length > 0" class="overflow-x-auto">
+        <h2 class="text-xl font-semibold mb-4">Encomendas com Volumes por Entregar</h2>
+        <div v-if="encomendasComVolumesPorEntregar && encomendasComVolumesPorEntregar.size > 0" class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
               <tr class="bg-gray-50">
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID encomenda
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumes por
+                  entregar</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="volume in volumesPorEntregar">
-                <td class="px-6 py-4 whitespace-nowrap">{{ volume.idVolume }}</td>
+              <tr v-for="encomenda of encomendasComVolumesPorEntregar" :key="encomenda.encomendaId">
+                <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.encomendaId }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="{
-                    'px-2 py-1 text-xs rounded-full': true,
-                    'bg-green-100 text-green-800': volume.isEntregue,
-                    'bg-yellow-100 text-yellow-800': !volume.isEntregue
-                  }">
-                    {{ volume.entregue ? 'Entregue' : 'Por Entregar' }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <!-- Button to deliver volume -->
-                  <form>
-                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg"
-                      @click="entregarVolume(volume.idVolume)">Entregar</button>
-                  </form>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th class="text-right px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Volume</th>
+                        <th class="text-center px-6 py-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Ação</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-gray-50 divide-y divide-gray-200 ">
+                      <tr v-for="volume in encomenda.volumes.filter(volume => !volume.entregue)">
+                        <td class="text-center pl-1">{{ volume.idVolume }}</td>
+                        <td class="text-center">
+                          <button @click="entregarVolume(volume.idVolume)"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-lg">Entregar</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
             </tbody>

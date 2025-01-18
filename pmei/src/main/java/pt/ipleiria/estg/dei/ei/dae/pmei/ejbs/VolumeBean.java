@@ -121,6 +121,11 @@ public class VolumeBean {
         }
         if (allDelivered) {
             encomenda.setEstado("Entregue");
+            for(Volume ignored : encomenda.getVolumes()) {
+                for(Sensor s : volume.getSensores()) {
+                    s.setStatus(false);
+                }
+            }
         }
         em.merge(volume);
     }

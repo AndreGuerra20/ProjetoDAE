@@ -219,6 +219,8 @@ public class SensorService {
         Sensor sensor = sensorBean.findWithEventos(SensorId);
         if (sensor == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        } else if(!sensor.getStatus()){
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
         sensorBean.createEvento(sensor, eventoDTO.getValor());
         return Response.ok(SensorDTO.from(sensor)).build();
