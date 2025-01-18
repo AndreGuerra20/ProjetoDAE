@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from '~/store/auth-store';
+const config = useRuntimeConfig()
+const api = config.public.API_URL
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -13,6 +15,7 @@ const orders = ref(null)
 const token = ref(null)
 const sensorsSize = ref(null)
 const idAProcurar = ref(null)
+const volumes = ref(null)
 
 const lastReading = reactive({
   id: null,
@@ -35,7 +38,7 @@ async function fetch() {
   error.value = null;
   try {
     // Then fetch the sensors
-    sensors.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores`, {
+    sensors.value = await $fetch(`${api}/sensores`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
@@ -44,7 +47,7 @@ async function fetch() {
     //filter sensors
     // sensors.value = sensors.value.filter(sensor => sensor.status === true)
 
-    orders.value = await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/encomendas`, {
+    orders.value = await $fetch(`${api}/encomendas`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
@@ -54,6 +57,10 @@ async function fetch() {
     console.error('Error fetching encomenda details:', err)
     error.value = 'Não foi possível carregar os detalhes da encomenda, tente novamente mais tarde.'
   }
+}
+
+const getVolumeStatus = (status) => {
+  return status === true ? 'Sim' : 'Não';
 }
 
 const getSensorStatus = (status) => {
@@ -80,7 +87,7 @@ const getLastReading = async () => {
     return
   }
   try {
-    await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${idAProcurar.value}/eventoRecente`, {
+    await $fetch(`${api}/sensores/${idAProcurar.value}/eventoRecente`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
@@ -90,7 +97,7 @@ const getLastReading = async () => {
           lastReading.id = response._data.sensorId
           lastReading.ultimaLeitura = response._data.valor
           lastReading.timestamp = response._data.timestamp
-          $fetch(`http://localhost:8080/PMEI/monitorizacao/api/sensores/${idAProcurar.value}`, {
+          $fetch(`${api}/sensores/${idAProcurar.value}`, {
             headers: {
               Authorization: `Bearer ${token.value}`
             },
@@ -118,11 +125,28 @@ const getLastReading = async () => {
   }
 }
 
+const getVolumes = async () => {
+  try {
+    volumes.value = await $fetch(`${api}/volumes/`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+  } catch (err) {
+    console.error('Error fetching volumes:', err)
+  }
+}
+
+const getColor = (length) => {
+  return length === 0 ? 'px-6 py-4 whitespace-nowrap text-yellow-500' : 'px-6 py-4 whitespace-nowrap'
+}
+
 onMounted(async () => {
   if (authStore.token) {
     await fetch()
     sensorsSize.value = sensors.value.length
   }
+  await getVolumes()
 })
 
 onBeforeMount(() => {
@@ -221,6 +245,48 @@ onBeforeMount(() => {
           </table>
         </div>
       </div>
+
+      <!-- Volumes -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Volumes</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID do Volume
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo da
+                  Embalagem
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase
+                  tracking-wider">Entregue</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Sensores</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Encomenda</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="volume in volumes" :key="volume.id">
+                <td class="px-6 py-4 whitespace-nowrap">{{ volume.idVolume }}</td>
+                <td class="px-6 py-4 whitespace-nowrap" :class="getColor(volume.tipoEmbalagem.length)">{{ volume.tipoEmbalagem.length > 0 ? volume.tipoEmbalagem : 'Sem tipo de embalagem definido' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="styleStatusBadge(volume.entregue)">
+                    {{ getVolumeStatus(volume.entregue) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <NuxtLink :to="`/SGO/volumes/${volume.idVolume}`" class="text-blue-500 hover:text-blue-600">
+                    +
+                  </NuxtLink>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
 
       <!-- Sensors -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
