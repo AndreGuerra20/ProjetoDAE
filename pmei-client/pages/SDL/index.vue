@@ -45,7 +45,6 @@ async function fetchEncomendas() {
             }
           }
         }
-        console.log('Encomendas:', encomendas.value)
       }
     });
   } catch (err) {
@@ -67,8 +66,6 @@ onMounted(async () => {
         }
       });
     });
-    console.log('Volumes por entregar:', volumesPorEntregar.value)
-    console.log('Encomendas com volumes por entregar:', encomendasComVolumesPorEntregar.value)
   }
 })
 

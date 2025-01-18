@@ -90,7 +90,6 @@ async function fetchEvents() {
 onMounted(async () => {
   await fetchSensor()
   await fetchEvents()
-  console.log(sensor.value)
   await getSensorStats()
 })
 

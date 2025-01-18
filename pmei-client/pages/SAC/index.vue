@@ -97,7 +97,6 @@ const getLeituras = async () => {
       onResponse({ response }) {
         if (response.status === 200) {
           leituras.value = response._data
-          console.log(leituras.value)
         }
       }
     });

@@ -36,8 +36,6 @@ const addNewUser = async () => {
     errorUser.value = 'As passwords não coincidem.'
     return
   }
-  console.log('formData:', formData)
-  console.log('tipouser:', tipouser.value)
   if (tipouser.value === '') {
     errorUser.value = 'Escolha um tipo de utilizador.'
     return

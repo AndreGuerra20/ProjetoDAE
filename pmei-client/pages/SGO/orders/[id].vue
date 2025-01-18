@@ -57,7 +57,6 @@ const styleStatusBadge = (status) => {
 
 onMounted(async () => {
   await fetch()
-  console.log(order.value)
 })
 
 onBeforeMount(() => {

@@ -110,7 +110,6 @@ async function fetchEncomendaDetails() {
           }
     }
   }
-  console.log(marcadores.value)
 }
 
 function calculateCenter(eventos) {
@@ -182,7 +181,6 @@ onMounted(async () => {
   // authStore.loadUser()
   // token.value = authStore.token
   await fetchEncomendaDetails()
-  console.log(encomenda.value)
 })
 
 onBeforeMount(() => {
