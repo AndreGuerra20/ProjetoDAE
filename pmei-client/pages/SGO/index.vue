@@ -200,6 +200,10 @@ onBeforeMount(() => {
     <div class="max-w-7xl mx-auto">
       <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Gestão</h1>
 
+      <div class="flex gap-2 justify-end mb-4">
+        <NuxtLink to="/SGO/clients" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Ver Clientes</NuxtLink>
+      </div>
+
       <!-- Search by Sensor ID -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
