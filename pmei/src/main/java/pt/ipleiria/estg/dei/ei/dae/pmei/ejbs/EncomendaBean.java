@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import org.hibernate.Hibernate;
+import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.LinhaProdutoDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.dtos.VolumeDTO;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.*;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyConstraintViolationException;
@@ -49,7 +50,7 @@ public class EncomendaBean {
         } catch (ConstraintViolationException e) {
             throw new MyConstraintViolationException(e);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid estado");
+            throw new IllegalArgumentException("Invalid estado {" + estado + "} should be one of " + Encomenda.LISTA_ESTADOS);
         }
     }
 
@@ -79,6 +80,9 @@ public class EncomendaBean {
                     if (p == null) {
                         throw new MyEntityNotFoundException("Produto with Id{" + lpDto.getId() + "} not found");
                     }
+                    if (p.isPrecisaEmbalagemAdicional() && (vol.getTipoEmbalagem() == null || vol.getTipoEmbalagem().isEmpty())) {
+                        throw new IllegalArgumentException("Produto with Id{" + lpDto.getId() + "} needs additional packaging");
+                    }
                     produto.setProduto(p);
                     produto.setQuantidade(lpDto.getQuantidade());
                     produto.setVolume(vol);
@@ -99,8 +103,6 @@ public class EncomendaBean {
             }).collect(Collectors.toList()));
         } catch (ConstraintViolationException e) {
             throw new MyConstraintViolationException(e);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid estado should be one of {" + Encomenda.LISTA_ESTADOS + "}");
         }
         em.persist(encomenda);
         for (Volume volume : encomenda.getVolumes()) {
@@ -165,6 +167,9 @@ public class EncomendaBean {
                 Produto produto = produtoBean.find(produtoDTO.getId());
                 if (produto == null) {
                     throw new MyEntityNotFoundException("Produto with id {" + produtoDTO.getId() +"} not found");
+                }
+                if (produto.isPrecisaEmbalagemAdicional() && (finalVolume.getTipoEmbalagem() == null || finalVolume.getTipoEmbalagem().isEmpty())) {
+                    throw new IllegalArgumentException("Produto with id {" + produtoDTO.getId() +"} needs additional packaging");
                 }
                 LinhaProduto linhaProduto = new LinhaProduto();
                 linhaProduto.setProduto(produto);

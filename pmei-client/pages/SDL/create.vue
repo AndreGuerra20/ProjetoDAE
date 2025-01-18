@@ -15,9 +15,7 @@ const produtos = ref([])
 const errorList = reactive({
   encomendas: null,
   clientes: null,
-  volumes: null,
-  quantidade: null,
-  sensores: null
+  volumes: [],
 })
 
 const encomenda = ref({
@@ -48,12 +46,32 @@ const addVolume = () => {
       }
     ]
   })
+  errorList.volumes.push({
+    erroIdVolume: null,
+    produtos: [
+      {
+        erroPrecisaEmbalagem: null,
+        erroQuantidade: null
+      }
+    ],
+    sensores: [
+      {
+        erroIdSensor: null
+      }
+    ],
+  })
 }
 
 const addProduto = (volumeIndex) => {
   encomenda.value.volumes[volumeIndex].produtos.push({
     id: null,
     quantidade: null
+  })
+  errorList.volumes[volumeIndex].produtos.push({
+    erroIdProduto: null,
+    erroQuantidade: null,
+    erroPrecisaEmbalagem: null,
+    precisaEmbalagemAdicional: null
   })
 }
 
@@ -63,11 +81,32 @@ const addSensor = (volumeIndex) => {
     tipo: null,
     status: false
   })
+  errorList.volumes[volumeIndex].sensores.push({
+    erroIdSensor: null
+  })
+}
+
+const hasErrors = () => {
+  for (let i = 0; i < encomenda.value.volumes.length; i++) {
+    if (errorList.volumes[i].erroIdVolume) {
+      return true
+    }
+    for (let j = 0; j < encomenda.value.volumes[i].produtos.length; j++) {
+      if (errorList.volumes[i].produtos[j].erroIdProduto || errorList.volumes[i].produtos[j].erroQuantidade || errorList.volumes[i].produtos[j].erroPrecisaEmbalagem) {
+        return true
+      }
+    }
+    for (let j = 0; j < encomenda.value.volumes[i].sensores.length; j++) {
+      if (errorList.volumes[i].sensores[j].erroIdSensor) {
+        return true
+      }
+    }
+  }
+  return false
 }
 
 const createEncomenda = async () => {
-
-  if (errorList.clientes || errorList.encomendas || errorList.volumes || errorList.quantidade || errorList.sensores) {
+  if (errorList.clientes || errorList.encomendas || hasErrors()) { //Atualizar
     return
   }
 
@@ -155,10 +194,25 @@ const fetchClientes = async () => {
   }
 }
 
-const isIDbeingUsed = async (classe, id) => {
+const isIDbeingUsed = async (classe, id,volumeIndex,sensorIndex) => {
   if (id == null) {
     return
   }
+  if (id < 0) {
+    switch (classe) {
+      case 'encomendas':
+        errorList.encomendas = 'ID tem de ser maior que 0'
+        break
+      case 'volumes':
+        errorList.volumes[volumeIndex].erroIdVolume = 'ID tem de ser maior que 0'
+        break
+      case 'sensores':
+        errorList.volumes[volumeIndex].sensores[sensorIndex].erroIdSensor = 'ID tem de ser maior que 0'
+        break
+    }
+    return
+  }
+  let url = `http://localhost:8080/PMEI/monitorizacao/api/`
   try {
     await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/${classe}/${id}`, {
       headers: {
@@ -178,10 +232,10 @@ const isIDbeingUsed = async (classe, id) => {
               errorList.encomendas = 'ID já está a ser utilizado'
               break
             case 'volumes':
-              errorList.volumes = 'ID já está a ser utilizado'
+              errorList.volumes[volumeIndex].erroIdVolume = 'ID já está a ser utilizado'
               break
             case 'sensores':
-              errorList.sensores = 'ID já está a ser utilizado'
+              errorList.volumes[volumeIndex].sensores[sensorIndex].erroIdSensor = 'ID já está a ser utilizado'
               break
           }
         } else {
@@ -190,13 +244,12 @@ const isIDbeingUsed = async (classe, id) => {
               errorList.encomendas = null
               break
             case 'volumes':
-              errorList.volumes = null
+              errorList.volumes[volumeIndex].erroIdVolume = null
               break
             case 'sensores':
-              errorList.sensores = null
+              errorList.volumes[volumeIndex].sensores[sensorIndex].erroIdSensor = null
               break
           }
-
         }
       }
     })
@@ -236,14 +289,14 @@ const algo = {
           <input placeholder="Ex: 1" name="encomendaId" id="encomendaId" v-model="encomenda.encomendaId"
                  type="number"
                  class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                 required @focusout="isIDbeingUsed('encomendas', encomenda.encomendaId)">
+                 required @focusout="isIDbeingUsed('encomendas', encomenda.encomendaId,null,null)">
           <p v-if="errorList.encomendas" class="text-red-500 text-sm mt-1">{{ errorList.encomendas }}</p>
         </div>
         <!-- Customer ID -->
         <div>
           <label for="customerId" class="block text-sm font-medium text-gray-700">Cliente</label>
           <USelectMenu searchable searchable-placeholder="Procurar cliente por username ou email" name="customerId"
-                       placeholder="Selecione um cliente" :options="clientesOptions" value-attribute="id"
+                       placeholder="Selecione um cliente" :options="clientesOptions" value-attribute="id" required
                        option-attribute="descricao" v-model="encomenda.customerId" size="xl" :ui="algo"/>
         </div>
 
@@ -267,18 +320,26 @@ const algo = {
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label for="idVolume" class="block text-sm font-medium text-gray-700">ID Volume</label>
-                <input placeholder="Ex: 1" name="idVolume" id="idVolume" v-model="volume.idVolume"
-                       type="number" @focusout="isIDbeingUsed('volumes', volume.idVolume)"
+                <input placeholder="Ex: 1" name="idVolume" id="idVolume" v-model="volume.idVolume" required
+                       type="number" @focusout="isIDbeingUsed('volumes',volume.idVolume,index,null)"
                        class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <p v-if="errorList.volumes" class="text-red-500 text-sm mt-1">{{ errorList.volumes }}
-                </p>
+                <p v-if="errorList.volumes[index].erroIdVolume" class="text-red-500 text-sm mt-1">{{ errorList.volumes[index].erroIdVolume }}</p>
               </div>
               <div>
-                <label for="tipoEmbalagem" class="block text-sm font-medium text-gray-700">Tipo
-                  Embalagem</label>
+                <label for="tipoEmbalagem" class="block text-sm font-medium text-gray-700">Tipo Embalagem</label>
                 <input id="tipoEmbalagem" name="tipoEmbalagem" v-model="volume.tipoEmbalagem"
                        autocomplete="off"
-                       class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       @change="() => {
+                          if (volume.tipoEmbalagem != null && volume.tipoEmbalagem !== ''){
+                            errorList.volumes[index].produtos.forEach(p => p.erroPrecisaEmbalagem = null);
+                          }else{
+                            errorList.volumes[index].produtos.forEach(p => p.precisaEmbalagemAdicional ? p.erroPrecisaEmbalagem = 'Produto precisa de embalagem' : p.erroPrecisaEmbalagem = null);
+                          }
+                       }">
+                <p v-if="errorList.volumes[index].produtos.filter(p => p.erroPrecisaEmbalagem).length > 0" class="text-red-500 text-sm mt-1">
+                  O volume tem produtos que precisam de embalagem adicional
+                </p>
               </div>
             </div>
 
@@ -292,22 +353,32 @@ const algo = {
                          class="block text-sm font-medium text-gray-700">Produto</label>
                   <USelectMenu searchable searchable-placeholder="Procurar produto" name="idProduto"
                                placeholder="Selecione um produto" :options="produtos" value-attribute="id"
-                               option-attribute="descricao" v-model="produto.id" size="xl" :ui="algo"/>
+                               option-attribute="descricao" v-model="produto.id" size="xl" :ui="algo" required
+                               @change="() => {
+                                  errorList.volumes[index].produtos[prodIndex].erroPrecisaEmbalagem = null
+                                  errorList.volumes[index].produtos[prodIndex].precisaEmbalagemAdicional = produtos.find(p => p.id === produto.id).precisaEmbalagemAdicional;
+                                  if (produtos.find(p => p.id === produto.id).precisaEmbalagemAdicional && (volume.tipoEmbalagem == null || volume.tipoEmbalagem === '')){
+                                    errorList.volumes[index].produtos[prodIndex].erroPrecisaEmbalagem = 'Produto precisa de embalagem';
+                                  }
+                                  else errorList.volumes[index].produtos[prodIndex].erroPrecisaEmbalagem = null
+                               }"/>
+                  <p v-if="errorList.volumes[index].produtos[prodIndex].erroPrecisaEmbalagem" class="text-red-500 text-sm mt-1">{{ errorList.volumes[index].produtos[prodIndex].erroPrecisaEmbalagem }}</p>
                 </div>
                 <div>
                   <label for="quantidade"
                          class="block text-sm font-medium text-gray-700">Quantidade</label>
                   <input id="quantidade" placeholder="Ex: 1" name="quantidade"
                          v-model="produto.quantidade" type="number"
-                         @change="() => { if (produto.quantidade < 1) errorList.quantidade = 'Quantidade tem de ser maior que 0'; else errorList.quantidade = '' }"
-                         class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <p v-if="errorList.quantidade" class="text-red-500 text-sm mt-1">{{
-                      errorList.quantidade
+                         @change="() => { if (produto.quantidade < 1) errorList.volumes[index].produtos[prodIndex].erroQuantidade = 'Quantidade tem de ser maior que 0'; else errorList.volumes[index].produtos[prodIndex].erroQuantidade = '' }"
+                         class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         required>
+                  <p v-if="errorList.volumes[index].produtos[prodIndex].erroQuantidade" class="text-red-500 text-sm mt-1">{{
+                      errorList.volumes[index].produtos[prodIndex].erroQuantidade
                     }}</p>
                 </div>
                 <div>
                   <button type="button"
-                          @click="encomenda.volumes[index].produtos.splice(prodIndex, 1); errorList.quantidade = null"
+                          @click="encomenda.volumes[index].produtos.splice(prodIndex, 1); errorList.volumes[index].produtos.pop(prodIndex); errorList.volumes[index].erroTipoEmbalagemCount--;"
                           class="mt-6 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200">
                     Remover Produto
                   </button>
@@ -328,16 +399,16 @@ const algo = {
                   <label for="idSensor" class="block text-sm font-medium text-gray-700">ID
                     Sensor</label>
                   <input id="idSensor" placeholder="Ex: 1" name="idSensor" v-model="sensor.id"
-                         type="number" @focusout="isIDbeingUsed('sensores', sensor.id)"
-                         class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <p v-if="errorList.sensores" class="text-red-500 text-sm mt-1">{{
-                      errorList.sensores
+                         type="number" @focusout="isIDbeingUsed('sensores', sensor.id,index,sensorIndex)"
+                         class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                  <p v-if="errorList.volumes[index].sensores[sensorIndex].erroIdSensor" class="text-red-500 text-sm mt-1">{{
+                      errorList.volumes[index].sensores[sensorIndex].erroIdSensor
                     }}</p>
                 </div>
                 <div>
                   <label for="tipoSensor" class="block text-sm font-medium text-gray-700">Tipo</label>
                   <select id="tipoSensor" name="tipoSensor" v-model="sensor.tipo"
-                          class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                          class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     <option value="Aceleracao">Aceleração</option>
                     <option value="Posicionamento Global">Posicionamento Global</option>
                     <option value="Pressao">Pressão</option>
@@ -351,7 +422,7 @@ const algo = {
                 </div>
                 <div>
                   <button type="button"
-                          @click="encomenda.volumes[index].sensores.splice(sensorIndex, 1); errorList.sensores = null"
+                          @click="encomenda.volumes[index].sensores.splice(sensorIndex, 1); errorList.volumes[index].sensores.pop(sensorIndex)"
                           class="mt-6 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200">
                     Remover Sensor
                   </button>
@@ -364,7 +435,7 @@ const algo = {
             </div>
             <div>
               <button type="button"
-                      @click="encomenda.volumes.splice(index, 1); errorList.sensores = null; errorList.volumes = null; errorList.quantidade = null"
+                      @click="encomenda.volumes.splice(index, 1); errorList.volumes.pop(index)"
                       class="mt-6 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200">
                 Remover Volume
               </button>

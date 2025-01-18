@@ -798,9 +798,6 @@ public class ConfigBean {
                     i++;
                     String longitude = linha[0];
                     String latitude = linha[1];
-                    if (eventoBean.findAll().size()%100 == 0){
-                        System.out.println("Foram inseridos +100 eventos");
-                    }
                     //Ler de 10 em 10 linhas porque o ficheiro é muito grande
                     if (i % 10 == 0){
                         eventoBean.create(longitude + "," + latitude, 10);
@@ -819,9 +816,6 @@ public class ConfigBean {
                     i++;
                     String longitude = linha[0];
                     String latitude = linha[1];
-                    if (eventoBean.findAll().size()%100 == 0){
-                        System.out.println("Foram inseridos +100 eventos");
-                    }
                     //Ler de 50 em 50 linhas porque o ficheiro é muito grande
                     if (i % 50 == 0){
                         evento = eventoBean.create(longitude + "," + latitude, 11);
