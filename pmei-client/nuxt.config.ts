@@ -17,7 +17,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      API_URL: process.env.API_URL || 'http://localhost:8080/PMEI/monitorizacao/api'
+      API_URL: process.env.API_URL || 'http://localhost:8080/PMEI/monitorizacao/api',
+      GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyCWw9M1QaF5YgRCtlARHJl1ZBDYMxmMXWg'
     }
   },
 

@@ -56,7 +56,7 @@ public class ConfigBean {
     @EJB
     private EventoBean eventoBean;
 
-    public static boolean development = true;
+    public static boolean development = false;
 
     private static final Logger logger = Logger.getLogger("ConfigBean.logger");
     private static final String CSV_FILE = "/products.csv";

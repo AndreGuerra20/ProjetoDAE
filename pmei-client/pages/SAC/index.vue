@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter()
 const config = useRuntimeConfig()
 const api = config.public.API_URL
+const googleMapsApiKey = config.public.GOOGLE_MAPS_API_KEY
 
 const authStore = useAuthStore()
 const { token, user } = storeToRefs(authStore)
@@ -85,18 +86,25 @@ async function getTypes() {
 }
 
 const getLeituras = async () => {
-  leituras.value = null
+  leituras.value = null;
   if (!formData.selectedTipo) {
-    return
+    return;
   }
   try {
     await $fetch(`${api}/sensores/cliente/${username}/${formData.selectedTipo}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
-      onResponse({ response }) {
+      async onResponse({ response }) {
         if (response.status === 200) {
-          leituras.value = response._data
+          leituras.value = response._data.ultimosValores;
+          if (formData.selectedTipo === 'Posicionamento Global' && leituras.value.length > 0) {
+            for (let i = 0; i < leituras.value.length; i++) {
+              const posicao = leituras.value[i].ultimaLeitura;
+              leituras.value[i].ultimaLeitura = await getMoradaFromPosicao(posicao);
+            }
+            console.log(leituras.value);
+          }
         }
       }
     });
@@ -104,7 +112,28 @@ const getLeituras = async () => {
     console.error('Error fetching readings:', err);
     error.encomendas = 'Não foi possível carregar as leituras, por favor tente novamente.';
   }
-}
+};
+
+const getMoradaFromPosicao = async (posicao) => {
+  try {
+    const response = await $fetch('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        latlng: `${posicao}`,
+        key: `${googleMapsApiKey}`
+      }
+    });
+    if (response && response.results && response.results.length > 0) {
+      return response.results[0].formatted_address;
+    } else {
+      console.error('No address found for position:', posicao);
+      return 'Morada não encontrada';
+    }
+  } catch (err) {
+    console.error('Error fetching address:', err);
+    return 'Erro ao obter morada';
+  }
+};
+
 
 const getCurrentUser = async () => {
   try {
@@ -193,7 +222,7 @@ onBeforeMount(async () => {
         </div>
         <div>
           <div v-if="leituras" class="mt-4 p-3 bg-gray-50 rounded-lg">
-            <div v-for="leitura in leituras" class="text-sm mb-3">
+            <div class="text-sm mb-3">
               <table class="min-w-full">
                 <thead>
                   <tr class="bg-gray-50">
@@ -210,7 +239,7 @@ onBeforeMount(async () => {
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="eachleitura in leitura" :key="eachleitura.idSensor">
+                  <tr v-for="eachleitura in leituras" :key="eachleitura.idSensor">
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idSensor }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idEncomenda }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idVolume }}</td>

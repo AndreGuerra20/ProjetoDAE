@@ -8,7 +8,6 @@ export const useAuthStore = defineStore("authStore", () => {
     const role = ref(null);
 
     if (isClient) {
-        console.log("Client side");
         token.value = sessionStorage.getItem("authToken");
         user.value = sessionStorage.getItem("authUser");
         role.value = sessionStorage.getItem("authRole");
