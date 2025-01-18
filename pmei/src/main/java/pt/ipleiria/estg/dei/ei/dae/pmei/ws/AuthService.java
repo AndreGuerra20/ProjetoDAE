@@ -40,7 +40,7 @@ public class AuthService {
     private LogisticaBean logisticaBean;
 
     /**
-     * EP 10 - Um utilizador faz login
+     * EP 07 - Um utilizador faz login
      *
      * @param auth Informação para fazer login
      * @return Token para efeitos de autenticação e autorização

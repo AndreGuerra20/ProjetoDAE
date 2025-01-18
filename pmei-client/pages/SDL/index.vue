@@ -178,7 +178,7 @@ function encomendaHasGPS(encomenda) {
 
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Encomendas Atuais</h2>
+          <h2 class="text-xl font-semibold">Encomendas</h2>
           <div class="flex gap-2">
             <NuxtLink to="/SDL/addVolume" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Adicionar Volume
             </NuxtLink>
@@ -187,7 +187,7 @@ function encomendaHasGPS(encomenda) {
         </div>
 
         <div class="overflow-x-auto">
-          <table v-if="encomendas && encomendas.filter(encomenda => encomenda.estado !== 'Entregue').length > 0"
+          <table v-if="encomendas && encomendas.length > 0"
             class="min-w-full">
             <thead>
               <tr class="bg-gray-50">
@@ -199,7 +199,7 @@ function encomendaHasGPS(encomenda) {
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="encomenda in encomendas.filter(encomenda => encomenda.estado !== 'Entregue')"
+              <tr v-for="encomenda in encomendas"
                 :key="encomenda.encomendaId">
                 <td class="px-6 py-4 whitespace-nowrap">{{ encomenda.encomendaId }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">

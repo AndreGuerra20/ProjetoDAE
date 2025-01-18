@@ -61,6 +61,12 @@ public class SensorBean {
     }
 
     public List<Sensor> findWithTipo(String tipo) {
+        if (tipo == null || tipo.isEmpty()) {
+            throw new IllegalArgumentException("Tipo de sensor cannot be null or empty");
+        }
+        if (!Sensor.sensorTypes.contains(tipo)) {
+            throw new IllegalArgumentException("Invalid sensor tipo de sensor, must be one of " + Sensor.sensorTypes);
+        }
         List<Sensor> sensores = findAll();
         List<Sensor> sensoresByTipo = new ArrayList<>();
         for (Sensor sensor : sensores) {

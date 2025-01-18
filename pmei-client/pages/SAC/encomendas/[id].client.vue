@@ -305,11 +305,13 @@ const styleStatusBadge = (status) => {
                     <div v-if="sensor.tipo === 'Posicionamento Global' && sensor.eventos.length > 0 && marcadores.find(marcador => marcador.sensorid == sensor.id && marcador.showMap !== undefined).showMap">
                       <!-- Map Section -->
                       <!-- TODO: Tornar o mapa responsivo -->
-                      <div style="height:60vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}"
+                      <div style="height:45vh; width: 100%;@media (max-width: 1000px) {.sm-h-40vh {height: 400px;}}"
                            class="mt-1">
                         <LMap ref="map"
+                              style="height:45vh"
                               :zoom="marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).mapZoom"
                               :max-zoom="18"
+                              :min-zoom="3"
                               :center="marcadores.find(marcador => marcador.sensorid == sensor.id  && marcador.showMap !== undefined).mapCenter"
                               :use-global-leaflet="false">
                           <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

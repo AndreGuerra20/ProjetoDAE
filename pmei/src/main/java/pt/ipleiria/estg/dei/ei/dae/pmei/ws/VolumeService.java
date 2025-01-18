@@ -76,7 +76,7 @@ public class VolumeService {
     }
 
     /**
-     * EP 13 - Um gestor acede aos produtos de um volume
+     * EP 9 - Um gestor acede aos produtos de um volume
      *
      * @param id ID do volume
      * @return Lista de produtos do volume
@@ -85,7 +85,7 @@ public class VolumeService {
     @Path("{id}/produtos")
     @RolesAllowed({"Gestor"})
     public Response getVolumeProdutos(@PathParam("id") long id) {
-        List<ProdutoDTO> produtoDTOS = new ArrayList<>();
+        List<ProdutoDTOComQuantidade> produtoDTOS = new ArrayList<>();
         Volume volume = volumeBean.findWithProdutos(id);
         if (volume == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -95,7 +95,9 @@ public class VolumeService {
             if (p == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            produtoDTOS.add(ProdutoDTO.from(p));
+            ProdutoDTOComQuantidade produtoDTO = ProdutoDTOComQuantidade.from(p);
+            produtoDTO.setQuantidade(lp.getQuantidade());
+            produtoDTOS.add(produtoDTO);
         }
         return Response.ok(produtoDTOS).build();
     }

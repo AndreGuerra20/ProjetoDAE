@@ -212,7 +212,6 @@ const isIDbeingUsed = async (classe, id,volumeIndex,sensorIndex) => {
     }
     return
   }
-  let url = `http://localhost:8080/PMEI/monitorizacao/api/`
   try {
     await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/${classe}/${id}`, {
       headers: {

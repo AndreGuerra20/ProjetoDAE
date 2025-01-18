@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "sensores")
 @NamedQueries(@NamedQuery(name = "getAllSensores", query = "SELECT s FROM Sensor s ORDER BY s.id"))
 public class Sensor {
-    private static final List<String> sensorTypes = List.of("Temperatura", "Pressao", "Posicionamento Global", "Aceleracao");
+    public static final List<String> sensorTypes = List.of("Temperatura", "Pressao", "Posicionamento Global", "Aceleracao");
 
     @Id
     private long id;

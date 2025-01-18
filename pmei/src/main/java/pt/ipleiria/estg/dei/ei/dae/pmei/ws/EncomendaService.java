@@ -92,7 +92,7 @@ public class EncomendaService {
     }
 
     /**
-     * EP 12 - O gestor acede aos sensores de uma encomenda
+     * EP 8 - O gestor acede aos sensores de uma encomenda
      *
      * @param id ID da encomenda
      * @return Lista dos sensores da encomenda
@@ -120,7 +120,6 @@ public class EncomendaService {
         return Response.ok(sensores).build();
     }
 
-    //TODO - Passsar maior parte do código para o EncomendaBean
     /**
      * EP 15 - Adicionar novos volumes a uma encomenda que já existe
      *

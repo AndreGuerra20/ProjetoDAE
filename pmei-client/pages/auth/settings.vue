@@ -25,6 +25,14 @@ const passwordUserFormData = reactive({
   confirmPassword: ""
 })
 
+const algo = {
+  color: {
+    white: {
+      outline: 'mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+    }
+  }
+}
+
 const errorUserPassword = ref('')
 const errorPassword = ref('')
 
@@ -138,7 +146,7 @@ onMounted(async () => {
             <label for="user" class="block text-sm font-medium text-gray-700">Utilizador</label>
             <USelectMenu searchable searchable-placeholder="Procurar utilizador" name="user"
                          placeholder="Selecione um utilizador" :options="usersOptions" value-attribute="id"
-                         option-attribute="descricao" v-model="passwordUserFormData.username" size="lg"/>
+                         option-attribute="descricao" v-model="passwordUserFormData.username" size="xl" :ui="algo"/>
           </div>
           <div>
             <label for="new-password" class="block text-sm font-medium text-gray-700">Nova password</label>

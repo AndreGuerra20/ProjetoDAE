@@ -26,7 +26,7 @@ onMounted(async () => {
 const algo = {
   color: {
     white: {
-      outline: 'mt-0.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500' //alterar aqui daniela
+      outline: 'mt-0.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
     },
     gray: {
       outline: 'shadow-sm bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400'
@@ -171,7 +171,7 @@ const isIDbeingUsed = async (classe, id,volumeIndex,sensorIndex) => {
     return
   }
   try {
-    await $fetch(`http://localhost:8080/PMEI/monitorizacao/api/${classe}/${id}`, {
+    await $fetch(`${api}/${classe}/${id}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
@@ -225,7 +225,7 @@ const isIDbeingUsed = async (classe, id,volumeIndex,sensorIndex) => {
                 <div>
                     <label for="encomendaId" class="block text-sm font-medium text-gray-700">Encomenda ID</label>
                     <input placeholder="Ex: 1" name="encomendaId" id="encomendaId" v-model="encomendaId" type="number"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="mt-1 block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required  @focusout="isIDbeingUsed('encomendas', encomendaId,null,null)">
                     <p v-if="errorList.encomendas" class="text-red-500 text-sm mt-1">{{ errorList.encomendas }}</p>
                 </div>

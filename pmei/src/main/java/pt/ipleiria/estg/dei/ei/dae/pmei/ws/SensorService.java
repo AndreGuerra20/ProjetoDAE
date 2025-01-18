@@ -57,6 +57,7 @@ public class SensorService {
 
     @GET
     @Path("{id}")
+    @RolesAllowed({"Gestor","Cliente"})
     public Response getSensor(@PathParam("id") long id) {
         Sensor sensor = sensorBean.find(id);
         if (sensor == null) {
@@ -190,19 +191,25 @@ public class SensorService {
     @RolesAllowed({"Gestor"})
     @GET
     @Path("tipo/{tiposensor}")
-    public List<SensorEventoEncomendaDTO> getUltimosSensoresAtivos(@PathParam("tiposensor") String tiposensor) {
+    public Response getUltimosSensoresAtivos(@PathParam("tiposensor") String tiposensor) {
         List<Sensor> sensores = sensorBean.findWithTipo(tiposensor);
         List<Evento> eventos = new ArrayList<>();
         if (sensores.isEmpty()) {
-            return null;
+            Response.status(Response.Status.NOT_FOUND).build();
         }
         for (Sensor sensor : sensores) {
             List<Evento> eventosBySensor = sensor.getEventos();
+            if (eventosBySensor.isEmpty()) {
+                continue;
+            }
             eventosBySensor.sort(new EventoComparator());
             Evento ultimoEvento = eventosBySensor.get(0);
             eventos.add(ultimoEvento);
         }
-        return SensorEventoEncomendaDTO.from(eventos);
+        if (eventos.size() == 0) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
+        return Response.ok(SensorEventoEncomendaDTO.from(eventos)).build();
     }
 
     /**
@@ -227,11 +234,11 @@ public class SensorService {
     }
 
     /**
-     * EP 06,07,08,09 - O cliente pede a última temperatura registada pelos sensores de temperatura ativos nas suas encomendas
+     * EP 06 - O cliente pede os últimos valores lidos por todos os sensores de {tipoSensor} ativos nas suas encomendas
      *
      * @param username do cliente
      * @param tipoSensor Tipo de sensor
-     * @return DTO que precisa de ser criado
+     * @return UltimosValoresDTO com os valores dos sensores
      */
     @GET
     @Path("/cliente/{username}/{tipoSensor}")
@@ -242,6 +249,9 @@ public class SensorService {
             if (!username.equals(securityContext.getUserPrincipal().getName())) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
+        }
+        if (!Sensor.sensorTypes.contains(tipoSensor)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         List<Encomenda> encomendasDoCliente = encomendaBean.findAll().stream().filter(e -> e.getCliente().getUsername().equals(username)).toList();
