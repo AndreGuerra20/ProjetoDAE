@@ -49,6 +49,7 @@ async function getSensorStats() {
           Authorization: `Bearer ${token.value}`
         }
       })
+      avg.value = avg.value.toFixed(2)
     }
   } catch (err) {
     console.error('Error fetching events:', err)
@@ -163,7 +164,7 @@ onBeforeMount(async () => {
 
       <div class="flex justify-between items-center mb-6">
         <h1 v-if="sensor" class="text-2xl md:text-3xl font-bold text-gray-800">Sensor #{{ sensor.id }}</h1>
-        <button v-if="sensor.status" @click="getEvento" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <button v-if="sensor && sensor.status" @click="getEvento()" class="bg-blue-500 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg inline-flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
@@ -187,7 +188,7 @@ onBeforeMount(async () => {
       <div v-if="sensor" class="bg-white rounded-lg shadow-md p-6">
         <div class="border-b pb-4 mb-4">
           <h1 class="text-2xl font-bold text-gray-800 pb-4">Eventos</h1>
-          <table class="min-w-full">
+          <table v-if="events" class="min-w-full">
             <thead>
               <tr class="bg-gray-50">
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
@@ -202,6 +203,9 @@ onBeforeMount(async () => {
               </tr>
             </tbody>
           </table>
+          <div v-else>
+            <p>Não existem eventos disponíveis para este sensor.</p>
+          </div>
         </div>
       </div>
       <!-- Statistics like Average, Min and Max -->

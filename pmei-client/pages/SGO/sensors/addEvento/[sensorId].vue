@@ -52,7 +52,7 @@ const createEvento = async () => {
 
                 <div class="flex justify-end mt-6">
                     <button type="submit"
-                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-700">
                         Adicionar Evento
                     </button>
                 </div>
