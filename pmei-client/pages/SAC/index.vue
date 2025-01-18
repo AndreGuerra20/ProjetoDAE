@@ -93,20 +93,6 @@ const getLeituras = async () => {
   }
 }
 
-const getMeasureText = () => {
-  const tipo = formData.selectedTipo;
-  if (tipo === 'Pressao') {
-    return 'KPa';
-  } else if (tipo === 'Aceleracao') {
-    return 'm/s²';
-  } else if (tipo === 'Temperatura') {
-    return '°C';
-  } else if (tipo === 'Humidade') {
-    return '%';
-  }
-  return '';
-}
-
 const getCurrentUser = async () => {
   try {
     await $fetch(`${api}/auth/user`, {
@@ -122,18 +108,6 @@ const getCurrentUser = async () => {
   } catch (err) {
     console.error('Error fetching user:', err);
   }
-}
-
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp)
-  let month = date.getMonth() + 1
-
-  // dd-mm-yyyy hh:mm:ss
-  const dateString = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}/${month + 1 < 10 ? '0' + month : month}/${date.getFullYear()}`
-  const timeString = `${date.getHours() < 10 ? '0' + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`
-
-  return `${dateString} ${timeString}`
-
 }
 
 onMounted(async () => {
@@ -218,7 +192,7 @@ onBeforeMount(async () => {
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idSensor }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idEncomenda }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idVolume }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.ultimaLeitura }} {{getMeasureText()}}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.ultimaLeitura }} {{getMeasureText(formData.selectedTipo)}}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(eachleitura.timestamp) }}</td>
                   </tr>
                   </tbody>

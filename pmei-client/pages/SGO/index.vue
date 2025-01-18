@@ -22,18 +22,6 @@ const lastReading = reactive({
   timestamp: null
 })
 
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp)
-  let month = date.getMonth() + 1
-
-  // dd-mm-yyyy hh:mm:ss
-  const dateString = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}/${month + 1 < 10 ? '0' + month : month}/${date.getFullYear()}`
-  const timeString = `${date.getHours() < 10 ? '0' + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`
-
-  return `${dateString} ${timeString}`
-
-}
-
 const getCorrectSensorName = (tipo) => {
   if (tipo === 'Pressao') {
     return 'Pressão';
