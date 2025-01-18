@@ -60,8 +60,8 @@ async function fetchEncomendaDetails() {
                 marcadores.value.find(marcador => marcador.sensorid === sensor.id).showTemperatureChart = false
                 marcadores.value.find(marcador => marcador.sensorid === sensor.id).chartData = {
                   labels: sensor.eventos.map(evento => new Date(evento.timestamp).toLocaleString('pt-PT', {
-
-                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                    day: '2-digit', month: '2-digit',
+                    year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
                   })),
                   datasets: [
                     {
@@ -331,7 +331,7 @@ const styleStatusBadge = (status) => {
                         </LMap>
                       </div>
                     </div>
-                    <div v-else-if="sensor.tipo === 'Temperatura'  && sensor.eventos.length > 0 && marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showTemperatureChart !== undefined).showTemperatureChart">
+                    <div style="height:40vh" v-else-if="sensor.tipo === 'Temperatura'  && sensor.eventos.length > 0 && marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showTemperatureChart !== undefined).showTemperatureChart">
                       <Line
                           :data="marcadores.find(marcador => marcador.sensorid === sensor.id && marcador.showTemperatureChart !== undefined).chartData"
                           :options="chartOptions"
