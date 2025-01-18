@@ -56,7 +56,7 @@ public class AuthService {
     }
 
     /**
-     * EP 14 - Criar um gestor novo
+     * EP 10 - Um gestor autenticado pretende criar uma nova conta com a função de gestor
      *
      * @param gestorDTO Dados para a criação como nome, codFuncionario, etc
      * @return Gestor criado
@@ -74,7 +74,7 @@ public class AuthService {
     }
 
     /**
-     * EP 14 - Criar um gestor novo
+     * EP 11 - Um gestor autenticado pretende criar uma nova conta com a função de logistica
      *
      * @param logisticaDTO Dados para a criação como nome, codFuncionario, etc
      * @return User Logistica criado
@@ -91,7 +91,11 @@ public class AuthService {
         return Response.ok(UserDTO.from(logistica)).build();
     }
 
-
+    /**
+     * EP 22 - Um utilizador autenticado quer visualizar os seus dados
+     *
+     * @return UserDTO com os dados do utilizador autenticado
+     */
     @GET
     @Authenticated
     @Path("/user")
@@ -101,6 +105,13 @@ public class AuthService {
         return Response.ok(UserDTO.from(user)).build();
     }
 
+    /**
+     * EP 23 - Um utilizador autenticado quer mudar a sua password
+     * EP 24 - Um gestor autenticado quer mudar a password de um utilizador
+     *
+     * @param passwordChangeDTO Dados para a mudança de password
+     * @return Response HTTP
+     */
     @PUT
     @Path("/setPassword")
     @Authenticated

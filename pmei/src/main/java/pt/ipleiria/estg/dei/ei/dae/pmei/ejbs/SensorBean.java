@@ -9,6 +9,7 @@ import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
 import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityExistsException;
+import pt.ipleiria.estg.dei.ei.dae.pmei.exceptions.MyEntityNotFoundException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -79,6 +80,15 @@ public class SensorBean {
 
     public double getAverageValue(long id) {
         Sensor sensor = em.find(Sensor.class, id);
+        if (sensor == null) {
+            throw new MyEntityNotFoundException("Sensor with Id{" + id + "} not found");
+        }
+        if (sensor.getEventos().isEmpty()) {
+            throw new IllegalArgumentException("Sensor with Id{" + id + "} has no eventos");
+        }
+        if (sensor.getTipo().equals("Posicionamento Global")) {
+            throw new IllegalArgumentException("Sensor with Id{" + id + "} is of type 'Posicionamento Global'");
+        }
         return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).average().orElse(0);
     }
 
@@ -89,6 +99,15 @@ public class SensorBean {
 
     public double getHighestValue(long id) {
         Sensor sensor = em.find(Sensor.class, id);
+        if (sensor == null) {
+            throw new MyEntityNotFoundException("Sensor with Id{" + id + "} not found");
+        }
+        if (sensor.getEventos().isEmpty()) {
+            throw new IllegalArgumentException("Sensor with Id{" + id + "} has no eventos");
+        }
+        if (sensor.getTipo().equals("Posicionamento Global")) {
+            throw new IllegalArgumentException("Sensor with Id{" + id + "} is of type 'Posicionamento Global'");
+        }
         return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).max().orElse(0);
     }
 

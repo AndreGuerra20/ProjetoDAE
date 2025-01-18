@@ -37,8 +37,15 @@ public class EncomendaService {
     @Context
     private SecurityContext securityContext;
 
+
+    /**
+     * EP 19 - O gestor quer visualizar todas as encomendas
+     *
+     * @return Lista de encomendas
+     */
     @GET
     @Path("/")
+    @RolesAllowed({"Gestor"})
     public List<EncomendaDTO> getAllEncomendas() {
         List<EncomendaDTO> listaEncomendas = EncomendaDTO.from(encomendaBean.findAll());
         if(listaEncomendas.isEmpty()){
@@ -47,6 +54,11 @@ public class EncomendaService {
         return listaEncomendas;
     }
 
+    /**
+     * EP 27 - O cliente quer visualizar todas as suas encomendas
+     *
+     * @return Lista de encomendas
+     */
     @GET
     @Path("/cliente")
     @RolesAllowed({"Cliente"})
@@ -61,8 +73,15 @@ public class EncomendaService {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * EP 20 - O gestor quer visualizar uma encomenda
+     *
+     * @param id ID da encomenda
+     * @return Encomenda
+     */
     @GET
     @Path("{id}")
+    @RolesAllowed({"Gestor","Cliente"})
     public Response getEncomenda(@PathParam("id") long id) {
         var encomenda = encomendaBean.findWithVolumes(id);
         if (encomenda == null) {
@@ -121,10 +140,11 @@ public class EncomendaService {
     }
 
     /**
-     * EP 15 - Adicionar novos volumes a uma encomenda que já existe
+     * EP 12 - Adicionar novos volumes a uma encomenda que já existe
      *
      * @param id ID da encomenda
-     * @return Encomenda atualizada
+     * @param volumes Lista de volumes a adicionar
+     * @return Resposta HTTP
      */
     @POST
     @Path("{id}")

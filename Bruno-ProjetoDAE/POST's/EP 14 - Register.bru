@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{uri}}auth/register
+  url: {{uri}}auth/gestor
   body: json
   auth: bearer
 }
@@ -17,8 +17,14 @@ auth:bearer {
 body:json {
   {
     "username": "gestor1",
-    "password": "123",
+    "password": "password",
     "nome": "Gestor1",
-    "codFuncionario": "FUNC3"
+    "codFuncionario":"FUNC3",
+    "email": "gestor1@mail.pt"
   }
+}
+
+script:pre-request {
+  var token = "Bearer " + bru.getEnvVar("token")
+  req.setHeader("Authorization",token)
 }

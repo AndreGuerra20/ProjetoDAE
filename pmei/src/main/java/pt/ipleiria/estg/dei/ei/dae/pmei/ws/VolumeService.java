@@ -33,8 +33,14 @@ public class VolumeService {
     @Context
     private SecurityContext securityContext;
 
+    /**
+     * EP 31 - Um utilizador autenticado quer visualizar todos os volumes
+     *
+     * @return Lista de VolumeDTO
+     */
     @GET
     @Path("/")
+    @RolesAllowed({"Gestor","Logistica"})
     public List<VolumeDTO> getAllVolumes() {
         List<VolumeDTO> listaVolumes = VolumeDTO.from(volumeBean.findAll());
         if (listaVolumes.isEmpty()) {
@@ -43,6 +49,11 @@ public class VolumeService {
         return listaVolumes;
     }
 
+    /**
+     * EP 32 - Um utilizador autenticado quer visualizar um volume
+     *
+     * @return VolumeDTO
+     */
     @GET
     @Path("{id}")
     public Response getVolume(@PathParam("id") long id) {
@@ -59,7 +70,7 @@ public class VolumeService {
     }
 
     /**
-     * EP 19 - O gestor acede aos sensores de um volume
+     * EP 16 - O gestor acede aos sensores de um volume
      *
      * @return Dados dos sensores do volume
      */
@@ -103,7 +114,7 @@ public class VolumeService {
     }
 
     /**
-     * EP 21 - O volume é entregue ao cliente
+     * EP 18 - O volume é entregue ao cliente
      *
      * @param volumeId ID do volume
      * @return Volume atualizado

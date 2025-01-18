@@ -19,6 +19,11 @@ public class ProdutoService {
     @EJB
     private ProdutoBean produtoBean;
 
+    /**
+     * EP 21 - Um utilizador autenticado quer visualizar todos os produtos
+     *
+     * @return lista de produtos
+     */
     @GET
     @Path("/")
     public List<ProdutoDTO> getProdutos() {

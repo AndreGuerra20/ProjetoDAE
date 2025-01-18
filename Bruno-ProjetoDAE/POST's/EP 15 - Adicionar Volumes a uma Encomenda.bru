@@ -11,50 +11,48 @@ post {
 }
 
 body:json {
-  [{    
-        "idVolume": 10,
-        "produtos":
-        [        
-          {          
-            "id": 1,          
-            "quantidade": 11        
-          },
-          {
-            "id": 2,
-            "quantidade": 5
-          }      
-        ],      
-        "tipoEmbalagem": "Caixa cartão",      
-        "sensores": 
-        [        
-          {          
-            "id": 10012,          
-            "tipo": "Temperatura"        
-          },
-          {
-            "id": 1111,
-            "tipo": "Posicionamento Global"
-          }      
-        ]    
-      },
-      { 
-        "idVolume": 11,
-        "produtos":
-        [        
-          {          
-            "id": 1,          
-            "quantidade": 2        
-          }    
-        ],      
-        "tipoEmbalagem": "Embalagem de Esferovite",      
-        "sensores": 
-        [        
-          {          
-            "id": 10013,          
-            "tipo": "Temperatura"        
-          }    
-        ]    
-      }]
+  [
+    {
+      "idVolume": 342,
+      "produtos": [
+        {
+          "id": 34,
+          "quantidade": 11
+        },
+        {
+          "id": 104,
+          "quantidade": 5
+        }
+      ],
+      "tipoEmbalagem": "Caixa cartão",
+      "sensores": [
+        {
+          "id": 10013,
+          "tipo": "Temperatura"
+        },
+        {
+          "id": 952,
+          "tipo": "Posicionamento Global"
+        }
+      ]
+    },
+    {
+      "idVolume": 1044,
+      "produtos": [
+        {
+          "id": 201,
+          "quantidade": 23
+        }
+      ],
+      "tipoEmbalagem": "Embalagem de Esferovite",
+      "sensores": [
+        {
+          "id": 113,
+          "tipo": "Temperatura"
+        }
+      ]
+    }
+  ]
 }
 
 script:pre-request {

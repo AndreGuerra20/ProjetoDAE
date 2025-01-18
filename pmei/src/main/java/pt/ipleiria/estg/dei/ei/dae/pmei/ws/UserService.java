@@ -27,8 +27,9 @@ public class UserService {
     @EJB
     private UserBean userBean;
 
-    /*
-     * Buscar todos os utilizadores
+    /**
+     * EP 30 - Um utilizador autenticado quer visualizar todos os utilizadores
+     *
      * @return lista de utilizadores
      */
     @GET

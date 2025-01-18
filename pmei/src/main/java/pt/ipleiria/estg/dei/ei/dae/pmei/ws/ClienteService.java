@@ -26,6 +26,11 @@ public class ClienteService {
     @Context
     private SecurityContext securityContext;
 
+    /**
+     * EP 25 - Um utilizador autenticado quer visualizar todos os clientes
+     *
+     * @return lista de clientes
+     */
     @GET
     @Path("/")
     @RolesAllowed({"Gestor","Logistica"})
@@ -45,7 +50,11 @@ public class ClienteService {
         }
         return Response.status(Response.Status.FORBIDDEN).build();
     }
-
+    /**
+     * EP 26 - Um utilizador autenticado quer visualizar um cliente
+     *
+     * @return um cliente
+     */
     @GET
     @Path("{username}")
     @RolesAllowed({"Gestor","Cliente"})

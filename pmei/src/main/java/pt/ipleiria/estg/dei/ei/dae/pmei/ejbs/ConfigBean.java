@@ -117,7 +117,7 @@ public class ConfigBean {
             clienteBean.create("Manel", 123456787, "manel", "123", "manel@mail.pt");
             clienteBean.create("Joana Vasconcelos", 250624499, "joana", "123", "joana@mail.pt");
             clienteBean.create("Maria", 123456788, "maria", "123", "maria@mail.pt");
-            clienteBean.create("Carlos Ferreira",8764321,"carlos","123","carlos.j.ferreira@ipleiria.pt");
+            clienteBean.create("Carlos Ferreira",876432122,"carlos","123","carlos.j.ferreira@ipleiria.pt");
 
             logisticaBean.create("Henrique", "FUNC1", "henri", "123","henrique@mail.pt");
 

@@ -55,6 +55,12 @@ public class SensorService {
         return listaSensores;
     }
 
+    /**
+     * EP 28 - Um utilizador visualiza os dados do sensor
+     *
+     * @param id ID do sensor
+     * @return Dados do sensor
+     */
     @GET
     @Path("{id}")
     @RolesAllowed({"Gestor","Cliente"})
@@ -73,7 +79,7 @@ public class SensorService {
     }
 
     /**
-     * EP 17 - Um gestor pretende visualizar a leitura mais baixa de um sensor
+     * EP 14 - Um gestor pretende visualizar a leitura mais baixa de um sensor
      *
      * @param id ID do sensor
      * @return Valor da leitura
@@ -96,7 +102,7 @@ public class SensorService {
     }
 
     /**
-     * EP 16 - Um gestor pretende visualizar a leitura mais elevada de um sensor
+     * EP 13 - O gestor quer visualizar o maior valor registado por um sensor de qualquer tipo excepto posicionamento global
      *
      * @param id ID do sensor
      * @return Valor da leitura
@@ -113,7 +119,7 @@ public class SensorService {
     }
 
     /**
-     * EP 18 - Um gestor pretende visualizar a média das leituras de um sensor
+     * EP 15 - Um gestor pretende visualizar a média das leituras de um sensor
      *
      * @param id ID do sensor
      * @return Valor da média
@@ -130,7 +136,7 @@ public class SensorService {
     }
 
     /**
-     * EP 20 - Um gestor pretende visualizar todas as leituras de um sensor
+     * EP 17 - Um gestor pretende visualizar todas as leituras de um sensor
      *
      * @param id ID do sensor
      * @return Lista de leituras do sensor
@@ -276,6 +282,12 @@ public class SensorService {
         return Response.ok(UltimosValoresDTO.from(ultimasLeituras)).build();
     }
 
+    /**
+     * EP 29 - O cliente pede os tipos de sensores que tem nas suas encomendas
+     *
+     * @param username do cliente
+     * @return Lista de tipos de sensores
+     */
     @GET
     @Path("/cliente/{username}/tipossensores")
     @RolesAllowed({"Cliente"})
