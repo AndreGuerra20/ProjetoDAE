@@ -178,9 +178,6 @@ onMounted(async () => {
     sensorsSize.value = sensors.value.length
   }
   await getVolumes()
-  if (sensors) {
-    console.log(tipos.value)
-  }
 })
 
 onBeforeMount(() => {
@@ -256,6 +253,7 @@ onBeforeMount(() => {
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID do cliente
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Sensores</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ver Detalhes
                 </th>
               </tr>
@@ -268,6 +266,11 @@ onBeforeMount(() => {
                   <span :class="styleStatusBadge(order.estado)">
                     {{ order.estado }}
                   </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <NuxtLink :to="`/SGO/orders/${order.encomendaId}/sensors`" class="text-blue-500 hover:text-blue-600">
+                    +
+                  </NuxtLink>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <NuxtLink :to="`/SGO/orders/${order.encomendaId}`" class="text-blue-500 hover:text-blue-600">
