@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.ei.dae.pmei.entities;
 
 import jakarta.persistence.*;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ValoresLimite;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -38,6 +39,23 @@ public class Evento {
     }
 
     public void setValor(String valor) {
+        switch (sensor.getTipo()) {
+            case "Temperatura" -> {
+                if (Float.parseFloat(valor) < ValoresLimite.MINIMO_TEMPERATURA || Float.parseFloat(valor) > ValoresLimite.MAXIMO_TEMPERATURA) {
+                    throw new IllegalArgumentException("Valor fora dos limites");
+                }
+            }
+            case "Pressao" -> {
+                if (Float.parseFloat(valor) < ValoresLimite.MINIMO_PRESSAO || Float.parseFloat(valor) > ValoresLimite.MAXIMO_PRESSAO) {
+                    throw new IllegalArgumentException("Valor fora dos limites");
+                }
+            }
+            case "Aceleracao" -> {
+                if (Float.parseFloat(valor) < ValoresLimite.MINIMO_ACELERACAO || Float.parseFloat(valor) > ValoresLimite.MAXIMO_ACELERACAO) {
+                    throw new IllegalArgumentException("Valor fora dos limites");
+                }
+            }
+        }
         this.valor = valor;
     }
 
@@ -55,10 +73,5 @@ public class Evento {
 
     public void setSensor(Sensor sensor) {
         this.sensor = sensor;
-    }
-
-    @Override
-    public String toString() {
-        return "Evento{" + "id=" + id + ", valor='" + valor + '\'' + ", timestamp=" + timestamp + ", sensor=" + sensor.getId() + '}';
     }
 }

@@ -6,11 +6,15 @@ import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ValoresLimite;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
@@ -58,10 +62,55 @@ public class ConfigBean {
     private static final String CSV_FILE = "/products.csv";
     private static final String CSV_FILE_DIRECOES = "/direcoes.csv";
     private static final String CSV_FILE_DIRECOES2 = "/direcoes2.csv";
+    private static final String EXCEL_FILE_SETTINGS = "/configs.xlsx";
 
     @PostConstruct
     public void populateDB() {
         try {
+            //Load Settings
+            try (FileInputStream fis = new FileInputStream(EXCEL_FILE_SETTINGS);
+                 Workbook workbook = new XSSFWorkbook(fis)) {
+
+                // Obter a primeira folha do ficheiro Excel
+                Sheet sheet = workbook.getSheetAt(0);
+
+                // Iterar pelas linhas e colunas
+                for (Row row : sheet) {
+                    if(row.getRowNum() > 2) {
+                        break;
+                    }
+                    System.out.println(row.getCell(0).getStringCellValue());
+                    String tipo = row.getCell(0).getStringCellValue();
+                    for (Cell cell : row) {
+                        // Lê o valor de cada célula
+                        switch(tipo) {
+                            case "Temperatura":
+                                if (cell.getColumnIndex() == 1) {
+                                    ValoresLimite.MINIMO_TEMPERATURA = (float) cell.getNumericCellValue();
+                                } else if (cell.getColumnIndex() == 2) {
+                                    ValoresLimite.MAXIMO_TEMPERATURA = (float) cell.getNumericCellValue();
+                                }
+                                break;
+                            case "Pressao":
+                                if (cell.getColumnIndex() == 1) {
+                                    ValoresLimite.MINIMO_PRESSAO = (float) cell.getNumericCellValue();
+                                } else if (cell.getColumnIndex() == 2) {
+                                    ValoresLimite.MAXIMO_PRESSAO = (float) cell.getNumericCellValue();
+                                }
+                                break;
+                            case "Aceleracao":
+                                if (cell.getColumnIndex() == 1) {
+                                    ValoresLimite.MINIMO_ACELERACAO = (float) cell.getNumericCellValue();
+                                } else if (cell.getColumnIndex() == 2) {
+                                    ValoresLimite.MAXIMO_ACELERACAO = (float) cell.getNumericCellValue();
+                                }
+                                break;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Erro ao ler ficheiro Excel - ", e);
+            }
 
             //Criar utilizadores
             clienteBean.create("João", 123456789, "joao", "123", "joao@mail.pt");
@@ -214,7 +263,7 @@ public class ConfigBean {
             }
 
             //Até aqui
-            Evento evento = null;
+            Evento evento;
             long timestamp = new Date().getTime();
 
             evento = eventoBean.create("25", 1);
@@ -428,7 +477,7 @@ public class ConfigBean {
             timestamp += 60000;
 
 
-            evento = eventoBean.create("40", 6);
+            evento = eventoBean.create("20", 6);
             evento.setTimestamp(DateTimeFormatter.ISO_INSTANT.format(new Date(timestamp).toInstant()));
             timestamp += 60000;
 

@@ -4,6 +4,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Hibernate;
+import pt.ipleiria.estg.dei.ei.dae.pmei.ValoresLimite;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Evento;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Sensor;
 import pt.ipleiria.estg.dei.ei.dae.pmei.entities.Volume;
@@ -18,13 +19,6 @@ import java.util.regex.*;
 public class SensorBean {
     @PersistenceContext
     private EntityManager em;
-
-    public static final double MAX_TEMPERATURE = 60.00;
-    public static final double MIN_TEMPERATURE = -30.00;
-    public static final double MAX_ACCELERATION = 100.0;
-    public static final double MIN_ACCELERATION = 0.1;
-    public static final double MAX_PRESSURE = 110.000;
-    public static final double MIN_PRESSURE = 60.000;
 
     private static final DecimalFormat dfTemperatura = new DecimalFormat("0.00");
     private static final DecimalFormat dfPressao = new DecimalFormat("0.000");
@@ -92,20 +86,23 @@ public class SensorBean {
         return sensor.getEventos().stream().mapToDouble(e -> Double.parseDouble(e.getValor())).max().orElse(0);
     }
 
-    public Evento createEvento(Sensor sensor, String valor) {
+    public void createEvento(Sensor sensor, String valor) {
         if (sensor == null) {
             throw new IllegalArgumentException("Sensor cannot be null");
         }
         if (valor == null || valor.isEmpty()) {
             throw new IllegalArgumentException("calor cannot be null or empty");
         }
+        if(!sensor.getTipo().equals("Posicionamento Global") && (Float.parseFloat(valor) < ValoresLimite.MINIMO_TEMPERATURA || Float.parseFloat(valor) > ValoresLimite.MAXIMO_TEMPERATURA)) {
+            throw new IllegalArgumentException("Valor fora dos limites");
+        }
         switch (sensor.getTipo()){
             case "Temperatura":
                 try {
                     valor = dfTemperatura.format(Double.parseDouble(valor));
                     double f = Double.parseDouble(valor);
-                    if (f < MIN_TEMPERATURE || f > MAX_TEMPERATURE) {
-                        throw new IllegalArgumentException("Invalid temperature, value must be between " + MIN_TEMPERATURE + " and " + MAX_TEMPERATURE);
+                    if (f < ValoresLimite.MINIMO_TEMPERATURA || f > ValoresLimite.MAXIMO_TEMPERATURA) {
+                        throw new IllegalArgumentException("Invalid temperature, value must be between " + ValoresLimite.MINIMO_TEMPERATURA + " and " + ValoresLimite.MAXIMO_TEMPERATURA);
                     }
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid temperature, value must be a number");
@@ -115,8 +112,8 @@ public class SensorBean {
                 try {
                     valor = dfPressao.format(Double.parseDouble(valor));
                     double f = Double.parseDouble(valor);
-                    if (f < MIN_PRESSURE || f > MAX_PRESSURE) {
-                        throw new IllegalArgumentException("Invalid pressure, value must be between " + MIN_PRESSURE + " and " + MAX_PRESSURE);
+                    if (f < ValoresLimite.MINIMO_PRESSAO || f > ValoresLimite.MAXIMO_PRESSAO) {
+                        throw new IllegalArgumentException("Invalid pressure, value must be between " + ValoresLimite.MINIMO_PRESSAO + " and " + ValoresLimite.MAXIMO_PRESSAO);
                     }
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid pressure,value must be a number");
@@ -132,8 +129,8 @@ public class SensorBean {
                 try {
                     valor = dfAceleracao.format(Double.parseDouble(valor));
                     double f = Double.parseDouble(valor);
-                    if (f < MIN_ACCELERATION || f > MAX_ACCELERATION) {
-                        throw new IllegalArgumentException("Invalid acceleration, value must be between " + MIN_ACCELERATION + " and " + MAX_ACCELERATION);
+                    if (f < ValoresLimite.MINIMO_ACELERACAO || f > ValoresLimite.MAXIMO_ACELERACAO) {
+                        throw new IllegalArgumentException("Invalid acceleration, value must be between " + ValoresLimite.MINIMO_ACELERACAO + " and " + ValoresLimite.MAXIMO_ACELERACAO);
                     }
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid acceleration, value must be a number");
@@ -145,6 +142,5 @@ public class SensorBean {
         Evento evento = new Evento(valor, sensor);
         sensor.addEvento(evento);
         em.merge(evento);
-        return evento;
     }
 }

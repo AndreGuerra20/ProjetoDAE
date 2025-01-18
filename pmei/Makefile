@@ -35,6 +35,7 @@ deploy: build
 	docker cp src/main/resources/products.csv pmei-webserver-1:/products.csv
 	docker cp src/main/resources/direcoes.csv pmei-webserver-1:/direcoes.csv
 	docker cp src/main/resources/direcoes2.csv pmei-webserver-1:/direcoes2.csv
+	docker cp src/main/resources/configs.xlsx pmei-webserver-1:/configs.xlsx
 
 monitor: deploy logs
 
