@@ -79,6 +79,8 @@ async function fetchEvents() {
         Authorization: `Bearer ${token.value}`
       }
     })
+    // sort events by timestamp
+    events.value.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
   } catch (err) {
     console.error('Error fetching events:', err)
     error.value = 'Não foi possível carregar os eventos, tente novamente mais tarde.'
@@ -107,33 +109,6 @@ const styleStatusBadge = (status) => {
     return ['px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800'];
   }
 };
-
-//change timestamp format
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp)
-  let month = date.getMonth() + 1
-
-  // dd-mm-yyyy hh:mm:ss
-  const dateString = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}/${month + 1 < 10 ? '0' + month : month}/${date.getFullYear()}`
-  const timeString = `${date.getHours() < 10 ? '0' + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`
-
-  return `${dateString} ${timeString}`
-
-}
-
-const getMeasureText = () => {
-  const tipo = sensor.value.tipo;
-  if (tipo === 'Pressao') {
-    return 'KPa';
-  } else if (tipo === 'Aceleracao') {
-    return 'm/s²';
-  } else if (tipo === 'Temperatura') {
-    return '°C';
-  } else if (tipo === 'Humidade') {
-    return '%';
-  }
-  return '';
-}
 
 onBeforeMount(async () => {
   if (!authStore.token) {
@@ -198,7 +173,7 @@ onBeforeMount(async () => {
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="event in events" :key="event.id">
-                <td class="px-6 py-4 whitespace-nowrap">{{ event.valor }} {{ getMeasureText() }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ event.valor }} {{ getMeasureText(sensor.tipo) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(event.timestamp) }}</td>
               </tr>
             </tbody>
@@ -215,15 +190,15 @@ onBeforeMount(async () => {
           <div v-if="min" class="grid grid-cols-3 gap-4">
             <div>
               <p class="text-lg font-bold">Mínimo</p>
-              <p class="text-sm">{{ min }} {{getMeasureText()}}</p>
+              <p class="text-sm">{{ min }} {{getMeasureText(sensor.tipo)}}</p>
             </div>
             <div>
               <p class="text-lg font-bold">Média</p>
-              <p class="text-sm">{{ avg }} {{getMeasureText()}}</p>
+              <p class="text-sm">{{ avg }} {{getMeasureText(sensor.tipo)}}</p>
             </div>
             <div>
               <p class="text-lg font-bold">Máximo</p>
-              <p class="text-sm">{{ max }} {{getMeasureText()}}</p>
+              <p class="text-sm">{{ max }} {{getMeasureText(sensor.tipo)}}</p>
             </div>
           </div>
           <div v-else>

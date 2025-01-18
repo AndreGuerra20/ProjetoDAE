@@ -18,8 +18,6 @@ export const getMeasureText = (tipo:string) => {
     return 'm/s²';
   } else if (tipo === 'Temperatura') {
     return '°C';
-  } else if (tipo === 'Humidade') {
-    return '%';
   }
   return '';
 }
