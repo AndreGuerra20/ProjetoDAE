@@ -1,14 +1,14 @@
 <script setup>
-import {ref, onMounted} from 'vue'
-import {useAuthStore} from "~/store/auth-store.js"
-import {useRouter} from 'vue-router';
+import { ref, onMounted } from 'vue'
+import { useAuthStore } from "~/store/auth-store.js"
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const config = useRuntimeConfig()
 const api = config.public.API_URL
 
 const authStore = useAuthStore()
-const {token, user} = storeToRefs(authStore)
+const { token, user } = storeToRefs(authStore)
 
 const tipos = ref(null)
 
@@ -33,7 +33,7 @@ async function fetchEncomendas() {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
-      onResponse({request, response, options}) {
+      onResponse({ request, response, options }) {
         messages.value.push({
           method: options.method,
           request: request,
@@ -52,6 +52,20 @@ async function fetchEncomendas() {
   }
 }
 
+const encomendasHaveAnySensores = computed(() => {
+  if (!encomendas.value && encomendas.value.length === 0) {
+    return false
+  }
+  return encomendas.value.some(encomenda => encomenda.volumes.some(volume => volume.sensores.length > 0))
+})
+
+const encomendaSensoresHaveAnyEvents = computed(() => {
+  if (!encomendas.value && encomendas.value.length === 0) {
+    return false
+  }
+  return encomendas.value.some(encomenda => encomenda.volumes.some(volume => volume.sensores.some(sensor => sensor.eventos.length > 0)))
+})
+
 async function getTypes() {
   tipos.value = null
   try {
@@ -59,7 +73,7 @@ async function getTypes() {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
-      onResponse({response}) {
+      onResponse({ response }) {
         if (response.status === 200) {
           tipos.value = response._data
         }
@@ -80,7 +94,7 @@ const getLeituras = async () => {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
-      onResponse({response}) {
+      onResponse({ response }) {
         if (response.status === 200) {
           leituras.value = response._data
           console.log(leituras.value)
@@ -99,7 +113,7 @@ const getCurrentUser = async () => {
       headers: {
         Authorization: `Bearer ${token.value}`
       },
-      onResponse({response}) {
+      onResponse({ response }) {
         if (response.status === 200) {
           username = response._data.username
         }
@@ -144,7 +158,8 @@ onBeforeMount(async () => {
         </div>
 
         <div class="space-y-4">
-          <div v-if="encomendas" v-for="encomenda in encomendas" class="border-l-4 border-blue-600 pl-4 py-2">
+          <div v-if="encomendas && encomendas.length > 0" v-for="encomenda in encomendas"
+            class="border-l-4 border-blue-600 pl-4 py-2">
             <NuxtLink :to="`/SAC/encomendas/${encomenda.encomendaId}`">
               <div class="flex justify-between items-center">
                 <div>
@@ -152,23 +167,26 @@ onBeforeMount(async () => {
                   <p class="text-m text-gray-600">No. de Volumes - {{ encomenda.volumes.length }}</p>
                 </div>
                 <span class="px-3 py-1 rounded-full text-sm"
-                      :class="{ 'bg-green-100 text-green-800': encomenda.estado === 'Entregue', 'bg-yellow-100 text-yellow-800': encomenda.estado === 'Pendente', 'bg-blue-100 text-blue-800': encomenda.estado === 'Despachada' }">
-                                    {{ encomenda.estado }}
+                  :class="{ 'bg-green-100 text-green-800': encomenda.estado === 'Entregue', 'bg-yellow-100 text-yellow-800': encomenda.estado === 'Pendente', 'bg-blue-100 text-blue-800': encomenda.estado === 'Despachada' }">
+                  {{ encomenda.estado }}
                 </span>
               </div>
             </NuxtLink>
           </div>
+          <div v-else>
+            <p class="text-gray-600">Não existem encomendas disponíveis.</p>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-md p-4 mt-5">
+      <div v-if="encomendasHaveAnySensores && encomendaSensoresHaveAnyEvents" class="bg-white rounded-lg shadow-md p-4 mt-5">
         <div class="space-y-4">
           <form>
             <div class="flex justify-between items-center mb-2">
               <p class="font-medium text-lg">Visualizar últimas leituras</p>
             </div>
             <select v-model="formData.selectedTipo" @change="getLeituras"
-                    class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
               <option value="" selected>Selecione um tipo</option>
               <option v-for="tipo in tipos" :value="tipo">{{ tipo }}</option>
             </select>
@@ -177,26 +195,32 @@ onBeforeMount(async () => {
         <div>
           <div v-if="leituras" class="mt-4 p-3 bg-gray-50 rounded-lg">
             <div v-for="leitura in leituras" class="text-sm mb-3">
-                <table class="min-w-full">
-                  <thead>
+              <table class="min-w-full">
+                <thead>
                   <tr class="bg-gray-50">
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Sensor</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Encomenda</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Volume</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Última Leitura</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Sensor
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID
+                      Encomenda</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Volume
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Última
+                      Leitura</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp
+                    </th>
                   </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="eachleitura in leitura" :key="eachleitura.idSensor">
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idSensor }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idEncomenda }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.idVolume }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.ultimaLeitura }} {{getMeasureText(formData.selectedTipo)}}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ eachleitura.ultimaLeitura }}
+                      {{ getMeasureText(formData.selectedTipo) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(eachleitura.timestamp) }}</td>
                   </tr>
-                  </tbody>
-                </table>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
